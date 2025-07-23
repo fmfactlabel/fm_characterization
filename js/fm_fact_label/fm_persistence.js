@@ -116,16 +116,9 @@ setupPDFSaveButton('#savePDFDataSetLandscape', '#FMFactLabelDataSetChartLandscap
 d3.select('#saveTXT').on('click', function () {
     const jsonString = pyodideInstance.FS.readFile("fm_characterization.json", { encoding: "utf8" });
     const fmData = JSON.parse(jsonString);
-    const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
-    var blob;
-
-    if (typeof fmData !== 'undefined') {
-        blob = new Blob([fmCharacterizationStr], { type: "text/plain" });
-    } else {
-        blob = new Blob([fmDatasetCharacterizationStr], { type: "text/plain" });
-    }
-
-    saveAs(blob, get_property(data, 'Name').value + ".txt");
+    const fmCharacterizationStr = pyodideInstance.FS.readFile("fm_characterization.txt", { encoding: "utf8" });
+    var blob = new Blob([fmCharacterizationStr], { type: "application/txt" });
+    saveAs(blob, get_property(fmData, 'Name').value + ".txt");
 });
 
 /**

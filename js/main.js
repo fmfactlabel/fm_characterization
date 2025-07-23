@@ -143,6 +143,7 @@ from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureID
 from fm_characterization import FMCharacterization
 from typing import Optional
 import pathlib
+import json
 
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
     try:
@@ -176,6 +177,14 @@ characterization.metadata.reference = doi
 characterization.metadata.domains = domain
 
 characterization.to_json_file("fm_characterization.json")
+
+
+with open("fm_characterization.json", "r", encoding="utf-8") as f:
+    json_data = json.load(f)
+
+text_representation = FMCharacterization.json_to_text(json_data)
+with open("fm_characterization.txt", "w", encoding="utf-8") as f:
+    f.write(text_representation)
 
 `;
 

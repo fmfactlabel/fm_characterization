@@ -12,7 +12,7 @@ requirements = read_requirements("requirements.txt")
 
 setuptools.setup(
     name="fact_label_json_gen",
-    version="1.0.0",
+    version="1.8.0",
     author="FM Fact Label",
     author_email="flamapy@us.es",
     description="FM Fact Lablel backend JSON generator",

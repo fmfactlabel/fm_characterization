@@ -19,7 +19,6 @@
 
     <!-- d3.js -->
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script src="js/fm_fact_label/fm_fact_label.js"></script>
 
     <!-- FileSaver, PDFKit -->
     <script src="js/FileSaver.js"></script>
@@ -27,7 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/svg-to-pdfkit@0.1.8/source.js"></script>
 
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ETY3FZE13S"></script>
@@ -52,7 +51,6 @@
 
             <!-- Main Content -->
             <div id="content">
-
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
@@ -166,7 +164,7 @@
                                                     class="spinner-button btn btn-primary">Submit</button> <i
                                                     class="fa-solid fa-circle-info" data-toggle="tooltip"
                                                     data-placement="top"
-                                                    title="We value your privacy: this service does not store any personal data or models. Only your IP location is collected for statistical purposes. By submitting the form, you consent to this. For more information, please visit the About page."></i>
+                                                    title="We value your privacy: this service does not store any personal data or models. For more information, please visit the About page."></i>
                                             </form>
                                         </div>
                                     </div>
@@ -213,101 +211,6 @@
                                                 </p>
                                             </div>
                                         </div>
-
-                                        <script>
-                                            // Store the BibTeX entry in a JavaScript variable
-                                            const bibtexEntry = `
-                                      @article{Horcas2025_FMFactLabel,
-                                        author       = {Jos{\'{e}} Miguel Horcas and Jos{\'{e}} A. Galindo and Lidia Fuentes and David Benavides},
-                                        title        = {{FM} fact label},
-                                        journal      = {Sci. Comput. Program.},
-                                        volume       = {240},
-                                        pages        = {103214},
-                                        year         = {2025},
-                                        url          = {https://doi.org/10.1016/j.scico.2024.103214},
-                                        doi          = {10.1016/J.SCICO.2024.103214},
-                                        timestamp    = {Mon, 21 Oct 2024 11:11:55 +0200},
-                                        biburl       = {https://dblp.org/rec/journals/scp/HorcasGFB25.bib},
-                                        bibsource    = {dblp computer science bibliography, https://dblp.org}
-                                      }`;
-
-                                            function copyBibTeX() {
-                                                // Create a temporary textarea to hold the BibTeX entry
-                                                const tempTextarea = document.createElement("textarea");
-                                                tempTextarea.value = bibtexEntry;
-                                                document.body.appendChild(tempTextarea);
-
-                                                // Select and copy the text
-                                                tempTextarea.select();
-                                                document.execCommand("copy");
-
-                                                // Remove the temporary textarea
-                                                document.body.removeChild(tempTextarea);
-                                            }
-                                        </script>
-
-                                        <script type="text/javascript">
-
-                                            function chart_countries() {
-                                                var ctx = document.getElementById('chart_countries');
-
-                                                data = '{{data["usage_stats"]["countries"] | tojson | safe}}';
-                                                data = JSON.parse(data);
-                                                var x = Object.keys(data);
-                                                var y = Object.values(data);
-
-                                                new Chart(ctx, {
-                                                    type: 'bar',
-                                                    data: {
-                                                        labels: x,
-                                                        datasets: [{
-                                                            label: 'Countries',
-                                                            data: y,
-                                                            //borderWidth: 1,
-                                                            //borderColor: 'black',
-                                                        }]
-                                                    },
-                                                    options: {
-                                                        scales: {
-                                                            y: {
-                                                                beginAtZero: true,
-                                                                title: {
-                                                                    display: true,
-                                                                    text: "Fact Labels generated"
-                                                                },
-                                                                ticks: {
-                                                                    callback: function (value) {
-                                                                        return Number.isInteger(value) ? value : null; // Mostrar solo enteros
-                                                                    }
-                                                                }
-                                                            },
-                                                            x: {
-                                                                title: {
-                                                                    display: true,
-                                                                    text: "Countries"
-                                                                },
-                                                            }
-                                                        },
-                                                        //barThickness: 4,
-                                                        plugins: {
-                                                            legend: {
-                                                                display: false
-                                                            },
-                                                            tooltip: {
-                                                                displayColors: false,
-                                                                callbacks: {
-                                                                    label: function (context) {
-                                                                        return context.parsed.y;
-                                                                    },
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                            chart_countries();
-                                        </script>
-
                                     </div>
                                 </div>
                             </div>
@@ -380,10 +283,15 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Footer con estado Pyodide -->
             <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; 2024</span>
+                <div class="container my-auto text-center">
+                    <div class="copyright my-1">
+                        <span>&copy; 2025</span>
+                    </div>
+                    <div id="pyodideStatus" class="text-muted small">
+                        Loading Pyodide, please wait...
                     </div>
                 </div>
             </footer>
@@ -404,140 +312,11 @@
 
     <!-- Custom scripts -->
     <script src="js/sb_admin_2/sb-admin-2.min.js"></script>
+
+    <!-- Fact Label scripts -->
     <script src="js/fm_fact_label/fm_fact_label.js"></script>
     <script src="js/fm_fact_label/fm_persistence.js"></script>
-
-    <!-- Tooltip Initialization -->
-    <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        });
-    </script>
-
-    <!-- Pyodide Integration and drawFMFactLabel Usage -->
-    <script type="text/javascript">
-        let pyodide;
-
-        async function loadPyodideAndPackages() {
-            pyodideInstance = await loadPyodide();
-            console.log("Pyodide loaded");
-            await pyodideInstance.loadPackage("micropip");
-            await pyodideInstance.loadPackage("python-sat");
-            await pyodideInstance.runPythonAsync(`
-  import micropip
-  await micropip.install("flamapy/uvlparser-2.0.1-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/afmparser-1.0.3-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/antlr4_python3_runtime-4.13.1-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/flamapy-2.0.1-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/flamapy_fw-2.0.2.dev0-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/flamapy_fm-2.0.2.dev0-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/flamapy_sat-2.0.1-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/flamapy_bdd-2.0.1-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/dd-0.5.7-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/astutils-0.0.6-py3-none-any.whl", deps=False)
-  await micropip.install("flamapy/ply-3.10-py2.py3-none-any.whl", deps=False)
-  
-  await micropip.install("flamapy/fact_label_json_gen-1.0.0-py3-none-any.whl", deps=False)
-
-  `);
-        }
-
-        loadPyodideAndPackages();
-
-        document.getElementById("fmForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            document.getElementById("submitButton").innerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i> Loading...';
-
-            const formData = new FormData(event.target);
-            const formObject = {};
-            formData.forEach((value, key) => { formObject[key] = value });
-
-            const fileInputElement = document.getElementById("inputFM");
-            if (!fileInputElement || fileInputElement.files.length === 0) return;
-            const inputFM = fileInputElement.files[0];
-
-            if (!inputFM) return;
-            // Leer el archivo como ArrayBuffer
-            const arrayBuffer = await inputFM.arrayBuffer();
-            const uint8Array = new Uint8Array(arrayBuffer);
-
-            // Escribirlo en el FS de Pyodide
-            pyodideInstance.FS.writeFile(inputFM.name, uint8Array);
-
-            const pyCode = `
-name = """${formObject.inputName}"""
-description = """${formObject.inputDescription}"""
-authors = """${formObject.inputAuthor}"""
-year = int(${formObject.inputYear || 0})
-domain = """${formObject.inputDomain}"""
-tags = """${formObject.inputTags}"""
-doi = """${formObject.inputDoi}"""
-
-fm_file = """${inputFM.name}"""
-
-from flamapy.metamodels.fm_metamodel.models import FeatureModel
-from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
-
-from fm_characterization import FMCharacterization
-from typing import Optional
-
-
-def read_fm_file(filename: str) -> Optional[FeatureModel]:
-    try:
-        if filename.endswith(".uvl"):
-            return UVLReader(filename).transform()
-        elif filename.endswith(".xml") or filename.endswith(".fide"):
-            return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return UVLReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    return None
-
-fm = read_fm_file(fm_file)
-if fm is None:
-    raise Exception('Feature model format not supported.')
-
-characterization = FMCharacterization(fm)
-characterization.metadata.name = name
-characterization.metadata.description = description
-characterization.metadata.author = authors
-characterization.metadata.year = year
-characterization.metadata.tags = tags
-characterization.metadata.reference = doi
-characterization.metadata.domains = domain
-
-characterization.to_json_file("fm_characterization.json")
-
-
-        `;
-
-            try {
-                const resultJson = await pyodideInstance.runPythonAsync(pyCode);
-                const jsonString = pyodideInstance.FS.readFile("fm_characterization.json", { encoding: "utf8" });
-                const fmData = JSON.parse(jsonString);
-
-                // Call your existing JS function with the result
-                drawFMFactLabel(fmData);
-
-            } catch (error) {
-                console.error("Pyodide Error:", error);
-                document.getElementById("result").innerHTML = `<div class="alert alert-danger">Error: ${error}</div>`;
-            }
-
-            document.getElementById("submitButton").innerHTML = 'Submit';
-        });
-    </script>
+    <script src="js/main.js"></script>
 
     <!-- Modal (preserved from your original code) -->
     <div class="modal fade" id="metricModal" tabindex="-1" aria-labelledby="metricModalLabel" aria-hidden="true">
@@ -556,7 +335,6 @@ characterization.to_json_file("fm_characterization.json")
             </div>
         </div>
     </div>
-
 </body>
 
 </html>

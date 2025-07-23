@@ -28,7 +28,7 @@
   </div>
 </div>
 
-<div class="card">
+<!-- <div class="card">
   <div class="card-body">
     <h5 class="card-title">Usage stats</h5>
     <p class="card-text">Total fact labels generated: {{data.usage_stats.total_fact_labels}}</p>
@@ -38,100 +38,4 @@
     <p class="card-text"><i class="fa-solid fa-circle-info"></i>We value your privacy: this service does not store any personal data or models. When submitting a model, only your IP location (continent, country, city) is collected solely for statistical purposes. By using this service, you consent to this data collection.</p>
     
   </div>
-</div>
-
-<script>
-  // Store the BibTeX entry in a JavaScript variable
-  {% raw %}
-  const bibtexEntry = `
-@article{Horcas2025_FMFactLabel,
-  author       = {Jos{\'{e}} Miguel Horcas and Jos{\'{e}} A. Galindo and Lidia Fuentes and David Benavides},
-  title        = {{FM} fact label},
-  journal      = {Sci. Comput. Program.},
-  volume       = {240},
-  pages        = {103214},
-  year         = {2025},
-  url          = {https://doi.org/10.1016/j.scico.2024.103214},
-  doi          = {10.1016/J.SCICO.2024.103214},
-  timestamp    = {Mon, 21 Oct 2024 11:11:55 +0200},
-  biburl       = {https://dblp.org/rec/journals/scp/HorcasGFB25.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}`;
-  {% endraw %}
-
-  function copyBibTeX() {
-      // Create a temporary textarea to hold the BibTeX entry
-      const tempTextarea = document.createElement("textarea");
-      tempTextarea.value = bibtexEntry;
-      document.body.appendChild(tempTextarea);
-
-      // Select and copy the text
-      tempTextarea.select();
-      document.execCommand("copy");
-
-      // Remove the temporary textarea
-      document.body.removeChild(tempTextarea);
-  }
-</script>
-
-<script type="text/javascript">
-
-  function chart_countries() {
-    var ctx = document.getElementById('chart_countries');
-  
-    data = '{{data["usage_stats"]["countries"] | tojson | safe}}';
-    data = JSON.parse(data);
-    var x = Object.keys(data);
-    var y = Object.values(data);
-
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: x,
-        datasets: [{
-          label: 'Countries',
-          data: y,
-          //borderWidth: 1,
-          //borderColor: 'black',
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-                display: true,
-                text: "Fact Labels generated"
-            },
-            ticks: {
-                callback: function(value) {
-                    return Number.isInteger(value) ? value : null; // Mostrar solo enteros
-                }
-            }
-          },
-          x: {
-            title: {
-                display: true,
-                text: "Countries"
-            },
-          }
-        },
-        //barThickness: 4,
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                displayColors: false,
-                callbacks: {
-                    label: function(context) {
-                        return context.parsed.y;
-                    },
-                }
-            }
-        }
-      }
-    });
-  }
-  chart_countries();
-  </script>
+</div> -->

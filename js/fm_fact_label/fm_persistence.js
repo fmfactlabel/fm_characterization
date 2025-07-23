@@ -8,6 +8,8 @@ const setupSaveButton = (buttonId, chartSelector, serializeFunction, extension) 
         const svgElement = chart.node();
         const originalHeight = adjustSVGSize(svgElement);
 
+        const jsonString = pyodideInstance.FS.readFile("fm_characterization.json", { encoding: "utf8" });
+        const fmData = JSON.parse(jsonString);
         try {
             const blob = await serializeFunction(svgElement);
             const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
@@ -48,6 +50,9 @@ const setupPDFSaveButton = (buttonId, chartSelector) => {
 
             const blob = await serializeToSVG(svgElement);
             const imgData = await readBlobAsDataURL(blob);
+
+            const jsonString = pyodideInstance.FS.readFile("fm_characterization.json", { encoding: "utf8" });
+            const fmData = JSON.parse(jsonString);
             const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
             const name = get_property(data, 'Name').value;
 
@@ -109,6 +114,8 @@ setupPDFSaveButton('#savePDFDataSetLandscape', '#FMFactLabelDataSetChartLandscap
  * Set-up the save TXT button.
  */
 d3.select('#saveTXT').on('click', function () {
+    const jsonString = pyodideInstance.FS.readFile("fm_characterization.json", { encoding: "utf8" });
+    const fmData = JSON.parse(jsonString);
     const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
     var blob;
 
@@ -125,16 +132,10 @@ d3.select('#saveTXT').on('click', function () {
  * Set-up the save JSON button.
  */
 d3.select('#saveJSON').on('click', function () {
-    const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
-    var blob;
-
-    if (typeof fmData !== 'undefined') {
-        blob = new Blob([fmCharacterizationJSONStr], { type: "application/json" });
-    } else {
-        blob = new Blob([fmDatasetCharacterizationJSONStr], { type: "application/json" });
-    }
-
-    saveAs(blob, get_property(data, 'Name').value + ".json");
+    const jsonString = pyodideInstance.FS.readFile("fm_characterization.json", { encoding: "utf8" });
+    const fmData = JSON.parse(jsonString);
+    var blob = new Blob([jsonString], { type: "application/json" });
+    saveAs(blob, get_property(fmData, 'Name').value + ".json");
 });
 
 /**

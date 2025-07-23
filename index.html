@@ -98,30 +98,54 @@
                                         <div class="card-body">
                                             <!-- Form -->
                                             <form id="fmForm">
-                                                <div class="mb-3">
-                                                    <label for="inputName" class="form-label">Name</label>
-                                                    <input type="text" class="form-control" id="inputName"
-                                                        name="inputName" placeholder="Feature model's name">
+                                                <div class="form-group row">
+                                                    <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Feature model's name">
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="inputDescription" class="form-label">Description</label>
-                                                    <textarea class="form-control" id="inputDescription"
-                                                        name="inputDescription" rows="3"
-                                                        placeholder="Brief description"></textarea>
+                                                <div class="form-group row">
+                                                    <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+                                                    <div class="col-sm">
+                                                        <textarea class="form-control" id="inputDescription" name="inputDescription" rows="3" placeholder="Brief description of the feature model."></textarea>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="inputAuthor" class="form-label">Author</label>
-                                                    <input type="text" class="form-control" id="inputAuthor"
-                                                        name="inputAuthor">
+                                                <div class="form-group row">
+                                                    <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputAuthor" name="inputAuthor" placeholder="Author(s)">
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="inputYear" class="form-label">Year</label>
-                                                    <input type="number" class="form-control" id="inputYear"
-                                                        name="inputYear">
+                                                <div class="form-group row">
+                                                    <label for="inputYear" class="col-sm-2 col-form-label">Year</label>
+                                                    <div class="col-sm">
+                                                    <input type="number" class="form-control" id="inputYear" name="inputYear" placeholder="Year">
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="inputFM" class="form-label">FM File</label>
-                                                    <input type="file" class="form-control" id="inputFM" name="inputFM">
+                                                <div class="form-group row">
+                                                    <label for="inputReference" class="col-sm-2 col-form-label">Reference</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputReference" name="inputReference" placeholder="Main reference or DOI">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputKeywords" name="inputKeywords" placeholder="Tags or keywords">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputDomain" class="col-sm-2 col-form-label">Domain</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputDomain" name="inputDomain" placeholder="Domain">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
+                                                    <div class="col-sm">
+                                                        <input type="file" class="form-control-file" id="inputFM" name="inputFM">
+                                                        Supported formats: <a href="https://universal-variability-language.github.io/">UVL</a> (.uvl), <a href="https://featureide.github.io/">FeatureIDE</a> (.xml, .fide), <a href="https://glencoe.hochschule-trier.de/">Glencoe</a> (.gfm.json)
+                                                    </div>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" value="on"
@@ -133,7 +157,7 @@
                                                     </label>
                                                 </div>
                                                 <button type="submit" id="submitButton"
-                                                    class="btn btn-primary">Submit</button>
+                                                    class="spinner-button btn btn-primary">Submit</button>
                                             </form>
                                         </div>
                                     </div>
@@ -235,7 +259,6 @@
                                             <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
                                             <a class="dropdown-item" id="savePNG" href="#">PNG</a>
                                             <a class="dropdown-item" id="savePDF" href="#">PDF</a>
-                                            <!-- <a class="dropdown-item" id="savePDF" href="#">PDF</a> -->
                                             <div class="dropdown-divider"></div>
                                             <div class="dropdown-header">Export to...</div>
                                             <a class="dropdown-item" id="saveJSON" href="#">JSON</a>

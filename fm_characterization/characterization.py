@@ -7,6 +7,7 @@ from fm_characterization import FMProperty, FMAnalysis, FMMetadata, FMMetrics
 
 
 SPACE = ' '
+INDENT_MULTIPLIER = 1  # change to 2 if you need more indentation
 
 
 class FMCharacterization():
@@ -42,6 +43,34 @@ class FMCharacterization():
             ratio = f' ({str(property.ratio*100)}%)' if property.ratio is not None else ''
             lines.append(f'{indentation}{name}: {value}{ratio}')    
         return '\n'.join(lines)
+
+    @staticmethod
+    def json_to_text(data: dict) -> str:
+        lines = ['METADATA']
+        for prop in data.get("metadata", []):
+            name = prop.get("name")
+            value = str(prop.get("value", "None"))
+            lines.append(f"{name}: {value}")
+
+        lines.append('METRICS')
+        for prop in data.get("metrics", []):
+            indentation = SPACE * (prop.get("level", 0) * INDENT_MULTIPLIER)
+            name = prop.get("name")
+            value = str(prop["size"]) if prop.get("size") is not None else str(prop.get("value"))
+            ratio = prop.get("ratio")
+            ratio_str = f" ({round(ratio * 100, 2)}%)" if ratio is not None else ""
+            lines.append(f"{indentation}{name}: {value}{ratio_str}")
+
+        lines.append('ANALYSIS')
+        for prop in data.get("analysis", []):
+            indentation = SPACE * (prop.get("level", 0) * INDENT_MULTIPLIER)
+            name = prop.get("name")
+            value = str(prop["size"]) if prop.get("size") is not None else str(prop.get("value"))
+            ratio = prop.get("ratio")
+            ratio_str = f" ({round(ratio * 100, 2)}%)" if ratio is not None else ""
+            lines.append(f"{indentation}{name}: {value}{ratio_str}")
+
+        return "\n".join(lines)
 
     def to_json(self) -> dict[Any]:
         metadata = []

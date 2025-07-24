@@ -27,6 +27,13 @@ app = flask.Flask(__name__,
 @app.route('/', methods=['GET', 'POST'])
 def index():
     data = {}
+    name = None
+    description = None
+    author = None
+    year = None
+    keywords = None
+    reference = None
+    domain = None
     if flask.request.method == 'GET':
         return flask.render_template('index_flask.html', data=data)
 
@@ -34,14 +41,7 @@ def index():
         light_fact_label = 'lightFactLabel' in flask.request.form
         logging.warning(f'light_fact_label: {light_fact_label}')
         fm_file = flask.request.files['inputFM']
-        name = None
-        description = None
-        author = None
-        year = None
-        keywords = None
-        reference = None
-        domain = None
-
+        
         filename = fm_file.filename
         fm_file.save(filename)
 
@@ -62,48 +62,41 @@ def index():
             year = flask.request.form['inputYear']
 
         try:
-            # Read the feature model
-            fm = read_fm_file(filename)
-            if fm is None:
-                data = {}
-                data['file_error'] = 'Feature model format not supported.'
-                return flask.render_template('index_flask.html', data=data)
-            if not name:
-                name = pathlib.Path(filename).stem
-
-            characterization = FMCharacterization(fm, light_fact_label)
-            characterization.metadata.name = name
-            characterization.metadata.description = description
-            characterization.metadata.author = author
-            characterization.metadata.year = year
-            characterization.metadata.tags = keywords
-            characterization.metadata.reference = reference
-            characterization.metadata.domains = domain
-            data['FM_NAME'] = name
-            data['JSON_CHARACTERIZATION'] = characterization.to_json()
-            data['TXT_CHARACTERIZATION'] = str(characterization)
-
-            # Write the characterization to a JSON file
-            json_filename = f'{name}.json'
-            temp_dir = pathlib.Path(tempfile.gettempdir())
-            temp_path = temp_dir / json_filename
-            characterization.to_json_file(temp_path)
-            delete_file_later(temp_path)
-            # Write the characterization to a text file
-            txt_filename = f'{name}.txt'
-            temp_dir = pathlib.Path(tempfile.gettempdir())
-            temp_path = temp_dir / txt_filename
-            with open(temp_path, 'w', encoding='utf-8') as file_txt:
-                file_txt.write(str(characterization))
-            delete_file_later(temp_path)
+            characterization = FMCharacterization.from_path(filename)
         except Exception as e:
-            raise e
+            data['file_error'] = 'Feature model format not supported or invalid syntax.'
+            return flask.render_template('index_flask.html', data=data)
+        finally:
+            file_path = pathlib.Path(filename)
+            if file_path.exists() and file_path.name == fm_file.filename:
+                file_path.unlink()
 
-        file_path = pathlib.Path(filename)
-        if file_path.exists() and file_path.name == fm_file.filename:
-            file_path.unlink()
+        if name is not None:
+            characterization.metadata.name = name
+        name = characterization.metadata.name
+        characterization.metadata.author = author
+        characterization.metadata.year = year
+        characterization.metadata.tags = keywords
+        characterization.metadata.reference = reference
+        characterization.metadata.domains = domain
+        data['FM_NAME'] = name
+        data['JSON_CHARACTERIZATION'] = characterization.to_json()
+        data['TXT_CHARACTERIZATION'] = str(characterization)
 
-        print(f'Data: {data}')
+        # Write the characterization to a JSON file
+        json_filename = f'{name}.json'
+        temp_dir = pathlib.Path(tempfile.gettempdir())
+        temp_path = temp_dir / json_filename
+        characterization.to_json_file(temp_path)
+        delete_file_later(temp_path)
+        # Write the characterization to a text file
+        txt_filename = f'{name}.txt'
+        temp_dir = pathlib.Path(tempfile.gettempdir())
+        temp_path = temp_dir / txt_filename
+        with open(temp_path, 'w', encoding='utf-8') as file_txt:
+            file_txt.write(str(characterization))
+        delete_file_later(temp_path)
+
         return flask.jsonify(data=data)
 
 
@@ -115,7 +108,6 @@ def uploadJSON():
 
     if flask.request.method == 'POST':
         json_file = flask.request.files['inputJSON']
-        
         filename = json_file.filename
         json_file.save(filename)
         try:
@@ -154,6 +146,37 @@ def uploadJSON():
             file_path.unlink()
     
         return flask.jsonify(data=data)
+
+@app.route('/fromURL', methods=['POST'])
+def fromURL():
+    data = {}
+    request_data = flask.request.get_json()
+    url = request_data.get('url')
+    if url is None:
+        return flask.jsonify({'error': 'URL not provided.'}), 400
+    try:
+        characterization = FMCharacterization.from_url(url)
+        data['FM_NAME'] = characterization.metadata.name
+        data['JSON_CHARACTERIZATION'] = characterization.to_json()
+        data['TXT_CHARACTERIZATION'] = str(characterization)
+
+        # Write the characterization to a JSON file
+        json_filename = f'{characterization.metadata.name}.json'
+        temp_dir = pathlib.Path(tempfile.gettempdir())
+        temp_path = temp_dir / json_filename
+        characterization.to_json_file(temp_path)
+        delete_file_later(temp_path)
+
+        # Write the characterization to a text file
+        txt_filename = f'{characterization.metadata.name}.txt'
+        temp_path = temp_dir / txt_filename
+        with open(temp_path, 'w', encoding='utf-8') as file_txt:
+            file_txt.write(str(characterization))
+        delete_file_later(temp_path)
+        return flask.jsonify(data=data)
+    except Exception as e:
+        logging.error(f"Error processing URL {url}: {e}")
+        return flask.jsonify({'error': str(e)}), 500
 
 
 def delete_file_later(path: str, delay: int = TIMEOUT_TEMPFILES):

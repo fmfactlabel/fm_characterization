@@ -69,8 +69,6 @@ from flamapy.metamodels.fm_metamodel.transformations import (
 )
 
 from fmfactlabel import FMCharacterization
-import pathlib
-import json
 
 def read_fm_file(filename: str) -> FeatureModel:
     if filename.endswith(".uvl"):
@@ -91,7 +89,7 @@ if fm is None:
     raise Exception('Feature model format not supported.')
 
 characterization = FMCharacterization(fm, ligth_fm)
-characterization.metadata.name = name if name is not None else pathlib.Path(fm_file).stem
+characterization.metadata.name = name if name is not None else fm_file.split('.')[0]
 characterization.metadata.description = description
 characterization.metadata.author = authors
 characterization.metadata.year = year
@@ -118,6 +116,7 @@ with open(filename, 'w', encoding='utf-8') as file_txt:
         window.FM_NAME = pyodideInstance.globals.get("name");
         const jsonString = pyodideInstance.FS.readFile(window.FM_NAME + ".json", { encoding: "utf8" });
         const fmData = JSON.parse(jsonString);
+        document.getElementById("FMFactLabelChart").replaceChildren();
         drawFMFactLabel(fmData);
     } catch (error) {
         console.error("Pyodide Error:", error);
@@ -164,6 +163,7 @@ with open(filename, 'w', encoding='utf-8') as file_txt:
         window.FM_NAME = pyodideInstance.globals.get("name");
         const jsonString = pyodideInstance.FS.readFile(window.FM_NAME + ".json", { encoding: "utf8" });
         const fmData = JSON.parse(jsonString);
+        document.getElementById("FMFactLabelChart").replaceChildren();
         drawFMFactLabel(fmData);
     } catch (error) {
         console.error("Pyodide Error:", error);
@@ -171,3 +171,84 @@ with open(filename, 'w', encoding='utf-8') as file_txt:
 
     document.getElementById("submitButtonJSON").innerHTML = 'Submit';
 });
+
+async function loadFileFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const fileURL = params.get('file');
+    if (!fileURL) return;
+
+    const response = await fetch(fileURL);
+    if (!response.ok) {
+        throw new Error(`Error downloading the file: ${response.statusText}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const fileName = fileURL.split('/').pop();
+    pyodideInstance.FS.writeFile(fileName, uint8Array);
+
+    const pyCode = `
+fm_file = """${fileName}"""
+
+from flamapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.fm_metamodel.transformations import (
+    UVLReader, 
+    FeatureIDEReader, 
+    GlencoeReader,
+    AFMReader,
+    JSONReader
+)
+
+from fmfactlabel import FMCharacterization
+
+def read_fm_file(filename: str) -> FeatureModel:
+    if filename.endswith(".uvl"):
+        return UVLReader(filename).transform()
+    elif filename.endswith(".xml") or filename.endswith(".fide"):
+        return FeatureIDEReader(filename).transform()
+    elif filename.endswith("gfm.json"):
+        return GlencoeReader(filename).transform()
+    elif filename.endswith(".afm"):
+        return AFMReader(filename).transform()
+    elif filename.endswith(".json"):
+        return JSONReader(filename).transform()
+    else:
+        raise Exception(f"Unsupported file format: {filename}")
+
+fm = read_fm_file(fm_file)
+if fm is None:
+    raise Exception('Feature model format not supported.')
+
+characterization = FMCharacterization(fm)
+characterization.metadata.name = fm_file.split('.')[0]
+
+json_characterization = characterization.to_json()
+txt_characterization = str(characterization)
+name = characterization.metadata.name
+
+# Write the characterization to a JSON file
+filename = f'{name}.json'
+characterization.to_json_file(filename)
+# Write the characterization to a text file
+filename = f'{name}.txt'
+with open(filename, 'w', encoding='utf-8') as file_txt:
+    file_txt.write(str(characterization))
+
+`;
+    try {
+        await pyodideInstance.runPythonAsync(pyCode);
+        window.FM_NAME = pyodideInstance.globals.get("name");
+        const jsonString = pyodideInstance.FS.readFile(window.FM_NAME + ".json", { encoding: "utf8" });
+        const fmData = JSON.parse(jsonString);
+        document.getElementById("FMFactLabelChart").replaceChildren();
+        drawFMFactLabel(fmData);
+    } catch (error) {
+        console.error("Pyodide Error:", error);
+    }
+}
+
+async function main() {
+    await loadPyodideAndPackages();
+    await loadFileFromURL();  // Ahora sí espera a que Pyodide esté cargado
+}
+
+main();

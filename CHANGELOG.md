@@ -10,12 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Deploy WASM web-based version of FM Fact Label.
+- Generate a fact label from a URL of a feature model.
+- _Language level_ new metadata for feature models.
 - Support for feature models specified in JSON.
 - Support for feature models specified in AFM (old FAMA tool).
 
-### Fixed
-
-- 
 
 ### Changed
 

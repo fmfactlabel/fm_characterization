@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,14 +8,14 @@ version = "1.8.0"
 description = "FM Fact Label backend to characterize feature models."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "GPL-3.0-or-later" }
+license = "GPL-3.0-or-later"
 authors = [
     { name = "José Miguel Horcas", email = "horcas@uma.es" },
-    { name = "José A. Galindo"},
-    { name = "Ángela Pérez de Guzmán de Miguel"},
-    { name = "Mónica Pinto"},
-    { name = "Lidia Fuentes"},
-    { name = "David Benavides"}    
+    { name = "José A. Galindo" },
+    { name = "Ángela Pérez de Guzmán de Miguel" },
+    { name = "Mónica Pinto" },
+    { name = "Lidia Fuentes" },
+    { name = "David Benavides" }
 ]
 dependencies = [
     "flamapy~=2.1.0.dev0",
@@ -27,7 +27,6 @@ dependencies = [
 
 classifiers = [
   "Programming Language :: Python :: 3",
-  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
   "Operating System :: OS Independent"
 ]
 

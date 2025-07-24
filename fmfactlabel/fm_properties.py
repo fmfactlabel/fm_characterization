@@ -64,6 +64,7 @@ class FMProperties(Enum):
     REFERENCE = FMProperty('Reference', 'Main paper for reference or DOI of the feature model', None)
     TAGS = FMProperty('Tags', 'Tags or keywords that identify the feature model.', None)
     DOMAIN = FMProperty('Domain', 'Domain of the feature model.', None)
+    LANGUAGE_LEVEL = FMProperty('Language level', 'Language level of the feature model.', None)
 
     # METRICS
     FEATURES = FMProperty('Features', 'Set of features in the feature model.', None)

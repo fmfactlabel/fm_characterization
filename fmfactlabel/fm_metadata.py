@@ -3,6 +3,7 @@ from typing import Optional
 from fmfactlabel import FMProperties, FMPropertyMeasure
 
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.fm_metamodel.operations import FMLanguageLevel
 
 
 class FMMetadata():
@@ -34,6 +35,7 @@ class FMMetadata():
         result.append(self.fm_reference(self.reference))
         result.append(self.fm_tags(self.tags))
         result.append(self.fm_domains(self.domains))
+        result.append(self.fm_language_level())
         return result
 
     def fm_name(self, value: Optional[str] = None) -> FMPropertyMeasure:
@@ -69,3 +71,10 @@ class FMMetadata():
         if value is None:
             return FMPropertyMeasure(FMProperties.DOMAIN.value)    
         return FMPropertyMeasure(FMProperties.DOMAIN.value, value)
+    
+    def fm_language_level(self) -> FMPropertyMeasure:
+        value = FMLanguageLevel().execute(self.fm).get_result()
+        minor_levels = ', '.join(level.name.capitalize().replace('_', ' ') for level in value.minors)
+        minor_levels = f' ({minor_levels})' if minor_levels else ''
+        value = f'{value.major.name.capitalize()}{minor_levels}'
+        return FMPropertyMeasure(FMProperties.LANGUAGE_LEVEL.value, value)

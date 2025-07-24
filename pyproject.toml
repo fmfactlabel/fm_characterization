@@ -30,5 +30,9 @@ classifiers = [
   "Operating System :: OS Independent"
 ]
 
-[tool.setuptools]
-packages = ["fmfactlabel"]
+[project.urls]
+"Homepage" = "https://fmfactlabel.github.io/"
+"GitHub" = "https://github.com/fmfactlabel/fm_characterization"
+
+[tool.setuptools.packages.find]
+where = ["fmfactlabel"]

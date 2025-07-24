@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fmfactlabel"
+version = "1.8.0"
+description = "FM Fact Label backend to characterize feature models."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0-or-later" }
+authors = [
+    { name = "José Miguel Horcas", email = "horcas@uma.es" },
+    { name = "José A. Galindo"},
+    { name = "Ángela Pérez de Guzmán de Miguel"},
+    { name = "Mónica Pinto"},
+    { name = "Lidia Fuentes"},
+    { name = "David Benavides"}    
+]
+dependencies = [
+    "flamapy~=2.1.0.dev0",
+    "flamapy-fw~=2.1.0.dev0",
+    "flamapy-fm~=2.1.0.dev0",
+    "flamapy-sat~=2.1.0.dev0",
+    "flamapy-bdd~=2.1.0.dev0",
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: OS Independent"
+]
+
+[tool.setuptools]
+packages = ["fmfactlabel"]

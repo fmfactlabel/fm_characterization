@@ -5,7 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.7.0] - 
+## [1.8.0] - 2025-07-24 
+
+### Added
+
+- Deploy WASM web-based version of FM Fact Label.
+- Support for feature models specified in JSON.
+- Support for feature models specified in AFM (old FAMA tool).
+
+### Fixed
+
+- 
+
+### Changed
+
+- Update Flamapy to version 2.1.0.dev0.
+  
+### Removed
+
+- Usage statistics: Location of the generated fact labels.
+- Examples of feature models (they are available in UVLHub).
+  
+## [1.7.0] - 2024-11-28
 
 ### Added
 

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="FM Characterization Fact Label">
+    <title>FM Fact Label</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/d0a6ca53ae.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+
+    <!-- Custom styles -->
+    <link href="static/css/sb_admin_2/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- d3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+    <!-- FileSaver, PDFKit -->
+    <script src="static/js/FileSaver.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfkit@0.17.1/js/pdfkit.standalone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-to-pdfkit@0.1.8/source.min.js"></script>
+
+    <!-- Chart.js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ETY3FZE13S"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ETY3FZE13S'); 
+    </script>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">FM Characterization Fact Label</h1>
+                    </div>
+
+                    <!-- Content Row -->
+
+                    <div class="row">
+
+                        <div class="col-xl-6 col-lg-5">
+                            <div class="card shadow mb-4">
+
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active"
+                                            id="uploadfm-tab" data-bs-toggle="tab" data-bs-target="#uploadfm"
+                                            type="button" role="tab" aria-controls="uploadfm" >Upload FM</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link"
+                                            id="uploadjson-tab" data-bs-toggle="tab" data-bs-target="#uploadjson"
+                                            type="button" role="tab" aria-controls="uploadjson" >Upload
+                                            JSON</button>
+                                    </li>
+
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="about-tab" data-bs-toggle="tab"
+                                            data-bs-target="#about" type="button" role="tab" aria-controls="about"
+                                            aria-selected="false">About</button>
+                                    </li>
+
+                                </ul>
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="uploadfm" role="tabpanel"
+                                        aria-labelledby="uploadfm-tab">
+                                        <!-- Card Header - Dropdown -->
+                                        <div
+                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h6 class="m-0 font-weight-bold text-primary">Upload your feature model</h6>
+                                        </div>
+                                        <!-- Card Body -->
+                                        <div class="card-body">
+                                            <!-- Form -->
+                                            <form id="fmForm">
+                                                <div class="form-group row">
+                                                    <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Feature model's name">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+                                                    <div class="col-sm">
+                                                        <textarea class="form-control" id="inputDescription" name="inputDescription" rows="3" placeholder="Brief description of the feature model."></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputAuthor" name="inputAuthor" placeholder="Author(s)">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputYear" class="col-sm-2 col-form-label">Year</label>
+                                                    <div class="col-sm">
+                                                    <input type="number" class="form-control" id="inputYear" name="inputYear" placeholder="Year">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputReference" class="col-sm-2 col-form-label">Reference</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputReference" name="inputReference" placeholder="Main reference or DOI">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputKeywords" name="inputKeywords" placeholder="Tags or keywords">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputDomain" class="col-sm-2 col-form-label">Domain</label>
+                                                    <div class="col-sm">
+                                                    <input type="text" class="form-control" id="inputDomain" name="inputDomain" placeholder="Domain">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
+                                                    <div class="col-sm">
+                                                        <input type="file" class="form-control-file" id="inputFM" name="inputFM">
+                                                        Supported formats: <a href="https://universal-variability-language.github.io/">UVL</a> (.uvl), <a href="https://featureide.github.io/">FeatureIDE</a> (.xml, .fide), <a href="https://glencoe.hochschule-trier.de/">Glencoe</a> (.gfm.json)
+                                                    </div>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="on"
+                                                        id="lightFactLabel" name="lightFactLabel">
+                                                    <label class="form-check-label" for="lightFactLabel"
+                                                        data-toggle="tooltip" data-placement="top"
+                                                        title="Exclude some analytical metrics (i.e., no BDD analysis)">
+                                                        Light fact label
+                                                    </label>
+                                                </div>
+                                                <button type="submit" id="submitButton"
+                                                    class="spinner-button btn btn-primary">Submit</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="uploadjson" role="tabpanel"
+                                        aria-labelledby="uploadjson-tab">
+                                        <!-- Form component -->
+
+                                        <!-- Card Header - Dropdown -->
+                                        <div
+                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h6 class="m-0 font-weight-bold text-primary">Upload your characterization
+                                                in JSON</h6>
+                                        </div>
+                                        <!-- Card Body -->
+                                        <div class="card-body">
+                                            <!-- Form -->
+                                            <form id="jsonForm">
+                                                <div class="form-group row">
+                                                    <label for="inputFM" class="col-sm-2 col-form-label">JSON
+                                                        file</label>
+                                                    <div class="col-sm">
+                                                        <input type="file" class="form-control-file" id="inputJSON"
+                                                            name="inputJSON">
+                                                        Supported formats: JSON (.json)
+                                                    </div>
+                                                </div>
+                                                <button type="submit" id="submitButtonJSON"
+                                                    class="spinner-button btn btn-primary">Submit</button> <i
+                                                    class="fa-solid fa-circle-info" data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    title="We value your privacy: this service does not store any personal data or models. For more information, please visit the About page."></i>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Current version: <span id="app-version">loading...</span></h5>
+                                                <p class="card-text">See <a
+                                                        href="https://github.com/jmhorcas/fm_characterization/blob/main/CHANGELOG.md"><b>changelog</b></a>.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">How to cite</h5>
+                                                <p class="card-text">José Miguel Horcas, José A. Galindo, Lidia Fuentes,
+                                                    David Benavides. <em>FM Fact Label</em>. <b>Science of Computer
+                                                        Programming (SCP)</b>. 2025. DOI: <a
+                                                        href="https://doi.org/10.1016/j.scico.2024.103214">https://doi.org/10.1016/j.scico.2024.103214</a>
+                                                </p>
+                                                <button type="button" class="btn btn-outline-primary"
+                                                    onclick="copyBibTeX()">Copy BibTex</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Contact</h5>
+                                                <p class="card-text"><a
+                                                        href="https://sites.google.com/view/josemiguelhorcas">José
+                                                        Miguel Horcas</a></p>
+                                                <a href="mailto:&#104;&#111;&#114;&#099;&#097;&#115;&#064;&#117;&#109;&#097;&#046;&#101;&#115;?subject=[FM Fact Label]"
+                                                    class="btn btn-outline-primary" role="button"
+                                                    aria-pressed="true">Contact</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">More info</h5>
+                                                <p class="card-text">Visit the official website of <a
+                                                        href="https://fmfactlabel.github.io/"><b>FM Fact Label</b></a>.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- FM Fact Label chart -->
+                        <div class="col-xl-6 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">FM Fact Label</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Save as...</div>
+                                            <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
+                                            <a class="dropdown-item" id="savePNG" href="#">PNG</a>
+                                            <a class="dropdown-item" id="savePDF" href="#">PDF</a>
+                                            <div class="dropdown-divider"></div>
+                                            <div class="dropdown-header">Export to...</div>
+                                            <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
+                                            <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <h6 class="h6">Label configuration:</h6>
+                                    <div class="mt-0 small">
+                                        <!-- <div class="form-check form-switch row">
+                                            <span class="me-2">
+                                                <input class="form-check-input" type="checkbox" id="portraitOrientation">
+                                                <label class="form-check-label" for="portraitOrientation">Portrait orientation</label>
+                                            </span>
+                                            <span class="me-2">
+                                                <input class="form-check-input" type="checkbox" id="intermediateRules">
+                                                <label class="form-check-label" for="intermediateRules">Intermediate rules</label>
+                                            </span>
+                                        </div> -->
+                                        <div class="form-check form-switch">
+                                            <span class="me-2">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="collapseSubProperties" checked>
+                                                <label class="form-check-label"
+                                                    for="collapseSubProperties">Collapse/Expand sub-properties</label>
+                                            </span>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <span class="me-2">
+                                                <input class="form-check-input" type="checkbox" id="collapseZeroValues">
+                                                <label class="form-check-label" for="collapseZeroValues">Collapse/Expand
+                                                    sub-properties with zero values</label>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <svg class="chart" id="FMFactLabelChart"></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto text-center">
+                    <div class="copyright my-1">
+                        <span>&copy; 2025</span>
+                    </div>
+                    <!-- Pyodide status -->
+                    <div id="pyodideStatus" class="text-muted small">
+                        Running in Flask mode. FM Fact Label ready.
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <!-- JQuery + Easing desde CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Custom scripts -->
+    <script src="static/js/sb_admin_2/sb-admin-2.min.js"></script>
+
+    <!-- Fact Label scripts -->
+    <script src="static/js/fm_fact_label/fmfactlabel.js"></script>
+    <script src="static/js/fm_fact_label/factlabel_visualization.js"></script>
+    <script src="static/js/fm_fact_label/persistence.js"></script>
+    <script src="static/js/fm_fact_label/flask.js"></script>
+
+    <!-- Modal (preserved from your original code) -->
+    <div class="modal fade" id="metricModal" tabindex="-1" aria-labelledby="metricModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 style="color:#2e59d9" id="metricModalLabel">Metric Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-break">
+                    <!-- Modal content will be injected here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="copyButton">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

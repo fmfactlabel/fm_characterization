@@ -4,10 +4,17 @@ import logging
 import argparse
 from typing import Optional, Any
 
+from flamapy.core.exceptions import FlamaException
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
-from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
+from flamapy.metamodels.fm_metamodel.transformations import (
+    UVLReader, 
+    FeatureIDEReader,
+    AFMReader,
+    GlencoeReader,
+    JSONReader
+)
 
-from fm_characterization import FMCharacterization
+from fmfactlabel import FMCharacterization
 
 
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
@@ -16,24 +23,19 @@ def read_fm_file(filename: str) -> Optional[FeatureModel]:
             return UVLReader(filename).transform()
         elif filename.endswith(".xml") or filename.endswith(".fide"):
             return FeatureIDEReader(filename).transform()
+        elif filename.endswith(".afm"):
+            return AFMReader(filename).transform()
+        elif filename.endswith(".gfm.json"):
+            return GlencoeReader(filename).transform()
+        elif filename.endswith(".json"):
+            return JSONReader(filename).transform()
     except Exception as e:
-        print(e)
-        pass
-    try:
-        return UVLReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
+        raise FlamaException(f"Error reading feature model from {filename}: {e}")
     return None
 
 
 
-def main(fm_filepath: str, metadata: dict[str, Any]) -> None:
+def main(fm_filepath: str, metadata: dict[str, Any], light_fm: bool) -> None:
     path = pathlib.Path(fm_filepath)
     filename = path.stem
     dir = path.parent
@@ -43,7 +45,7 @@ def main(fm_filepath: str, metadata: dict[str, Any]) -> None:
     if fm is None:
         raise Exception('Feature model format not supported.')
     
-    characterization = FMCharacterization(fm)
+    characterization = FMCharacterization(fm, light_fm)
     characterization.metadata.name = filename if metadata.get('name') is None else metadata.get('name')
     characterization.metadata.description = metadata.get('description')
     characterization.metadata.author = metadata.get('authors')
@@ -70,6 +72,7 @@ if __name__ == '__main__':
     parser.add_argument('-year', dest='year', type=int, required=False, help="Feature model's year")
     parser.add_argument('-domain', dest='domain', type=str, required=False, help="Feature model's domain")
     parser.add_argument('-doi', dest='doi', type=str, required=False, help="Feature model's doi")
+    parser.add_argument('-light', dest='light_fm', action='store_true', required=False, default=False, help='Exclude some analytical metrics (i.e., no BDD analysis)')
     args = parser.parse_args()
 
     metadata = {
@@ -81,4 +84,4 @@ if __name__ == '__main__':
         'domain': args.domain,
         'doi': args.doi
     }
-    main(args.path, metadata)
+    main(args.path, metadata, light_fm=args.light_fm)

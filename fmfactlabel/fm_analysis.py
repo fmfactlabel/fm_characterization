@@ -7,8 +7,8 @@ from fmfactlabel import FMProperties, FMPropertyMeasure
 from .fm_utils import get_ratio, get_nof_configuration_as_str, get_percentage_str
 
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
-from flamapy.metamodels.pysat_metamodel.transformations.fm_to_pysat import FmToPysat
-from flamapy.metamodels.bdd_metamodel.transformations.fm_to_bdd import FmToBDD
+from flamapy.metamodels.pysat_metamodel.transformations import FmToPysat
+from flamapy.metamodels.bdd_metamodel.transformations import FmToBDD
 from flamapy.metamodels.pysat_metamodel import operations as sat_operations
 from flamapy.metamodels.bdd_metamodel import operations as bdd_operations
 from flamapy.metamodels.fm_metamodel import operations as fm_operations

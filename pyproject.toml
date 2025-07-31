@@ -18,11 +18,10 @@ authors = [
     { name = "David Benavides" }
 ]
 dependencies = [
-    "flamapy~=2.1.0.dev0",
     "flamapy-fw~=2.1.0.dev0",
     "flamapy-fm~=2.1.0.dev0",
     "flamapy-sat~=2.1.0.dev0",
-    "flamapy-bdd~=2.1.0.dev0",
+    "flamapy-bdd-colosal~=2.1.0.dev0",
 ]
 
 classifiers = [
@@ -34,5 +33,5 @@ classifiers = [
 "Homepage" = "https://fmfactlabel.github.io/"
 "GitHub" = "https://github.com/fmfactlabel/fm_characterization"
 
-[tool.setuptools.packages.find]
-where = ["fmfactlabel"]
+[tool.setuptools]
+packages = ["fmfactlabel"]

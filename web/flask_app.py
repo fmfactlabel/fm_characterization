@@ -62,7 +62,7 @@ def index():
             year = flask.request.form['inputYear']
 
         try:
-            characterization = FMCharacterization.from_path(filename)
+            characterization = FMCharacterization.from_path(filename, light_fact_label)
         except Exception as e:
             data['file_error'] = 'Feature model format not supported or invalid syntax.'
             return flask.render_template('index_flask.html', data=data)

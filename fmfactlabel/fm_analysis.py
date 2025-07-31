@@ -133,7 +133,11 @@ class FMAnalysis():
                                         if not self.fm.get_feature_by_name(feat).is_root() and 
                                         not self.fm.get_feature_by_name(feat).is_mandatory()]
         else:
-            _false_optional_features = sat_operations.PySATFalseOptionalFeatures().execute(self.sat_model).get_result()
+            try:
+                _false_optional_features = sat_operations.PySATFalseOptionalFeatures().execute(self.sat_model).get_result()
+            except AssertionError as e:
+                logging.warning(f'Warning: Feature model has feature cardinalities, false optional features cannot be computed.\n {e}')
+                _false_optional_features = []
         return FMPropertyMeasure(FMProperties.FALSE_OPTIONAL_FEATURES.value, 
                                  _false_optional_features, 
                                  len(_false_optional_features),

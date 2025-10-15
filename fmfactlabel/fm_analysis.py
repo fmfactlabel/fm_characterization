@@ -129,9 +129,11 @@ class FMAnalysis():
 
     def fm_false_optional_features(self) -> FMPropertyMeasure:
         if self.bdd_model is not None:
-            _false_optional_features = [feat for feat in self._core_features 
-                                        if not self.fm.get_feature_by_name(feat).is_root() and 
-                                        not self.fm.get_feature_by_name(feat).is_mandatory()]
+            _false_optional_features = []
+            for feat in self._core_features:
+                feature = self.fm.get_feature_by_name(feat)
+                if feature is not None and not feature.is_root() and not feature.is_mandatory():
+                    _false_optional_features.append(feat)
         else:
             try:
                 _false_optional_features = sat_operations.PySATFalseOptionalFeatures().execute(self.sat_model).get_result()

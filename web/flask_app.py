@@ -75,6 +75,7 @@ def index():
             characterization.metadata.name = name
         name = characterization.metadata.name
         characterization.metadata.author = author
+        characterization.metadata.description = description
         characterization.metadata.year = year
         characterization.metadata.tags = keywords
         characterization.metadata.reference = reference

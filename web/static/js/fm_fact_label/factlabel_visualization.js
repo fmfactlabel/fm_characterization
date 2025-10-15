@@ -133,7 +133,8 @@ function drawFMFactLabel(data) {
       //.attr("y", BAR_HEIGHT / 2)
       .attr("font-family", DESCRIPTION_FONT_FAMILY)
       .attr("font-size", DESCRIPTION_FONT_SIZE)
-      .call(wrap, maxWidth - indentationDescription);
+      .call(wrap, maxWidth - indentationDescription)
+      .attr("fill", "currentColor");
    var descriptionSize = description.node().getBBox();
 
    // Keywords

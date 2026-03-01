@@ -12,6 +12,7 @@
   - [Architecture and repository's structure and contents](#architecture-and-repositorys-structure-and-contents)
     - [Software architecture](#software-architecture)
     - [Repository's structure and contents](#repositorys-structure-and-contents)
+  - [Generate Pypi package](#generate-pypi-package)
   - [References and third-party software](#references-and-third-party-software)
 
 # FM Fact Label: A Configurable and Interactive Visualization of Feature Model Characterizations
@@ -105,6 +106,12 @@ The tool offers a web service to upload the feature model and its metadata via a
 - [web](web/): Contains the code related with the client-side of the architecture in charge of building the visualization of the fact label from the JSON information provided by the server-side. Concretely, it contains the HTML, CSS, and JavaScript files, where the most important is the [fm_fact_label.js](web/js/fm_fact_label/fm_fact_label.js) script which contains the main code in [D3.js](https://d3js.org/) to build the visualization of the fact label. Also, the [fm_models](web/fm_models) contains the feature models examples availables in the tool.
 - [resources](resources/): Contains the images and videos used in this README.md file.
 
+
+## Generate Pypi package
+1. Install needed tools: `pip install --upgrade build twine`
+2. Build the package: `python -m build`
+3. Upload the package to TestPypI: `python -m twine upload --repository testpypi dist/*`
+4. Upload the package to PypI: `python -m twine upload dist/*`
 
 ## References and third-party software
 - [D3: Data-Driven Documents](https://d3js.org/)

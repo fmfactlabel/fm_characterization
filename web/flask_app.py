@@ -35,13 +35,12 @@ def index():
     reference = None
     domain = None
     if flask.request.method == 'GET':
-        return flask.render_template('index_flask.html', data=data)
+        return flask.render_template('index.html', data=data)
 
     if flask.request.method == 'POST':
         light_fact_label = 'lightFactLabel' in flask.request.form
         logging.warning(f'light_fact_label: {light_fact_label}')
-        fm_file = flask.request.files['inputFM']
-        
+        fm_file = flask.request.files.get('inputFM')
         filename = fm_file.filename
         fm_file.save(filename)
 
@@ -65,7 +64,7 @@ def index():
             characterization = FMCharacterization.from_path(filename, light_fact_label)
         except Exception as e:
             data['file_error'] = 'Feature model format not supported or invalid syntax.'
-            return flask.render_template('index_flask.html', data=data)
+            return flask.render_template('index.html', data=data)
         finally:
             file_path = pathlib.Path(filename)
             if file_path.exists() and file_path.name == fm_file.filename:
@@ -105,10 +104,10 @@ def index():
 def uploadJSON():   
     data = {}
     if flask.request.method == 'GET':
-        return flask.render_template('index_flask.html', data=data)
+        return flask.render_template('index.html', data=data)
 
     if flask.request.method == 'POST':
-        json_file = flask.request.files['inputJSON']
+        json_file = flask.request.files.get('inputCharacterization')
         filename = json_file.filename
         json_file.save(filename)
         try:
@@ -116,7 +115,7 @@ def uploadJSON():
             json_characterization = json.load(open(filename))
             if json_characterization is None:
                 data['file_error'] = 'JSON format not supported.'
-                return flask.render_template('index_flask.html', data=data)
+                return flask.render_template('index.html', data=data)
             
             name = next((item['value'] for item in json_characterization["metadata"] if item["name"] == "Name"), None)
             data['FM_NAME'] = name

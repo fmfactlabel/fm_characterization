@@ -117,3 +117,4 @@ The tool offers a web service to upload the feature model and its metadata via a
 - [D3: Data-Driven Documents](https://d3js.org/)
 - [Flama](https://www.flamapy.org/)
 - [Flask](https://flask.palletsprojects.com/en/3.0.x/)
+npx tsc -w

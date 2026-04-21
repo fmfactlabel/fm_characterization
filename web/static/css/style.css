@@ -1,0 +1,120 @@
+/* Custom variables for easy theming */
+:root {
+    --primary: #4f46e5;       /* Modern Indigo */
+    --bg-body: #f8fafc;       /* Light Slate Background */
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --border-color: #e2e8f0;
+    --accent-hover: #4338ca;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Navbar styles */
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--primary) !important;
+    font-size: 1.5rem;
+}
+
+/* Glassmorphism-inspired card design */
+.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    height: 100%;
+}
+
+/* Navigation tabs modernization */
+.nav-tabs {
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #64748b;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    transition: color 0.2s;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    background: transparent;
+}
+
+/* Form controls refinement */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    border-color: var(--primary);
+}
+
+.form-label {
+    margin-bottom: 0.4rem;
+}
+
+/* Primary CTA button */
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Container for the SVG/D3 visualization */
+.label-container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 450px;
+    border: 1px dashed #cbd5e1; /* Visual guide for empty states */
+}
+
+/* Footer layout */
+.footer {
+    padding: 3rem 0;
+    opacity: 0.7;
+}
+
+/* Custom switch colors */
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+#progress-anchor {
+    min-height: 200px; /* Evita que el contenedor colapse mientras carga */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

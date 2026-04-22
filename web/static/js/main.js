@@ -11,9 +11,13 @@ const processBar = new ProgressBar(null, { isModal: true, title: "Generating Fac
 document.addEventListener("DOMContentLoaded", async () => {
     await initializeApp();
     setupFormObservers();
-    setTimeout(async () => {
-        await loadFileFromURL();
-    }, 100);
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            // Aquí la UI ya se dibujó y el loader negro ya se ocultó.
+            // Ahora lanzamos la carga de la URL. Sin esto el Progres Bar no se muestra para el caso de uso de generar el fact label desde una URL.
+            loadFileFromURL();
+        });
+    });
 });
 // INITIALIZATION
 async function initializeApp() {

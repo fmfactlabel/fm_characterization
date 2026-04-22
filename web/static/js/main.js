@@ -41,13 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (isFlask) {
                     const formData = new FormData(fmForm);
                     try {
-                        const response = await fetch('/', { 
-                            method: 'POST', 
-                            body: formData, 
-                            headers: {
-                                'Accept': 'application/json' // Explicitly ask for JSON
-                            } 
-                        });
+                        const response = await fetch('/', { method: 'POST', body: formData });
                         if (!response.ok)
                             throw new Error('Flask response not ok.');
                         const data = await response.json();
@@ -80,13 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const formData = new FormData(jsonForm);
                 if (isFlask) {
                     try {
-                        const response = await fetch('/uploadJSON', { 
-                            method: 'POST', 
-                            body: formData,
-                            headers: {
-                                'Accept': 'application/json' // Explicitly ask for JSON
-                            } 
-                        });
+                        const response = await fetch('/uploadJSON', { method: 'POST', body: formData });
                         if (!response.ok)
                             throw new Error('Flask response not ok.');
                         const data = await response.json();
@@ -171,7 +159,6 @@ function createFMFactLabel(data) {
     if (optionsPanel) {
         optionsPanel.classList.remove("d-none");
     }
-
     const chartContainer = document.getElementById("FMFactLabelChart");
     if (chartContainer) {
         chartContainer.replaceChildren();

@@ -144,8 +144,9 @@ export class FMFactLabel {
         this.maxIndentationWidth = Math.max(this.calculateMaxIndentationWidth(data.metrics), this.calculateMaxIndentationWidth(data.analysis));
         this.maxNameWidth = Math.max(this.calculateMaxNameWidth(data.metrics), this.calculateMaxNameWidth(data.analysis));
         this.maxValueWidth = Math.max(this.calculateMaxValueWidth(data.metrics), this.calculateMaxValueWidth(data.analysis));
-        this.maxRatioWidth = Math.max(this.calculateMaxRatioWidth(data.metrics), this.calculateMaxRatioWidth(data.analysis));
-        this.maxWidth = this.maxIndentationWidth + this.maxNameWidth + this.PROPERTIES_VALUES_SPACE + this.maxValueWidth + this.PROPERTIES_RATIO_SPACE + this.maxRatioWidth + this.LEFT_MARGING;
+        const ratioSpaceNeeded = (this.showRatioBar || this.showPercentages);
+        this.maxRatioWidth = ratioSpaceNeeded ? Math.max(this.calculateMaxRatioWidth(data.metrics), this.calculateMaxRatioWidth(data.analysis)) : 0;
+        this.maxWidth = this.maxIndentationWidth + this.maxNameWidth + this.PROPERTIES_VALUES_SPACE + this.maxValueWidth + (ratioSpaceNeeded ? (this.PROPERTIES_RATIO_SPACE + this.maxRatioWidth) : 0) + this.LEFT_MARGING;
         this.chart.attr("width", this.maxWidth);
         this.x = d3.scaleLinear().domain([0, this.maxWidth]).range([0, this.maxWidth]);
     }
@@ -232,9 +233,13 @@ export class FMFactLabel {
             .call(this.wrap.bind(this), this.maxWidth - (6 * this.PROPERTY_INDENTATION + keyWidth));
     }
     draw() {
+        this.calculateDimensions();
         const visibleMetrics = this.allData.metrics.filter(d => this.visibleProperties[d.name]);
         const visibleAnalysis = this.allData.analysis.filter(d => this.visibleProperties[d.name]);
         this.syncMetricsSelector(); // Syncronize the metrics selector with the current visibility state
+        // 2. Reposicionar el título al nuevo centro
+        this.chart.select("g text") // Asumiendo que es el título
+            .attr("x", this.x(this.maxWidth / 2));
         this.drawRule("rule1", this.yRule1);
         this.updateProperties(visibleMetrics, "metrics");
         const yRule2 = this.yMetrics + (this.propertyHeight * visibleMetrics.length);

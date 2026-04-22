@@ -25,6 +25,9 @@ export class FMFactLabel {
         'https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@900',
         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css'
     ];
+    XMLNS = "http://www.w3.org/2000/xmlns/";
+    XLINKNS = "http://www.w3.org/1999/xlink";
+    SVGNS = "http://www.w3.org/2000/svg";
     MODERN_COLORS = {
         textMain: "#1a1a1a",
         accent: "#2e59d9",
@@ -576,6 +579,169 @@ export class FMFactLabel {
                 input.checked = this.visibleProperties[metricName];
             }
         });
+    }
+    async export(format, engine) {
+        const svgElement = this.chart.node();
+        const fmName = window.FM_NAME || "model";
+        // 1. Preparar el SVG (Ocultar iconos de colapso)
+        this.chart.selectAll(".collapse-icon").attr("visibility", "hidden");
+        const originalHeight = this.adjustSVGSize(svgElement);
+        try {
+            switch (format) {
+                case 'svg':
+                    const svgBlob = this.serializeToSVG(svgElement);
+                    saveAs(svgBlob, `${fmName}.svg`);
+                    break;
+                case 'png':
+                    const pngBlob = await this.rasterize(svgElement);
+                    saveAs(pngBlob, `${fmName}.png`);
+                    break;
+                case 'pdf':
+                    await this.generatePDF(svgElement, fmName);
+                    break;
+            }
+        }
+        catch (error) {
+            console.error(`Error exporting to ${format}:`, error);
+        }
+        finally {
+            // 2. Restaurar estado visual
+            if (originalHeight)
+                this.restoreSVGSize(svgElement, originalHeight);
+            this.chart.selectAll(".collapse-icon").attr("visibility", "visible");
+        }
+    }
+    downloadSource(format, engine) {
+        const fmName = window.FM_NAME || "model";
+        let data = "";
+        try {
+            if (format === 'json') {
+                if (window.JSON_CHARACTERIZATION) {
+                    data = JSON.stringify(window.JSON_CHARACTERIZATION, null, 4);
+                }
+                else if (engine) {
+                    data = engine.getFS().readFile(`${fmName}.json`, { encoding: "utf8" });
+                }
+                saveAs(new Blob([data], { type: "application/json" }), `${fmName}.json`);
+            }
+            else {
+                if (window.TXT_CHARACTERIZATION) {
+                    data = window.TXT_CHARACTERIZATION;
+                }
+                else if (engine) {
+                    data = engine.getFS().readFile(`${fmName}.txt`, { encoding: "utf8" });
+                }
+                saveAs(new Blob([data], { type: "text/plain" }), `${fmName}.txt`);
+            }
+        }
+        catch (e) {
+            console.error(`Error downloading ${format}:`, e);
+        }
+    }
+    serializeToSVG(svg) {
+        const clonedSvg = svg.cloneNode(true);
+        const fragment = window.location.href + "#";
+        const walker = document.createTreeWalker(clonedSvg, NodeFilter.SHOW_ELEMENT);
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            for (const attr of Array.from(node.attributes)) {
+                if (attr.value.includes(fragment)) {
+                    attr.value = attr.value.replace(fragment, "#");
+                }
+            }
+        }
+        clonedSvg.setAttributeNS(this.XMLNS, "xmlns", this.SVGNS);
+        clonedSvg.setAttributeNS(this.XMLNS, "xmlns:xlink", this.XLINKNS);
+        const serializer = new XMLSerializer();
+        const string = serializer.serializeToString(clonedSvg);
+        return new Blob([string], { type: "image/svg+xml" });
+    }
+    async rasterize(svg) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onerror = (e) => reject(e);
+            image.onload = () => {
+                const rect = svg.getBoundingClientRect();
+                const context = this.context2d(rect.width, rect.height);
+                if (context) {
+                    context.drawImage(image, 0, 0, rect.width, rect.height);
+                    context.canvas.toBlob((blob) => {
+                        if (blob)
+                            resolve(blob);
+                        else
+                            reject(new Error("Canvas toBlob failed"));
+                    }, 'image/png');
+                }
+            };
+            const serializedSVG = this.serializeToSVG(svg);
+            image.src = URL.createObjectURL(serializedSVG);
+        });
+    }
+    /**
+     * Crea un contexto de canvas 2D ajustado al DPI del dispositivo.
+     */
+    context2d(width, height, dpi) {
+        if (dpi == null)
+            dpi = window.devicePixelRatio;
+        const canvas = document.createElement("canvas");
+        canvas.width = width * dpi;
+        canvas.height = height * dpi;
+        canvas.style.width = width + "px";
+        const context = canvas.getContext("2d");
+        if (context)
+            context.scale(dpi, dpi);
+        return context;
+    }
+    /**
+     * Ajusta el tamaño del SVG al contenido real antes de exportar.
+     */
+    adjustSVGSize(svgElement) {
+        const originalHeight = svgElement.getAttribute("height");
+        // Ocultamos iconos de colapso específicos si existen
+        this.chart.selectAll("#collapseIcon").attr("visibility", "hidden");
+        const bbox = svgElement.getBBox();
+        svgElement.setAttribute("height", bbox.height.toString());
+        return originalHeight;
+    }
+    /**
+     * Restaura el tamaño original del SVG tras la exportación.
+     */
+    restoreSVGSize(svgElement, originalHeight) {
+        svgElement.setAttribute("height", originalHeight);
+    }
+    /**
+     * Convierte un Blob a DataURL de forma asíncrona.
+     */
+    readBlobAsDataURL(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error("Error reading the blob"));
+            reader.readAsDataURL(blob);
+        });
+    }
+    async generatePDF(svgElement, fmName) {
+        const bbox = svgElement.getBBox();
+        const svgWidth = bbox.width;
+        const svgHeight = bbox.height;
+        const doc = new window.PDFDocument({
+            size: [svgWidth, svgHeight]
+        });
+        const chunks = [];
+        const stream = doc.pipe({
+            write: (chunk) => chunks.push(chunk),
+            end: () => {
+                const pdfBlob = new Blob(chunks, { type: 'application/pdf' });
+                saveAs(pdfBlob, `${fmName}.pdf`);
+            },
+            // Mantenemos los stubs necesarios para el stream
+            on: () => { }, once: () => { }, emit: () => { },
+        });
+        window.SVGtoPDF(doc, svgElement, 0, 0, {
+            width: svgWidth,
+            height: svgHeight
+        });
+        doc.end();
     }
 }
 //# sourceMappingURL=FMFactLabel.js.map

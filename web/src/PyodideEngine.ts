@@ -5,15 +5,21 @@ declare const loadPyodide: any;
 
 export class PyodideEngine {
     private instance: any;
+    private isReady: boolean = false;
 
     async initialize(onProgress: (p: number, msg: string) => void): Promise<any> {
-        onProgress(10, "Cargando núcleo de Pyodide...");
+        if (this.isReady && this.instance) {
+            onProgress(100, "FM Fact Label ready (cached)!");
+            return this.instance;
+        }
+
+        onProgress(10, "Loading Pyodide core...");
         this.instance = await loadPyodide();
         
-        onProgress(30, "Cargando Micropip...");
+        onProgress(30, "Loading Micropip...");
         await this.instance.loadPackage(["micropip", "python-sat"]);
 
-        onProgress(50, "Instalando ecosistema FlamaPy...");
+        onProgress(50, "Installing Flamapy ecosystem...");
         await this.instance.runPythonAsync(`
             import micropip
             await micropip.install([
@@ -28,11 +34,12 @@ export class PyodideEngine {
                 "flamapy/flamapy_bdd-2.1.0.dev0-py3-none-any.whl",
                 "flamapy/dd-0.5.7-py3-none-any.whl",
                 "flamapy/astutils-0.0.6-py3-none-any.whl",
-                "flamapy/fmfactlabel-1.8.0-py3-none-any.whl"
+                "flamapy/fmfactlabel-1.8.2-py3-none-any.whl"
             ], deps=False)
         `);
         
-        onProgress(100, "Motor listo");
+        this.isReady = true;
+        onProgress(100, "FM Fact Label ready!");
         return this.instance;
     }
 
@@ -104,5 +111,9 @@ export class PyodideEngine {
             };
         }
         return await this.instance.runPythonAsync(code);
+    }
+
+    getFS() {
+        return this.instance ? this.instance.FS : null;
     }
 }

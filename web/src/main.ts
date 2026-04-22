@@ -15,7 +15,7 @@ declare global {
 }
 
 // GLOBAL CONSTANTS
-const engine = new PyodideEngine();
+export const engine = new PyodideEngine();
 const isFlask = window.IS_FLASK || false;
 const loader = new ProgressBar("progress-anchor", { isModal: false, title: "Loading FM Fact Label", color: "#000000" });
 const processBar = new ProgressBar(null, { isModal: true, title: "Generating Fact Label", color: "#007bff" });
@@ -39,11 +39,12 @@ async function initializeApp() {
         try {
             loader.show();
             await engine.initialize((p, msg) => loader.update(p, msg));
+            //(window as any).pyodideInstance = (engine as any).instance;
             loader.setState("success");
-            loader.hide(1000);
+            loader.hide(1500);
         } catch (e) {
             loader.setState("error");
-            console.error("Fallo al iniciar Pyodide", e);
+            console.error("Error loading Pyodide", e);
         }
     } else {
         loader.hide();
@@ -52,20 +53,35 @@ async function initializeApp() {
 
 // FORM HANDLERS
 function setupFormObservers() {
-    const observer = new MutationObserver(() => {
+    const attach = () => {
         const fmForm = document.getElementById("fmForm") as HTMLFormElement;
         const jsonForm = document.getElementById("jsonForm") as HTMLFormElement;
 
         if (fmForm && !fmForm.dataset.listenerAttached) {
-            fmForm.addEventListener("submit", (e) => onFMFormSubmit(e, fmForm));
+            fmForm.onsubmit = (e) => {
+                e.preventDefault();
+                onFMFormSubmit(e, fmForm);
+                return false;
+            };
             fmForm.dataset.listenerAttached = "true";
         }
 
         if (jsonForm && !jsonForm.dataset.listenerAttached) {
-            jsonForm.addEventListener("submit", (e) => onJSONFormSubmit(e, jsonForm));
+            jsonForm.onsubmit = (e) => {
+                e.preventDefault();
+                onJSONFormSubmit(e, jsonForm);
+                return false;
+            };
             jsonForm.dataset.listenerAttached = "true";
         }
+    };
 
+    attach();
+
+    const observer = new MutationObserver(() => {
+        attach();
+        const fmForm = document.getElementById("fmForm");
+        const jsonForm = document.getElementById("jsonForm");
         if (fmForm?.dataset.listenerAttached && jsonForm?.dataset.listenerAttached) {
             observer.disconnect();
         }
@@ -293,5 +309,36 @@ function createFMFactLabel(data: any) {
         };
 
         const factLabel = new FMFactLabel("#FMFactLabelChart", data, options);
+        setupPersistenceButtons(factLabel);
     }
+}
+
+function setupPersistenceButtons(factLabel: FMFactLabel) {
+    const buttons = [
+        { id: "saveSVG", format: "svg", type: "export" },
+        { id: "savePNG", format: "png", type: "export" },
+        { id: "savePDF", format: "pdf", type: "export" },
+        { id: "saveJSON", format: "json", type: "source" },
+        { id: "saveTXT", format: "txt", type: "source" }
+    ];
+
+    buttons.forEach(btnInfo => {
+        const btn = document.getElementById(btnInfo.id);
+        if (btn) {
+            // Eliminamos listeners previos para evitar duplicados si se llama varias veces
+            const newBtn = btn.cloneNode(true) as HTMLButtonElement;
+            btn.parentNode?.replaceChild(newBtn, btn);
+
+            newBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                
+                if (btnInfo.type === "export") {
+                    factLabel.export(btnInfo.format as 'svg' | 'png' | 'pdf');
+                } else {
+                    // Pasamos el engine que ya tienes en el scope de main.ts
+                    factLabel.downloadSource(btnInfo.format as 'json' | 'txt', engine);
+                }
+            });
+        }
+    });
 }

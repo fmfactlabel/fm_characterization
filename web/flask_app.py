@@ -26,8 +26,9 @@ app = flask.Flask(__name__,
                   template_folder=STATIC_DIR)
 CORS(app)
 
+
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def index() -> flask.Response:
     if flask.request.method == 'GET':
         return flask.render_template('index.html', data={})
     if flask.request.method == 'POST':
@@ -90,7 +91,7 @@ def index():
                 # Archivo TXT (Corregido el error de f.write(str))
                 txt_path = temp_dir / f"{name}.txt"
                 with open(txt_path, 'w', encoding='utf-8') as f:
-                    f.write(txt_content) # <--- Ahora pasamos el texto, no el tipo 'str'
+                    f.write(txt_content)
                 delete_file_later(txt_path)
 
                 # 5. Enviamos el éxito
@@ -118,54 +119,83 @@ def index():
 
 
 @app.route('/uploadJSON', methods=['GET', 'POST'])
-def uploadJSON():   
-    data = {}
+def uploadJSON() -> flask.Response:
     if flask.request.method == 'GET':
-        return flask.render_template('index.html', data=data)
+        return flask.render_template('index.html', data={})
 
     if flask.request.method == 'POST':
         json_file = flask.request.files.get('inputCharacterization')
         filename = json_file.filename
         json_file.save(filename)
-        try:
-            # Read the json
-            json_characterization = json.load(open(filename))
-            if json_characterization is None:
-                data['file_error'] = 'JSON format not supported.'
-                return flask.render_template('index.html', data=data)
-            
-            name = next((item['value'] for item in json_characterization["metadata"] if item["name"] == "Name"), None)
-            data['FM_NAME'] = name
-            data['JSON_CHARACTERIZATION'] = json_characterization
-            txt_characterization = FMCharacterization.json_to_text(json_characterization)
-            data['TXT_CHARACTERIZATION'] = str(txt_characterization)
 
-            # Write the characterization to a JSON file
-            json_filename = f'{name}.json'
-            temp_dir = pathlib.Path(tempfile.gettempdir())
-            temp_path = temp_dir / json_filename
-            with open(temp_path, 'w', encoding='utf-8') as file_json:
-                json.dump(json_characterization, file_json, indent=4)
-            delete_file_later(temp_path)
-            # Write the characterization to a text file
-            txt_filename = f'{name}.txt'
-            temp_dir = pathlib.Path(tempfile.gettempdir())
-            temp_path = temp_dir / txt_filename
-            txt_characterization = FMCharacterization.json_to_text(json_characterization)
-            with open(temp_path, 'w', encoding='utf-8') as file_txt:
-                file_txt.write(txt_characterization)
-            delete_file_later(temp_path)
-        except Exception as e:
-            raise e
+        progress_queue = queue.Queue()
 
-        file_path = pathlib.Path(filename)
-        if file_path.exists() and file_path.name == json_file.filename:
-            file_path.unlink()
+        def background_task():
+            try:
+                # 1. Inicio
+                progress_queue.put({'type': 'progress', 'p': 10, 'm': 'Reading JSON file...'})
+                
+                with open(filename, 'r', encoding='utf-8') as f:
+                    json_characterization = json.load(f)
+
+                if json_characterization is None:
+                    raise ValueError('JSON format not supported.')
+
+                progress_queue.put({'type': 'progress', 'p': 40, 'm': 'Recreating characterization...'})
+
+                # 2. Extraer nombre y generar textos
+                name = next((item['value'] for item in json_characterization["metadata"] if item["name"] == "Name"), "Unnamed")
+                txt_characterization = FMCharacterization.json_to_text(json_characterization)
+                
+                final_data = {
+                    'FM_NAME': name,
+                    'JSON_CHARACTERIZATION': json_characterization,
+                    'TXT_CHARACTERIZATION': str(txt_characterization)
+                }
+
+                progress_queue.put({'type': 'progress', 'p': 70, 'm': 'Finishing processing...'})
+
+                # 3. Lógica de archivos temporales (JSON y TXT)
+                temp_dir = pathlib.Path(tempfile.gettempdir())
+                
+                # Guardar JSON temporal
+                json_path = temp_dir / f'{name}.json'
+                with open(json_path, 'w', encoding='utf-8') as file_json:
+                    json.dump(json_characterization, file_json, indent=4)
+                delete_file_later(json_path)
+
+                # Guardar TXT temporal
+                txt_path = temp_dir / f'{name}.txt'
+                with open(txt_path, 'w', encoding='utf-8') as file_txt:
+                    file_txt.write(str(txt_characterization))
+                delete_file_later(txt_path)
+
+                # 4. Éxito final
+                progress_queue.put({'type': 'final', 'data': final_data})
+
+            except Exception as e:
+                progress_queue.put({'type': 'error', 'msg': str(e)})
+            finally:
+                # Limpiar el archivo subido
+                p_file = pathlib.Path(filename)
+                if p_file.exists(): p_file.unlink()
+                progress_queue.put(None)
+
+        # Lanzar hilo
+        threading.Thread(target=background_task).start()
+
+        # Generador de respuesta SSE
+        def generate():
+            while True:
+                item = progress_queue.get()
+                if item is None: break
+                yield f"data: {json.dumps(item)}\n\n"
+
+        return flask.Response(generate(), mimetype='text/event-stream')
     
-        return flask.jsonify(data=data)
 
 @app.route('/fromURL', methods=['POST'])
-def fromURL():
+def fromURL() -> flask.Response:
     data = {}
     request_data = flask.request.get_json()
     url = request_data.get('url')
@@ -196,7 +226,7 @@ def fromURL():
         return flask.jsonify({'error': str(e)}), 500
 
 
-def delete_file_later(path: str, delay: int = TIMEOUT_TEMPFILES):
+def delete_file_later(path: str, delay: int = TIMEOUT_TEMPFILES) -> None:
     """Delete the given file after `delay` seconds using pathlib.Path."""
     path = pathlib.Path(path)
 

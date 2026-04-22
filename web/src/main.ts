@@ -1,6 +1,6 @@
 import { ProgressBar } from './ProgressBar.js';
 import { PyodideEngine } from './PyodideEngine.js';
-import { handleFMSubmission } from './FormHandlers.js';
+import { handleFMSubmission, handleJSONSubmission } from './FormHandlers.js';
 import { FMFactLabel } from './FMFactLabel.js';
 
 // GLOBAL DECLARATIONS
@@ -71,10 +71,10 @@ function setupFormObservers() {
 // EVENT FORM SUBMISSION HANDLERS
 async function onFMFormSubmit(e: Event, form: HTMLFormElement) {
     e.preventDefault();
-    const btn = document.getElementById("submitButton") as HTMLButtonElement;
+    const btn = document.getElementById("submitButtonFM") as HTMLButtonElement;
     
     toggleUIState(true, btn);
-    processBar.update(0, "Processing file...");
+    processBar.update(0, "Initializing...");
 
     try {
         if (isFlask) {
@@ -94,7 +94,7 @@ async function onFMFormSubmit(e: Event, form: HTMLFormElement) {
         } else {
             await handleFMSubmission(form, engine, 
                 (name) => {
-                    processBar.update(100, "Success!");
+                    processBar.update(100, "Fact Label generated!");
                     processBar.setState("success");
                     renderPyodideResult(name);
                     processBar.hide(1000);
@@ -112,20 +112,42 @@ async function onFMFormSubmit(e: Event, form: HTMLFormElement) {
 
 async function onJSONFormSubmit(e: Event, form: HTMLFormElement) {
     e.preventDefault();
-    const formData = new FormData(form);
+    const btn = document.getElementById("submitButtonJSON") as HTMLButtonElement;
+    
+    toggleUIState(true, btn);
+    processBar.update(0, "Initializing...");
 
     try {
         if (isFlask) {
-            const response = await fetch('/uploadJSON', { method: 'POST', body: formData });
-            const result = await response.json();
-            updateAndRender(result.data);
-        } else {
-            const file = formData.get("inputJSON") as File;
-            if (!file) throw new Error("No JSON file");
-            updateAndRender(JSON.parse(await file.text()));
+            const response = await fetch('/uploadJSON', { method: 'POST', body: new FormData(form) });
+            if (!response.ok) throw new Error('Flask response not ok.');
+
+            await readStream(response, (event) => {
+                if (event.type === 'progress') processBar.update(event.p, event.m);
+                if (event.type === 'final') {
+                    processBar.update(100, "Fact Label generated!");
+                    processBar.setState("success");
+                    updateAndRender(event.data);
+                    processBar.hide(1500);
+                }
+                if (event.type === 'error') throw new Error(event.msg);
+            });
+        } else {  // Pyodide
+            await handleJSONSubmission(form, engine, 
+                (name) => {
+                    processBar.update(100, "Fact Label generated!");
+                    processBar.setState("success");
+                    renderPyodideResult(name);
+                    processBar.hide(1000);
+                },
+                (p, msg) => processBar.update(p, msg)
+            );
         }
-    } catch (error) {
-        console.error('Error JSON Form:', error);
+    } catch (err: any) {
+        processBar.setState("error");
+        processBar.update(100, err.message);
+    } finally {
+        toggleUIState(false, btn);
     }
 }
 

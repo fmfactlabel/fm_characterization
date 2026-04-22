@@ -862,7 +862,8 @@ export class FMFactLabel {
         const svgHeight = bbox.height;
 
         const doc = new window.PDFDocument({ 
-            size: [svgWidth, svgHeight] 
+            size: [svgWidth, svgHeight],
+            margin: 0 
         });
 
         const chunks: Uint8Array[] = [];
@@ -878,7 +879,8 @@ export class FMFactLabel {
 
         window.SVGtoPDF(doc, svgElement, 0, 0, {
             width: svgWidth,
-            height: svgHeight
+            height: svgHeight,
+            preserveAspectRatio: 'xMidYMid meet'
         });
         doc.end();
     }

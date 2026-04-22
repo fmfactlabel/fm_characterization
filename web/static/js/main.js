@@ -162,6 +162,16 @@ function renderPyodideResult(fmName) {
     createFMFactLabel(data);
 }
 function createFMFactLabel(data) {
+    // show the options and export panels
+    const optionsPanel = document.getElementById("optionsPanel");
+    const exportDropdown = document.getElementById("exportDropdown");
+    if (exportDropdown) {
+        exportDropdown.classList.remove("d-none");
+    }
+    if (optionsPanel) {
+        optionsPanel.classList.remove("d-none");
+    }
+
     const chartContainer = document.getElementById("FMFactLabelChart");
     if (chartContainer) {
         chartContainer.replaceChildren();

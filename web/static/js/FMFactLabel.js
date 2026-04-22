@@ -266,7 +266,7 @@ export class FMFactLabel {
                 .attr("y", 0)
                 .attr("width", self.maxWidth)
                 .attr("height", self.propertyHeight)
-                .style("fill", self.showZebra && i % 2 !== 0 ? "#f8f9fc" : "rgba(0,0,0,0)") // Usar rgba transparente es más seguro
+                .style("fill", self.showZebra && i % 2 !== 0 ? "#f3f4f6" : "rgba(0,0,0,0)") // Usar rgba transparente es más seguro
                 .style("pointer-events", "all"); // Para que el hover funcione en toda la fila
             // Ratio Bars (Micro-viz)
             const showBar = self.showRatioBar && d.ratio !== undefined;

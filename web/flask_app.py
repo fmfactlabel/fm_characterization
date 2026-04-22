@@ -8,7 +8,7 @@ import threading
 import time
 
 import flask
-
+from flask_cors import CORS
 
 from fmfactlabel import FMCharacterization
 from fmfactlabel.fm_utils import read_fm_file
@@ -22,7 +22,7 @@ app = flask.Flask(__name__,
                   static_url_path='',
                   static_folder=STATIC_DIR,
                   template_folder=STATIC_DIR)
-
+CORS(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

@@ -1,6 +1,7 @@
 import { ProgressBar } from './ProgressBar.js';
 import { PyodideEngine } from './PyodideEngine.js';
 import { handleFMSubmission } from './FormHandlers.js';
+import { FMFactLabel } from './FMFactLabel.js';
 
 declare global {
     interface Window {
@@ -150,11 +151,7 @@ function updateAndRender(payload: any) {
     window.TXT_CHARACTERIZATION = payload.TXT_CHARACTERIZATION;
     window.FM_NAME = payload.FM_NAME;
 
-    const chartContainer = document.getElementById("FMFactLabelChart");
-    if (chartContainer) {
-        chartContainer.replaceChildren();
-        window.drawFMFactLabel(window.JSON_CHARACTERIZATION);
-    }
+    createFMFactLabel(window.JSON_CHARACTERIZATION);
 }
 
 async function loadFileFromURL() {
@@ -182,6 +179,20 @@ function renderPyodideResult(fmName: string) {
     const jsonStr = engine.readFile(`${fmName}.json`);
     const data = JSON.parse(jsonStr);
     
-    document.getElementById("FMFactLabelChart")?.replaceChildren();
-    window.drawFMFactLabel(data);
+    createFMFactLabel(data);
+}
+
+function createFMFactLabel(data: any) {
+    const chartContainer = document.getElementById("FMFactLabelChart");
+    if (chartContainer) {
+        chartContainer.replaceChildren();
+
+        const options = {
+            zeroValuesSelector: "#collapseZeroValues",
+            subPropertiesSelector: "#collapseSubProperties",
+            showTooltips: true
+        };
+
+        const factLabel = new FMFactLabel("#FMFactLabelChart", data, options);
+    }
 }

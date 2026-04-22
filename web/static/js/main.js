@@ -1,6 +1,7 @@
 import { ProgressBar } from './ProgressBar.js';
 import { PyodideEngine } from './PyodideEngine.js';
 import { handleFMSubmission } from './FormHandlers.js';
+import { FMFactLabel } from './FMFactLabel.js';
 const engine = new PyodideEngine();
 const isFlask = window.IS_FLASK || false;
 document.addEventListener("DOMContentLoaded", async () => {
@@ -40,7 +41,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (isFlask) {
                     const formData = new FormData(fmForm);
                     try {
-                        const response = await fetch('/', { method: 'POST', body: formData });
+                        const response = await fetch('/', { 
+                            method: 'POST', 
+                            body: formData, 
+                            headers: {
+                                'Accept': 'application/json' // Explicitly ask for JSON
+                            } 
+                        });
                         if (!response.ok)
                             throw new Error('Flask response not ok.');
                         const data = await response.json();
@@ -73,7 +80,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const formData = new FormData(jsonForm);
                 if (isFlask) {
                     try {
-                        const response = await fetch('/uploadJSON', { method: 'POST', body: formData });
+                        const response = await fetch('/uploadJSON', { 
+                            method: 'POST', 
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json' // Explicitly ask for JSON
+                            } 
+                        });
                         if (!response.ok)
                             throw new Error('Flask response not ok.');
                         const data = await response.json();
@@ -120,11 +133,7 @@ function updateAndRender(payload) {
     window.JSON_CHARACTERIZATION = payload.JSON_CHARACTERIZATION;
     window.TXT_CHARACTERIZATION = payload.TXT_CHARACTERIZATION;
     window.FM_NAME = payload.FM_NAME;
-    const chartContainer = document.getElementById("FMFactLabelChart");
-    if (chartContainer) {
-        chartContainer.replaceChildren();
-        window.drawFMFactLabel(window.JSON_CHARACTERIZATION);
-    }
+    createFMFactLabel(window.JSON_CHARACTERIZATION);
 }
 async function loadFileFromURL() {
     const params = new URLSearchParams(window.location.search);
@@ -150,7 +159,20 @@ function renderPyodideResult(fmName) {
     window.FM_NAME = fmName;
     const jsonStr = engine.readFile(`${fmName}.json`);
     const data = JSON.parse(jsonStr);
-    document.getElementById("FMFactLabelChart")?.replaceChildren();
-    window.drawFMFactLabel(data);
+    createFMFactLabel(data);
+}
+function createFMFactLabel(data) {
+    const chartContainer = document.getElementById("FMFactLabelChart");
+    if (chartContainer) {
+        chartContainer.replaceChildren();
+        const options = {
+            zeroValuesSelector: "#collapseZeroValues",
+            subPropertiesSelector: "#collapseSubProperties",
+            zebraStripingSelector: "#checkZebraStriping",
+            showRatioBarSelector: "#checkRatioBar",
+            showPercentagesSelector: "#checkShowPercentages"
+        };
+        const factLabel = new FMFactLabel("#FMFactLabelChart", data, options);
+    }
 }
 //# sourceMappingURL=main.js.map

@@ -118,3 +118,42 @@ body {
     flex-direction: column;
     align-items: center;
 }
+
+/* Section labels inside the form */
+.uppercase {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Enhancing the file upload area */
+.upload-zone {
+    transition: all 0.3s ease;
+    border: 2px dashed var(--border-color) !important;
+}
+
+.upload-zone:hover {
+    border-color: var(--primary) !important;
+    background-color: #f1f5f9 !important;
+}
+
+/* Better spacing for the switch */
+.custom-switch {
+    padding-left: 3.5rem;
+    min-height: 2.5rem;
+}
+
+.custom-switch .form-check-input {
+    margin-left: -3.5rem;
+    width: 2.8rem;
+    height: 1.4rem;
+    cursor: pointer;
+}
+
+.custom-switch .form-check-label {
+    padding-top: 2px;
+    cursor: pointer;
+}
+

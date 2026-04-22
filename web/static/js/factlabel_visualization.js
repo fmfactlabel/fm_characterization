@@ -52,13 +52,16 @@ function drawFMFactLabel(data) {
         .style("opacity", 0)
         .style("position", "absolute")
         .style("text-align", "left")
-        .style("padding", "0.1rem")
-        .style("background", "#FFFFFF")
-        .style("color", "#313639")
-        .style("border", "1px solid #313639")
-        .style("border-radius", "8px")
+        .style("padding", "10px 14px")
+        .style("background", "rgba(26, 26, 26, 0.95)")
+        .style("color", "#fff")
+        .style("border", "none")
+        .style("border-radius", "10px")
         .style("pointer-events", "none")
-        .style("font-size", "0.8rem");
+        .style("font-size", "0.85rem")
+        .style("line-height", "1.4")
+        .style("box-shadow", "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)")
+        .style("backdrop-filter", "blur(4px)");
     contentDetail = d3.select("body").append("div")
         .attr("class", "contentDetail")
         .style("opacity", 0)
@@ -115,9 +118,9 @@ function drawFMFactLabel(data) {
     // Metadatos (Tags, Author, etc.) con lógica de altura acumulada
     const metadataToRender = [
         { id: 'Tags', label: 'Tags:' },
+        { id: 'Domain', label: 'Domain:' },
         { id: 'Author', label: 'Author:' },
         { id: 'Year', label: 'Year:' },
-        { id: 'Domain', label: 'Domain:' },
         { id: 'Language level', label: 'Language level:' }
     ];
     metadataToRender.forEach(m => {

@@ -4,7 +4,8 @@ import { PYTHON_CODE } from './PythonScripts.js';
 export async function handleFMSubmission(
     form: HTMLFormElement, 
     engine: PyodideEngine,
-    onResult: (name: string) => void
+    onResult: (name: string) => void,
+    onProgress?: (percent: number, message: string) => void // 👈 Nuevo parámetro opcional
 ) {
     const formData = new FormData(form);
     const fileInput = form.querySelector('#inputFM') as HTMLInputElement;
@@ -15,6 +16,8 @@ export async function handleFMSubmission(
         alert("Please, select a file.");
         return; // Si no hay archivo, salimos de la función
     }
+    if (onProgress) onProgress(5, "Preparando archivos en el navegador...");
+
     const arrayBuffer = await file.arrayBuffer();
     engine.writeFile(file.name, new Uint8Array(arrayBuffer));
 
@@ -23,6 +26,6 @@ export async function handleFMSubmission(
     const isLight = formData.get("lightFactLabel") === "on";
 
     const pyCode = PYTHON_CODE.PROCESS_FM(file.name, name, isLight, desc);
-    const fmName = await engine.run(pyCode);
+    const fmName = await engine.run(pyCode, onProgress);
     onResult(fmName);
 }

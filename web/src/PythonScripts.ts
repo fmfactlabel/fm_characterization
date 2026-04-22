@@ -1,25 +1,34 @@
 export const PYTHON_CODE = {
     PROCESS_FM: (fileName: string, name: string, isLight: boolean, desc: string) => `
-from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader, GlencoeReader, AFMReader, JSONReader
+import js
+import asyncio
 from fmfactlabel import FMCharacterization
-import pathlib, json
+import pathlib
 
-def read_fm_file(filename: str):
-    if filename.endswith(".uvl"): return UVLReader(filename).transform()
-    elif filename.endswith((".xml", ".fide")): return FeatureIDEReader(filename).transform()
-    elif filename.endswith("gfm.json"): return GlencoeReader(filename).transform()
-    elif filename.endswith(".afm"): return AFMReader(filename).transform()
-    elif filename.endswith(".json"): return JSONReader(filename).transform()
-    return None
+async def run_process():
+    # 1. Definimos el adaptador para el callback
+    def progress_adapter(p, m):
+        if hasattr(js, "py_progress_callback"):
+            js.py_progress_callback(p, m)
 
-fm = read_fm_file("${fileName}")
-char = FMCharacterization(fm, ${isLight ? "True" : "False"})
-char.metadata.name = ${name} or pathlib.Path("${fileName}").stem
-char.metadata.description = ${desc}
+    # 2. Llamada asíncrona a tu clase modificada
+    # Usamos from_path porque ya implementamos el on_progress ahí
+    char = await FMCharacterization.from_path("${fileName}", ${isLight ? "True" : "False"}, on_progress=progress_adapter)
+    
+    # 3. Metadatos extra
+    if ${name} is not None:
+        char.metadata.name = ${name}
+    char.metadata.description = ${desc}
 
-char.to_json_file(f"{char.metadata.name}.json")
-with open(f"{char.metadata.name}.txt", 'w') as f: f.write(str(char))
-char.metadata.name
+    # 4. Guardado de archivos
+    char.to_json_file(f"{char.metadata.name}.json")
+    with open(f"{char.metadata.name}.txt", 'w', encoding='utf-8') as f: 
+        f.write(str(char))
+    
+    return char.metadata.name
+
+# Ejecutamos la corrutina y devolvemos el resultado a JS
+await run_process()
 `,
 
     PROCESS_JSON: (fileName: string) => `

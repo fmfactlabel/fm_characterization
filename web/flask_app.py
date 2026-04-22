@@ -6,6 +6,8 @@ import pathlib
 import tempfile
 import threading
 import time
+import asyncio
+import queue
 
 import flask
 from flask_cors import CORS
@@ -26,78 +28,93 @@ CORS(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    data = {}
-    name = None
-    description = None
-    author = None
-    year = None
-    keywords = None
-    reference = None
-    domain = None
     if flask.request.method == 'GET':
-        return flask.render_template('index.html', data=data)
-
+        return flask.render_template('index.html', data={})
     if flask.request.method == 'POST':
         light_fact_label = 'lightFactLabel' in flask.request.form
-        logging.warning(f'light_fact_label: {light_fact_label}')
         fm_file = flask.request.files.get('inputFM')
         filename = fm_file.filename
         fm_file.save(filename)
 
-        if flask.request.form['inputName']:
-            name = flask.request.form['inputName']
-        if flask.request.form['inputDescription']:
-            description = flask.request.form['inputDescription']
-            description = description.replace(os.linesep, ' ')
-        if flask.request.form['inputAuthor']:
-            author = flask.request.form['inputAuthor']
-        if flask.request.form['inputReference']:
-            reference = flask.request.form['inputReference']
-        if flask.request.form['inputKeywords']:
-            keywords = flask.request.form['inputKeywords']
-        if flask.request.form['inputDomain']:
-            domain = flask.request.form['inputDomain']
-        if flask.request.form['inputYear']:
-            year = flask.request.form['inputYear']
+        form_data = {
+            'name': flask.request.form.get('inputName', None),
+            'description': flask.request.form.get('inputDescription', '').replace(os.linesep, ' '),
+            'author': flask.request.form.get('inputAuthor', None),
+            'reference': flask.request.form.get('inputReference', None),
+            'keywords': flask.request.form.get('inputKeywords', None),
+            'domain': flask.request.form.get('inputDomain', None),
+            'year': flask.request.form.get('inputYear', None)
+        }
 
-        try:
-            characterization = FMCharacterization.from_path(filename, light_fact_label)
-        except Exception as e:
-            data['file_error'] = 'Feature model format not supported or invalid syntax.'
-            return flask.render_template('index.html', data=data)
-        finally:
-            file_path = pathlib.Path(filename)
-            if file_path.exists() and file_path.name == fm_file.filename:
-                file_path.unlink()
+        progreso_q = queue.Queue()
 
-        if name is not None:
-            characterization.metadata.name = name
-        name = characterization.metadata.name
-        characterization.metadata.author = author
-        characterization.metadata.description = description
-        characterization.metadata.year = year
-        characterization.metadata.tags = keywords
-        characterization.metadata.reference = reference
-        characterization.metadata.domains = domain
-        data['FM_NAME'] = name
-        data['JSON_CHARACTERIZATION'] = characterization.to_json()
-        data['TXT_CHARACTERIZATION'] = str(characterization)
+        def background_task():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                def on_prog(p, m):
+                    # Aseguramos que m sea siempre string para evitar errores de tipo
+                    progreso_q.put({'type': 'progress', 'p': p, 'm': str(m)})
 
-        # Write the characterization to a JSON file
-        json_filename = f'{name}.json'
-        temp_dir = pathlib.Path(tempfile.gettempdir())
-        temp_path = temp_dir / json_filename
-        characterization.to_json_file(temp_path)
-        delete_file_later(temp_path)
-        # Write the characterization to a text file
-        txt_filename = f'{name}.txt'
-        temp_dir = pathlib.Path(tempfile.gettempdir())
-        temp_path = temp_dir / txt_filename
-        with open(temp_path, 'w', encoding='utf-8') as file_txt:
-            file_txt.write(str(characterization))
-        delete_file_later(temp_path)
+                # 1. EJECUCIÓN ASÍNCRONA (Asegúrate que from_path use await internamente)
+                char = loop.run_until_complete(
+                    FMCharacterization.from_path(filename, light_fact_label, on_progress=on_prog)
+                )
+                
+                # 2. Metadatos
+                if form_data['name']: char.metadata.name = form_data['name']
+                name = char.metadata.name
+                char.metadata.author = form_data['author'] if form_data['author'] else None
+                char.metadata.description = form_data['description'] if form_data['description'] else None
+                char.metadata.year = form_data['year'] if form_data['year'] else None
+                char.metadata.tags = form_data['keywords'] if form_data['keywords'] else None
+                char.metadata.reference = form_data['reference'] if form_data['reference'] else None
+                char.metadata.domains = form_data['domain'] if form_data['domain'] else None
 
-        return flask.jsonify(data=data)
+                # 3. Preparar data final
+                txt_content = str(char) # Guardamos el string aquí para reusarlo
+                final_data = {
+                    'FM_NAME': name,
+                    'JSON_CHARACTERIZATION': char.to_json(),
+                    'TXT_CHARACTERIZATION': txt_content
+                }
+
+                # 4. Lógica de archivos temporales CORREGIDA
+                temp_dir = pathlib.Path(tempfile.gettempdir())
+                
+                # Archivo JSON
+                json_path = temp_dir / f"{name}.json"
+                char.to_json_file(str(json_path))
+                delete_file_later(json_path)
+
+                # Archivo TXT (Corregido el error de f.write(str))
+                txt_path = temp_dir / f"{name}.txt"
+                with open(txt_path, 'w', encoding='utf-8') as f:
+                    f.write(txt_content) # <--- Ahora pasamos el texto, no el tipo 'str'
+                delete_file_later(txt_path)
+
+                # 5. Enviamos el éxito
+                progreso_q.put({'type': 'final', 'data': final_data})
+
+            except Exception as e:
+                # Importante: str(e) para que JSON pueda serializarlo
+                progreso_q.put({'type': 'error', 'msg': str(e)})
+            finally:
+                p_file = pathlib.Path(filename)
+                if p_file.exists(): p_file.unlink()
+                progreso_q.put(None)
+
+        # Lanzar el hilo
+        threading.Thread(target=background_task).start()
+
+        # Generador para Flask
+        def generate():
+            while True:
+                item = progreso_q.get()
+                if item is None: break
+                yield f"data: {json.dumps(item)}\n\n"
+
+        return flask.Response(generate(), mimetype='text/event-stream')
 
 
 @app.route('/uploadJSON', methods=['GET', 'POST'])

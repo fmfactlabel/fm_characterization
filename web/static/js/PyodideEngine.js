@@ -31,7 +31,12 @@ export class PyodideEngine {
     readFile(name) {
         return this.instance.FS.readFile(name, { encoding: "utf8" });
     }
-    async run(code) {
+    async run(code, onProgress) {
+        if (onProgress) {
+            self.py_progress_callback = (p, msg) => {
+                onProgress(p, msg);
+            };
+        }
         return await this.instance.runPythonAsync(code);
     }
 }

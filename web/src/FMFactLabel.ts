@@ -72,6 +72,17 @@ export class FMFactLabel {
     private readonly XMLNS = "http://www.w3.org/2000/xmlns/";
     private readonly XLINKNS = "http://www.w3.org/1999/xlink";
     private readonly SVGNS = "http://www.w3.org/2000/svg";
+    
+    // Define el orden y los nombres exactos una sola vez
+    private readonly METADATA_KEYS = [
+        { id: 'Description', label: 'Description' },
+        { id: 'Tags', label: 'Tags' },
+        { id: 'Domain', label: 'Domain' },
+        { id: 'Author', label: 'Author' },
+        { id: 'Year', label: 'Year' },
+        { id: 'Language level', label: 'Language level' },
+        { id: 'Reference', label: 'Reference' }
+    ];
 
     private readonly MODERN_COLORS = {
         textMain: "#1a1a1a",
@@ -218,12 +229,10 @@ export class FMFactLabel {
         const data = this.allData;
         
         // Título
-        const nameVal = this.getProperty("Name")?.value || "Unknown";
-        const titleSize = this.textSize(nameVal, this.TITLE_FONT_FAMILY, this.TITLE_FONT_SIZE);
         const title = this.chart.append("g").attr("transform", `translate(0,${this.TOP_MARGING})`);
         
         title.append("text")
-            .text(nameVal)
+            .text(this.getProperty("Name")?.value || "Unknown")
             .attr("x", this.x(this.maxWidth / 2))
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "central")
@@ -232,58 +241,13 @@ export class FMFactLabel {
             .style("font-weight", "900")
             .style("fill", "#000");
 
-        // Descripción
-        const descVal = this.getProperty('Description')?.value || "";
-        const yDescription = this.TOP_MARGING + titleSize.height + 1;
-        const indentDesc = this.textSize("-".repeat(this.PROPERTY_INDENTATION), this.DESCRIPTION_FONT_FAMILY, this.DESCRIPTION_FONT_SIZE).width;
-        const description = this.chart.append("g").attr("transform", `translate(0,${yDescription})`);
-        description.append("text")
-            .text(descVal)
-            .attr("x", this.x(indentDesc))
-            .attr("font-family", this.DESCRIPTION_FONT_FAMILY)
-            .attr("font-size", this.DESCRIPTION_FONT_SIZE)
-            .call(this.wrap.bind(this), this.maxWidth - indentDesc)
-            .attr("fill", "currentColor");
-
-        const descriptionSize = (description.node() as SVGGraphicsElement).getBBox();
-        let currentY = yDescription + descriptionSize.height + 1;
-
-        // Metadatos
-        const metadataToRender = [
-            { id: 'Tags', label: 'Tags:' },
-            { id: 'Domain', label: 'Domain:' },
-            { id: 'Author', label: 'Author:' },
-            { id: 'Year', label: 'Year:' },
-            { id: 'Language level', label: 'Language level:' }
-        ];
-
-        metadataToRender.forEach(m => {
-            const prop = this.getProperty(m.id);
-            if (prop && prop.value !== null) {
-                const g = this.chart.append("g").attr("transform", `translate(0,${currentY})`);
-                this.addMetadata(g, m.label, prop.value);
-                currentY += (g.node() as SVGGraphicsElement).getBBox().height;
-            }
+        this.METADATA_KEYS.forEach(m => {
+            this.chart.append("g")
+                .attr("id", m.id.replace(/\s+/g, '-'))
+                .attr("class", "dynamic-metadata-item");
         });
 
-        // Referencia
-        const refProp = this.getProperty('Reference');
-        if (refProp && refProp.value) {
-            const reference = this.chart.append("g").attr("transform", `translate(0,${currentY - 15})`);
-            reference.append('a')
-                .attr("href", refProp.value)
-                .append("text")
-                .attr("text-anchor", "end")
-                .attr("x", this.maxWidth - 5)
-                .attr('font-family', 'FontAwesome')
-                .attr('font-size', "12pt")
-                .text(this.HREF_ICON)
-                .attr("cursor", "pointer");
-        }
-
-        this.yRule1 = currentY;
         this.chart.append("g").attr("id", "rule1");
-        this.yMetrics = this.yRule1 + this.MAIN_RULE_HEIGHT;
         this.chart.append("g").attr("id", "metrics").attr("transform", `translate(0,${this.yMetrics})`);
         this.chart.append("g").attr("id", "rule2");
         this.chart.append("g").attr("id", "analysis");
@@ -310,29 +274,89 @@ export class FMFactLabel {
     public draw(): void {
         this.calculateDimensions();
 
-        const visibleMetrics = this.allData.metrics.filter(d => this.visibleProperties[d.name]);
-        const visibleAnalysis = this.allData.analysis.filter(d => this.visibleProperties[d.name]);
+        const nameVal = this.getProperty("Name")?.value || "Unknown";
+        const titleSize = this.textSize(nameVal, this.TITLE_FONT_FAMILY, this.TITLE_FONT_SIZE);
+        this.chart.select("#main-title").attr("x", this.x(this.maxWidth / 2));
 
-        this.syncMetricsSelector();  // Syncronize the metrics selector with the current visibility state
+        // Layout dinámico de cabecera
+        let currentY = this.TOP_MARGING + titleSize.height; // + 5;
 
-        // 2. Reposicionar el título al nuevo centro
-        this.chart.select("g text") // Asumiendo que es el título
-            .attr("x", this.x(this.maxWidth / 2));
-            
+        this.METADATA_KEYS.forEach(m => {
+            const prop = this.getProperty(m.id);
+            const safeId = m.id.replace(/\s+/g, '-');
+            const group = this.chart.select(`#${safeId}`);
+            const isVisible = this.visibleProperties[m.id] !== false && prop && prop.value;
+
+            group.selectAll("*").remove();
+
+            if (isVisible) {
+                group.style("display", "inline");
+
+                if (m.id === 'Description') {
+                    group.attr("transform", `translate(0,${currentY})`);
+                    const indent = this.textSize("-".repeat(this.PROPERTY_INDENTATION), this.DESCRIPTION_FONT_FAMILY, this.DESCRIPTION_FONT_SIZE).width;
+                    group.append("text")
+                        .text(prop.value)
+                        .attr("x", this.x(indent))
+                        .attr("font-family", this.DESCRIPTION_FONT_FAMILY)
+                        .attr("font-size", this.DESCRIPTION_FONT_SIZE)
+                        .call(this.wrap.bind(this), this.maxWidth - indent);
+                    
+                    currentY += (group.node() as SVGGraphicsElement).getBBox().height; // +2
+
+                } else if (m.id === 'Reference') {
+                    // CASO ESPECIAL: Icono a la derecha
+                    // No sumamos currentY aquí para que quede alineado con el final de la sección
+                    // o lo posicionamos un poco antes de la regla
+                    group.attr("transform", `translate(0,${currentY - 15})`);
+                    group.append('a')
+                        .attr("href", prop.value)
+                        .attr("target", "_blank")
+                        .append("text")
+                        .attr("text-anchor", "end")
+                        .attr("x", this.maxWidth - 5)
+                        .attr('font-family', 'FontAwesome')
+                        .attr('font-size', "12pt")
+                        .text(this.HREF_ICON)
+                        .attr("cursor", "pointer");
+                    
+                    // Opcional: Si quieres que la regla respete el espacio del icono:
+                    //currentY += 15; 
+
+                } else {
+                    // Metadatos estándar
+                    group.attr("transform", `translate(0,${currentY})`);
+                    this.addMetadata(group, m.label + ":", prop.value);
+                    currentY += (group.node() as SVGGraphicsElement).getBBox().height + 2;
+                }
+            } else {
+                group.style("display", "none");
+            }
+        });
+        // 4. Posicionar Regla 1 y Métricas
+        this.yRule1 = currentY - 5; // + 5;
         this.drawRule("rule1", this.yRule1);
 
+        this.yMetrics = this.yRule1 + this.MAIN_RULE_HEIGHT;
+        const visibleMetrics = this.allData.metrics.filter(d => this.visibleProperties[d.name]);
+        this.chart.select("#metrics").attr("transform", `translate(0,${this.yMetrics})`);
         this.updateProperties(visibleMetrics, "metrics");
 
+        // 5. Posicionar Regla 2 y Análisis
         const yRule2 = this.yMetrics + (this.propertyHeight * visibleMetrics.length);
         this.drawRule("rule2", yRule2);
 
+        const visibleAnalysis = this.allData.analysis.filter(d => this.visibleProperties[d.name]);
         const yAnalysis = yRule2 + this.MAIN_RULE_HEIGHT;
         this.chart.select("#analysis").attr("transform", `translate(0,${yAnalysis})`);
         this.updateProperties(visibleAnalysis, "analysis");
 
-        const maxHeight = yAnalysis + this.MARGING_BETWEEN_PROPERTIES + (this.propertyHeight * visibleAnalysis.length);
+        // 6. Ajuste Final de Bordes y Altura del SVG
+        const maxHeight = yAnalysis + (this.propertyHeight * visibleAnalysis.length) + 10;
         this.drawBorders(this.maxWidth, maxHeight);
         this.chart.attr("height", maxHeight);
+        
+        this.syncMetricsSelector();
     }
 
     private updateProperties(data: FMProperty[], containerId: string): void {
@@ -644,7 +668,12 @@ export class FMFactLabel {
         listContainer.id = "metricListItems";
         container.appendChild(listContainer);
 
-        const allProperties: FMProperty[] = [...this.allData.metrics, ...this.allData.analysis];
+        const metadataProperties: FMProperty[] = this.METADATA_KEYS.map(m => ({
+            name: m.id, // Usamos el ID como nombre para el selector
+            value: "",
+            level: 0
+        } as FMProperty));
+        const allProperties: FMProperty[] = [...metadataProperties, ...this.allData.metrics, ...this.allData.analysis];
 
         allProperties.forEach((prop: FMProperty) => {
             const wrapper = document.createElement("div");
@@ -671,13 +700,12 @@ export class FMFactLabel {
         // --- LÓGICA DEL BUSCADOR ---
         const searchInput = searchWrapper.querySelector("#metricSearch") as HTMLInputElement;
         searchInput.addEventListener("input", (e) => {
-            const term = (e.target as HTMLInputElement).value.toLowerCase();
+            const term = (e.target as HTMLInputElement).value.toLowerCase().trim();
             const items = listContainer.querySelectorAll(".metric-item");
             
             items.forEach(item => {
                 const name = item.getAttribute("data-name") || "";
-                (item as HTMLElement).style.display = name.includes(term) ? "block" : "none";
-            });
+                (item as HTMLElement).style.setProperty("display", name.includes(term) ? "flex" : "none", "important");            });
         });
 
         // Eventos Bulk
@@ -690,11 +718,11 @@ export class FMFactLabel {
      * @param state 
      */
     private bulkToggleMetrics(state: boolean): void {
-        const all = [...this.allData.metrics, ...this.allData.analysis];
+        const all = [...this.METADATA_KEYS.map(m => ({ name: m.id })), ...this.allData.metrics, ...this.allData.analysis];
         all.forEach(prop => {
             this.visibleProperties[prop.name] = state;
-            // Actualizar el checkbox visualmente
-            const input = document.getElementById(`toggle-${prop.name.replace(/\s+/g, '-')}`) as HTMLInputElement;
+            const safeId = `toggle-${prop.name.replace(/\s+/g, '-')}`;
+            const input = document.getElementById(safeId) as HTMLInputElement;
             if (input) input.checked = state;
         });
         this.draw();

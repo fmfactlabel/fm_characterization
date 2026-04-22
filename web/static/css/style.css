@@ -158,3 +158,12 @@ body {
     cursor: pointer;
 }
 
+.navbar-logo {
+        height: 32px;
+        width: auto;
+        border-radius: 4px; /* O 50% si es circular */
+        transition: transform 0.3s ease;
+    }
+.navbar-brand:hover .navbar-logo {
+    transform: scale(1.1); /* Un pequeño efecto visual al pasar el ratón */
+}

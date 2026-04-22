@@ -7,33 +7,26 @@ import { FMFactLabel } from './FMFactLabel.js';
 declare global {
     interface Window {
         FM_NAME: string;
-        IS_FLASK: boolean;
         TXT_CHARACTERIZATION: string | null;
         JSON_CHARACTERIZATION: any | null;
         drawFMFactLabel: (data: any) => void;
     }
 }
 
+interface AppConfig {
+    version: string;
+    is_flask: boolean;
+}
+let CONFIG: AppConfig;
+
 // GLOBAL CONSTANTS
 export const engine = new PyodideEngine();
-const isFlask = window.IS_FLASK || false;
 const loader = new ProgressBar("progress-anchor", { isModal: false, title: "Loading FM Fact Label", color: "#000000" });
 const processBar = new ProgressBar(null, { isModal: true, title: "Generating Fact Label", color: "#007bff" });
 
-// ENTRY POINT
-// document.addEventListener("DOMContentLoaded", async () => {
-//     await initializeApp();
-//     setupFormObservers();
-//     requestAnimationFrame(() => {
-//         requestAnimationFrame(() => {
-//             // Aquí la UI ya se dibujó y el loader negro ya se ocultó.
-//             // Ahora lanzamos la carga de la URL. Sin esto el Progres Bar no se muestra para el caso de uso de generar el fact label desde una URL.
-//             loadFileFromURL(); 
-//         });
-//     });
-// });
-
 document.addEventListener("DOMContentLoaded", async () => {
+    await loadConfiguration();
+
     // 1. Primero configuramos los formularios para que sean interactivos
     setupFormObservers(); 
     
@@ -47,11 +40,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
     });
+    setupCopyrightYear();
 });
+
+async function loadConfiguration() {
+    const response = await fetch('./config.json');
+    CONFIG = await response.json();
+    (window as any).CONFIG = CONFIG; // Exponemos la configuración globalmente por si es necesaria en otros módulos
+    
+    // Update version in the UI
+    const versionSpan = document.getElementById("app-version");
+    if (versionSpan) {
+        versionSpan.textContent = CONFIG.version;
+    }
+}
 
 // INITIALIZATION
 async function initializeApp() {
-    if (!isFlask) {
+    if (!CONFIG.is_flask) {
         try {
             loader.show();
             await engine.initialize((p, msg) => loader.update(p, msg));
@@ -115,7 +121,7 @@ async function onFMFormSubmit(e: Event, form: HTMLFormElement) {
     processBar.update(0, "Initializing...");
 
     try {
-        if (isFlask) {
+        if (CONFIG.is_flask) {
             const response = await fetch('/', { method: 'POST', body: new FormData(form) });
             if (!response.ok) throw new Error('Flask response not ok.');
 
@@ -156,7 +162,7 @@ async function onJSONFormSubmit(e: Event, form: HTMLFormElement) {
     processBar.update(0, "Initializing...");
 
     try {
-        if (isFlask) {
+        if (CONFIG.is_flask) {
             const response = await fetch('/uploadJSON', { method: 'POST', body: new FormData(form) });
             if (!response.ok) throw new Error('Flask response not ok.');
 
@@ -235,7 +241,7 @@ async function loadFileFromURL() {
         toggleUIState(true, btn);
         processBar.update(0, "Initializing...");
 
-        if (isFlask) {
+        if (CONFIG.is_flask) {
             // --- LÓGICA FLASK (STREAM) ---
             try {
                 const response = await fetch('/fromURL', {
@@ -357,4 +363,17 @@ function setupPersistenceButtons(factLabel: FMFactLabel) {
             });
         }
     });
+}
+
+function setupCopyrightYear(): void {
+    const yearElement = document.getElementById("current-year");
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear().toString();
+    }
+    // Set the maximum year for the input field to current year + 1
+    const inputYear = document.getElementById("inputYear") as HTMLInputElement;
+    if (inputYear) {
+        const maxYear = new Date().getFullYear() + 1;
+        inputYear.max = maxYear.toString();
+    }
 }

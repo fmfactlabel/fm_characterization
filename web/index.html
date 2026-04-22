@@ -35,8 +35,6 @@
     <script src="static/js/FileSaver.js" defer></script>
 
     <!-- Fact Label scripts -->
-    <script>window.IS_FLASK = true;</script>
-    <!-- <script type="module" src="static/js/factlabel_visualization.js"></script> -->
     <script type="module" src="static/js/FMFactLabel.js"></script>
     <script type="module" src="static/js/ui_utils.js"></script>
     <script type="module" src="static/js/main.js"></script>
@@ -46,7 +44,10 @@
 
     <nav class="navbar navbar-expand-lg py-4">
         <div class="container">
-            <a class="navbar-brand" href="#"><i class="fa-solid fa-layer-group me-2"></i>FM Fact Label</a>
+            <a class="navbar-brand" href="/">
+                <img src="static/img/favicon.ico" width="24" height="24" class="navbar-logo d-inline-block align-center me-2">
+                FM Fact Label
+            </a>
         </div>
     </nav>
 
@@ -161,18 +162,10 @@
     <!-- Footer -->
         <footer class="container footer text-center">
         <hr>
-        <p>&copy; <span id="year"></span> • FM Fact Label</p>
+        <p>&copy; <span id="current-year"></span> • FM Fact Label</p>
     </footer>
     <!-- End of Footer -->
      
-    <!-- <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
-    </script> -->
-    <!-- JQuery + Easing desde CDN -->
-    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-
-
 
     <!-- Modal (preserved from your original code) -->
     <div class="modal fade" id="metricModal" tabindex="-1" aria-labelledby="metricModalLabel" aria-hidden="true">

@@ -39,6 +39,33 @@ name = next((item['value'] for item in data["metadata"] if item["name"] == "Name
 with open(f"{name}.json", 'w') as f: json.dump(data, f)
 with open(f"{name}.txt", 'w') as f: f.write(FMCharacterization.json_to_text(data))
 name
+`,
+    PROCESS_URL: (url) => `
+import js
+import asyncio
+from fmfactlabel import FMCharacterization
+import pyodide
+
+async def run_url_process():
+    # 1. Definimos el adaptador para el callback de progreso
+    def progress_adapter(p, m):
+        if hasattr(js, "py_progress_callback"):
+            js.py_progress_callback(p, m)
+
+    # 2. Ejecutamos la carga desde URL (que ahora es async)
+    # El método from_url ya maneja internamente la descarga y la generación
+    char = await FMCharacterization.from_url("${url}", on_progress=progress_adapter)
+    
+    # 3. Guardado de archivos en el sistema virtual
+    name = char.metadata.name
+    char.to_json_file(f"{name}.json")
+    with open(f"{name}.txt", 'w', encoding='utf-8') as f:
+        f.write(str(char))
+    
+    return name
+
+# Ejecutar y retornar el nombre a JS
+await run_url_process()
 `
 };
 //# sourceMappingURL=PythonScripts.js.map

@@ -1,3 +1,4 @@
+import { PYTHON_CODE } from './PythonScripts.js'; // Asegúrate de importar la constante
 export class PyodideEngine {
     instance;
     async initialize(onProgress) {
@@ -23,6 +24,7 @@ export class PyodideEngine {
                 "flamapy/fmfactlabel-1.8.0-py3-none-any.whl"
             ], deps=False)
         `);
+        onProgress(100, "Motor listo");
         return this.instance;
     }
     writeFile(name, data) {
@@ -30,6 +32,46 @@ export class PyodideEngine {
     }
     readFile(name) {
         return this.instance.FS.readFile(name, { encoding: "utf8" });
+    }
+    /**
+     * Procesa un archivo FM (UVL, AFM, etc)
+     */
+    async processFM(fileName, name, isLight, desc, onProgress) {
+        if (onProgress) {
+            self.py_progress_callback = (p, msg) => onProgress(p, msg);
+        }
+        // Preparamos los argumentos para el script de Python
+        const pyName = name ? `"""${name}"""` : "None";
+        const pyDesc = `"""${desc}"""`;
+        const pyCode = PYTHON_CODE.PROCESS_FM(fileName, pyName, isLight, pyDesc);
+        return await this.instance.runPythonAsync(pyCode);
+    }
+    /**
+     * Procesa un JSON ya generado
+     */
+    async processJSON(fileName, onProgress) {
+        if (onProgress) {
+            self.py_progress_callback = (p, msg) => onProgress(p, msg);
+        }
+        const pyCode = PYTHON_CODE.PROCESS_JSON(fileName);
+        return await this.instance.runPythonAsync(pyCode);
+    }
+    /**
+     * Procesa un modelo desde una URL directamente en el navegador
+     */
+    async processFromURL(url, onProgress) {
+        // Registramos el callback en el scope global (self) para que Python lo vea
+        self.py_progress_callback = (p, msg) => {
+            onProgress(p, msg);
+        };
+        const pythonScript = PYTHON_CODE.PROCESS_URL(url);
+        try {
+            return await this.instance.runPythonAsync(pythonScript);
+        }
+        catch (error) {
+            console.error("Error executing PROCESS_URL script:", error);
+            throw error;
+        }
     }
     async run(code, onProgress) {
         if (onProgress) {

@@ -76,8 +76,13 @@ export class ProgressBar {
         }
     }
     show() {
-        if (this.el)
-            this.el.style.display = "flex";
+        //if (this.el) this.el.style.display = "flex";
+        if (this.el) {
+            this.el.style.setProperty('display', 'flex', 'important');
+            this.el.style.setProperty('visibility', 'visible', 'important');
+            this.el.style.setProperty('opacity', '1', 'important');
+            this.el.style.setProperty('z-index', '2147483647', 'important');
+        }
     }
     hide(delay = 0) {
         if (!this.el)

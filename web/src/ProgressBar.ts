@@ -92,7 +92,13 @@ export class ProgressBar {
     }
 
     public show(): void {
-        if (this.el) this.el.style.display = "flex";
+        //if (this.el) this.el.style.display = "flex";
+        if (this.el) {
+            this.el.style.setProperty('display', 'flex', 'important');
+            this.el.style.setProperty('visibility', 'visible', 'important');
+            this.el.style.setProperty('opacity', '1', 'important');
+            this.el.style.setProperty('z-index', '2147483647', 'important');
+        }
     }
     
     public hide(delay: number = 0): void {

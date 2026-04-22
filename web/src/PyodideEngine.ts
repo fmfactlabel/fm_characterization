@@ -1,3 +1,5 @@
+import { PYTHON_CODE } from './PythonScripts.js'; // Asegúrate de importar la constante
+
 // Declaración para que TS no se queje de la librería externa
 declare const loadPyodide: any;
 
@@ -30,6 +32,7 @@ export class PyodideEngine {
             ], deps=False)
         `);
         
+        onProgress(100, "Motor listo");
         return this.instance;
     }
 
@@ -39,6 +42,59 @@ export class PyodideEngine {
 
     readFile(name: string): string {
         return this.instance.FS.readFile(name, { encoding: "utf8" });
+    }
+
+    /**
+     * Procesa un archivo FM (UVL, AFM, etc)
+     */
+    async processFM(
+        fileName: string, 
+        name: string | null, 
+        isLight: boolean, 
+        desc: string, 
+        onProgress?: (p: number, msg: string) => void
+    ): Promise<string> {
+        if (onProgress) {
+            (self as any).py_progress_callback = (p: number, msg: string) => onProgress(p, msg);
+        }
+
+        // Preparamos los argumentos para el script de Python
+        const pyName = name ? `"""${name}"""` : "None";
+        const pyDesc = `"""${desc}"""`;
+        
+        const pyCode = PYTHON_CODE.PROCESS_FM(fileName, pyName, isLight, pyDesc);
+        return await this.instance.runPythonAsync(pyCode);
+    }
+
+    /**
+     * Procesa un JSON ya generado
+     */
+    async processJSON(fileName: string, onProgress?: (p: number, msg: string) => void): Promise<string> {
+        if (onProgress) {
+            (self as any).py_progress_callback = (p: number, msg: string) => onProgress(p, msg);
+        }
+
+        const pyCode = PYTHON_CODE.PROCESS_JSON(fileName);
+        return await this.instance.runPythonAsync(pyCode);
+    }
+
+    /**
+     * Procesa un modelo desde una URL directamente en el navegador
+     */
+    async processFromURL(url: string, onProgress: (p: number, msg: string) => void): Promise<string> {
+        // Registramos el callback en el scope global (self) para que Python lo vea
+        (self as any).py_progress_callback = (p: number, msg: string) => {
+            onProgress(p, msg);
+        };
+
+        const pythonScript = PYTHON_CODE.PROCESS_URL(url);
+        
+        try {
+            return await this.instance.runPythonAsync(pythonScript);
+        } catch (error) {
+            console.error("Error executing PROCESS_URL script:", error);
+            throw error;
+        }
     }
 
     async run(code: string, onProgress?: (p: number, msg: string) => void): Promise<any> {

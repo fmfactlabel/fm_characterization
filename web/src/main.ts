@@ -24,7 +24,11 @@ const processBar = new ProgressBar(null, { isModal: true, title: "Generating Fac
 document.addEventListener("DOMContentLoaded", async () => {
     await initializeApp();
     setupFormObservers();
+    setTimeout(async () => {
+        await loadFileFromURL();
+    }, 100);
 });
+
 
 // INITIALIZATION
 async function initializeApp() {
@@ -40,7 +44,6 @@ async function initializeApp() {
         }
     } else {
         loader.hide();
-        loadFileFromURL();
     }
 }
 
@@ -97,7 +100,7 @@ async function onFMFormSubmit(e: Event, form: HTMLFormElement) {
                     processBar.update(100, "Fact Label generated!");
                     processBar.setState("success");
                     renderPyodideResult(name);
-                    processBar.hide(1000);
+                    processBar.hide(1500);
                 },
                 (p, msg) => processBar.update(p, msg)
             );
@@ -138,7 +141,7 @@ async function onJSONFormSubmit(e: Event, form: HTMLFormElement) {
                     processBar.update(100, "Fact Label generated!");
                     processBar.setState("success");
                     renderPyodideResult(name);
-                    processBar.hide(1000);
+                    processBar.hide(1500);
                 },
                 (p, msg) => processBar.update(p, msg)
             );
@@ -175,7 +178,9 @@ async function readStream(response: Response, onEvent: (data: any) => void) {
 
     while (true) {
         const { value, done } = await reader.read();
-        if (done) break;
+        if (done) {
+            break;
+        }
         const chunk = decoder.decode(value);
         chunk.split('\n').forEach(line => {
             if (line.trim().startsWith('data: ')) {
@@ -191,18 +196,64 @@ async function loadFileFromURL() {
     const fileURL = params.get('file');
 
     if (fileURL) {
-        try {
-            const response = await fetch('/fromURL', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: fileURL })
-            });
-            if (!response.ok) throw new Error('Flask response not ok.');
-            const data = await response.json();
-            updateAndRender(data.data);
-        } catch (error) {
-            console.error('Error:', error);
+        const btn = document.getElementById("submitButtonFM") as HTMLButtonElement;
+        toggleUIState(true, btn);
+        processBar.update(0, "Initializing...");
+
+        if (isFlask) {
+            // --- LÓGICA FLASK (STREAM) ---
+            try {
+                const response = await fetch('/fromURL', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: fileURL })
+                });
+
+                if (!response.ok) throw new Error('Flask response not ok.');
+
+                // Consumimos el stream igual que en los formularios
+                await readStream(response, (event) => {
+                    if (event.type === 'progress') {
+                        processBar.update(event.p, event.m);
+                    } else if (event.type === 'final') {
+                        processBar.update(100, "Fact Label generated!");
+                        processBar.setState("success");
+                        updateAndRender(event.data);
+                        processBar.hide(1500);
+                    } else if (event.type === 'error') {
+                        throw new Error(event.msg);
+                    }
+                });
+            } catch (err: any) {
+                processBar.setState("error");
+                processBar.update(100, `Error: ${err.message}`);
+                console.error("Flask URL Error:", err);
+            }
+        } else {
+            // --- LÓGICA PYODIDE ---
+            try {
+                // Suponiendo que tu motor tiene un método para manejar URLs 
+                // similar a handleFMSubmission pero para URLs
+                processBar.update(20, "Downloading via Pyodide...");
+                
+                // Aquí usamos la lógica de Pyodide:
+                // Nota: Asegúrate de tener expuesta esta lógica en tu PyodideEngine o similar
+                const fmName = await engine.processFromURL(
+                    fileURL, 
+                    (p: number, msg: string) => processBar.update(p, msg)
+                );
+
+                processBar.update(100, "Done!");
+                processBar.setState("success");
+                renderPyodideResult(fmName);
+                processBar.hide(1000);
+            } catch (error: any) {
+                processBar.setState("error");
+                processBar.update(100, "Pyodide URL Error");
+                console.error("Pyodide URL Error:", error);
+            }
         }
+        toggleUIState(false, btn);
     }
 }
 

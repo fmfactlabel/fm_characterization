@@ -28,202 +28,150 @@ CORS(app)
 
 
 @app.route('/', methods=['GET', 'POST'])
-def index() -> flask.Response:
+def index():
     if flask.request.method == 'GET':
         return flask.render_template('index.html', data={})
-    if flask.request.method == 'POST':
-        light_fact_label = 'lightFactLabel' in flask.request.form
-        fm_file = flask.request.files.get('inputFM')
-        filename = fm_file.filename
-        fm_file.save(filename)
+    
+    light_fact_label = 'lightFactLabel' in flask.request.form
+    fm_file = flask.request.files.get('inputFM')
+    filename = fm_file.filename
+    fm_file.save(filename)
 
-        form_data = {
-            'name': flask.request.form.get('inputName', None),
-            'description': flask.request.form.get('inputDescription', '').replace(os.linesep, ' '),
-            'author': flask.request.form.get('inputAuthor', None),
-            'reference': flask.request.form.get('inputReference', None),
-            'keywords': flask.request.form.get('inputKeywords', None),
-            'domain': flask.request.form.get('inputDomain', None),
-            'year': flask.request.form.get('inputYear', None)
-        }
+    form_data = {
+        'name': flask.request.form.get('inputName'),
+        'description': flask.request.form.get('inputDescription', '').replace(os.linesep, ' '),
+        'author': flask.request.form.get('inputAuthor'),
+        'reference': flask.request.form.get('inputReference'),
+        'keywords': flask.request.form.get('inputKeywords'),
+        'domain': flask.request.form.get('inputDomain'),
+        'year': flask.request.form.get('inputYear')
+    }
+    form_data = {k: v if v else None for k, v in form_data.items()}
 
-        progreso_q = queue.Queue()
-
-        def background_task():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            try:
-                def on_prog(p, m):
-                    # Aseguramos que m sea siempre string para evitar errores de tipo
-                    progreso_q.put({'type': 'progress', 'p': p, 'm': str(m)})
-
-                # 1. EJECUCIÓN ASÍNCRONA (Asegúrate que from_path use await internamente)
-                char = loop.run_until_complete(
-                    FMCharacterization.from_path(filename, light_fact_label, on_progress=on_prog)
-                )
-                
-                # 2. Metadatos
-                if form_data['name']: char.metadata.name = form_data['name']
-                name = char.metadata.name
-                char.metadata.author = form_data['author'] if form_data['author'] else None
-                char.metadata.description = form_data['description'] if form_data['description'] else None
-                char.metadata.year = form_data['year'] if form_data['year'] else None
-                char.metadata.tags = form_data['keywords'] if form_data['keywords'] else None
-                char.metadata.reference = form_data['reference'] if form_data['reference'] else None
-                char.metadata.domains = form_data['domain'] if form_data['domain'] else None
-
-                # 3. Preparar data final
-                txt_content = str(char) # Guardamos el string aquí para reusarlo
-                final_data = {
-                    'FM_NAME': name,
-                    'JSON_CHARACTERIZATION': char.to_json(),
-                    'TXT_CHARACTERIZATION': txt_content
-                }
-
-                # 4. Lógica de archivos temporales CORREGIDA
-                temp_dir = pathlib.Path(tempfile.gettempdir())
-                
-                # Archivo JSON
-                json_path = temp_dir / f"{name}.json"
-                char.to_json_file(str(json_path))
-                delete_file_later(json_path)
-
-                # Archivo TXT (Corregido el error de f.write(str))
-                txt_path = temp_dir / f"{name}.txt"
-                with open(txt_path, 'w', encoding='utf-8') as f:
-                    f.write(txt_content)
-                delete_file_later(txt_path)
-
-                # 5. Enviamos el éxito
-                progreso_q.put({'type': 'final', 'data': final_data})
-
-            except Exception as e:
-                # Importante: str(e) para que JSON pueda serializarlo
-                progreso_q.put({'type': 'error', 'msg': str(e)})
-            finally:
-                p_file = pathlib.Path(filename)
-                if p_file.exists(): p_file.unlink()
-                progreso_q.put(None)
-
-        # Lanzar el hilo
-        threading.Thread(target=background_task).start()
-
-        # Generador para Flask
-        def generate():
-            while True:
-                item = progreso_q.get()
-                if item is None: break
-                yield f"data: {json.dumps(item)}\n\n"
-
-        return flask.Response(generate(), mimetype='text/event-stream')
+    # Pasamos la lógica de creación como una función lambda
+    return process_characterization_stream(
+        fetch_coro_func=lambda on_p: FMCharacterization.from_path(filename, light_fact_label, on_progress=on_p),
+        form_data=form_data,
+        cleanup_path=filename
+    )
 
 
-@app.route('/uploadJSON', methods=['GET', 'POST'])
-def uploadJSON() -> flask.Response:
-    if flask.request.method == 'GET':
-        return flask.render_template('index.html', data={})
+@app.route('/uploadJSON', methods=['POST'])
+def uploadJSON():
+    json_file = flask.request.files.get('inputCharacterization')
+    filename = json_file.filename
+    json_file.save(filename)
 
-    if flask.request.method == 'POST':
-        json_file = flask.request.files.get('inputCharacterization')
-        filename = json_file.filename
-        json_file.save(filename)
+    # Definimos la función que cargará el JSON y lo "disfrazará" de objeto caracterización
+    async def load_json_as_char(on_prog):
+        on_prog(20, "Reading JSON file...")
+        with open(filename, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        on_prog(50, "Parsing data...")
+        # Creamos un objeto 'dummy' que se comporte como FMCharacterization
+        # para que la función maestra pueda usar sus métodos.
+        class JSONWrapper:
+            def __init__(self, d):
+                self.data = d
+                # Extraemos el nombre para la metadata
+                name_val = next((i['value'] for i in d["metadata"] if i["name"] == "Name"), "Unnamed")
+                self.metadata = type('Obj', (object,), {'name': name_val})()
+            
+            def to_json(self): return self.data
+            def to_json_file(self, path): 
+                with open(path, 'w', encoding='utf-8') as f: json.dump(self.data, f, indent=4)
+            def __str__(self): return FMCharacterization.json_to_text(self.data)
+            
+        return JSONWrapper(data)
 
-        progress_queue = queue.Queue()
-
-        def background_task():
-            try:
-                # 1. Inicio
-                progress_queue.put({'type': 'progress', 'p': 10, 'm': 'Reading JSON file...'})
-                
-                with open(filename, 'r', encoding='utf-8') as f:
-                    json_characterization = json.load(f)
-
-                if json_characterization is None:
-                    raise ValueError('JSON format not supported.')
-
-                progress_queue.put({'type': 'progress', 'p': 40, 'm': 'Recreating characterization...'})
-
-                # 2. Extraer nombre y generar textos
-                name = next((item['value'] for item in json_characterization["metadata"] if item["name"] == "Name"), "Unnamed")
-                txt_characterization = FMCharacterization.json_to_text(json_characterization)
-                
-                final_data = {
-                    'FM_NAME': name,
-                    'JSON_CHARACTERIZATION': json_characterization,
-                    'TXT_CHARACTERIZATION': str(txt_characterization)
-                }
-
-                progress_queue.put({'type': 'progress', 'p': 70, 'm': 'Finishing processing...'})
-
-                # 3. Lógica de archivos temporales (JSON y TXT)
-                temp_dir = pathlib.Path(tempfile.gettempdir())
-                
-                # Guardar JSON temporal
-                json_path = temp_dir / f'{name}.json'
-                with open(json_path, 'w', encoding='utf-8') as file_json:
-                    json.dump(json_characterization, file_json, indent=4)
-                delete_file_later(json_path)
-
-                # Guardar TXT temporal
-                txt_path = temp_dir / f'{name}.txt'
-                with open(txt_path, 'w', encoding='utf-8') as file_txt:
-                    file_txt.write(str(txt_characterization))
-                delete_file_later(txt_path)
-
-                # 4. Éxito final
-                progress_queue.put({'type': 'final', 'data': final_data})
-
-            except Exception as e:
-                progress_queue.put({'type': 'error', 'msg': str(e)})
-            finally:
-                # Limpiar el archivo subido
-                p_file = pathlib.Path(filename)
-                if p_file.exists(): p_file.unlink()
-                progress_queue.put(None)
-
-        # Lanzar hilo
-        threading.Thread(target=background_task).start()
-
-        # Generador de respuesta SSE
-        def generate():
-            while True:
-                item = progress_queue.get()
-                if item is None: break
-                yield f"data: {json.dumps(item)}\n\n"
-
-        return flask.Response(generate(), mimetype='text/event-stream')
+    # Llamamos a la misma función unificada
+    return process_characterization_stream(
+        fetch_coro_func=load_json_as_char,
+        cleanup_path=filename
+    )
     
 
 @app.route('/fromURL', methods=['POST'])
-def fromURL() -> flask.Response:
-    data = {}
-    request_data = flask.request.get_json()
-    url = request_data.get('url')
-    if url is None:
+def fromURL():
+    url = flask.request.get_json().get('url')
+    if not url:
         return flask.jsonify({'error': 'URL not provided.'}), 400
-    try:
-        characterization = FMCharacterization.from_url(url)
-        data['FM_NAME'] = characterization.metadata.name
-        data['JSON_CHARACTERIZATION'] = characterization.to_json()
-        data['TXT_CHARACTERIZATION'] = str(characterization)
 
-        # Write the characterization to a JSON file
-        json_filename = f'{characterization.metadata.name}.json'
-        temp_dir = pathlib.Path(tempfile.gettempdir())
-        temp_path = temp_dir / json_filename
-        characterization.to_json_file(temp_path)
-        delete_file_later(temp_path)
+    return process_characterization_stream(
+        fetch_coro_func=lambda on_p: FMCharacterization.from_url(url, on_progress=on_p)
+    )
 
-        # Write the characterization to a text file
-        txt_filename = f'{characterization.metadata.name}.txt'
-        temp_path = temp_dir / txt_filename
-        with open(temp_path, 'w', encoding='utf-8') as file_txt:
-            file_txt.write(str(characterization))
-        delete_file_later(temp_path)
-        return flask.jsonify(data=data)
-    except Exception as e:
-        logging.error(f"Error processing URL {url}: {e}")
-        return flask.jsonify({'error': str(e)}), 500
+
+def process_characterization_stream(fetch_coro_func, form_data=None, cleanup_path=None):
+    """
+    Función unificada para procesar la caracterización y devolver una Response SSE.
+    :param fetch_coro_func: Función que recibe (on_prog) y devuelve la corrutina de FMCharacterization.
+    :param form_data: Diccionario con metadatos extra para sobreescribir.
+    :param cleanup_path: Ruta de archivo local que debe borrarse al finalizar.
+    """
+    progreso_q = queue.Queue()
+
+    def background_task():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            def on_prog(p, m):
+                progreso_q.put({'type': 'progress', 'p': p, 'm': str(m)})
+
+            # 1. Obtener la caracterización (aquí se ejecuta la corrutina pasada)
+            char = loop.run_until_complete(fetch_coro_func(on_prog))
+            
+            # 2. Aplicar Metadatos del formulario si existen
+            if form_data:
+                if form_data.get('name'): char.metadata.name = form_data['name']
+                char.metadata.author = form_data.get('author')
+                char.metadata.description = form_data.get('description')
+                char.metadata.year = form_data.get('year')
+                char.metadata.tags = form_data.get('keywords')
+                char.metadata.reference = form_data.get('reference')
+                char.metadata.domains = form_data.get('domain')
+
+            name = char.metadata.name
+            txt_content = str(char)
+
+            # 3. Preparar archivos temporales
+            temp_dir = pathlib.Path(tempfile.gettempdir())
+            
+            json_path = temp_dir / f"{name}.json"
+            char.to_json_file(str(json_path))
+            delete_file_later(json_path)
+
+            txt_path = temp_dir / f"{name}.txt"
+            with open(txt_path, 'w', encoding='utf-8') as f:
+                f.write(txt_content)
+            delete_file_later(txt_path)
+
+            # 4. Enviar resultado final
+            final_data = {
+                'FM_NAME': name,
+                'JSON_CHARACTERIZATION': char.to_json(),
+                'TXT_CHARACTERIZATION': txt_content
+            }
+            progreso_q.put({'type': 'final', 'data': final_data})
+
+        except Exception as e:
+            progreso_q.put({'type': 'error', 'msg': str(e)})
+        finally:
+            if cleanup_path:
+                p_file = pathlib.Path(cleanup_path)
+                if p_file.exists(): p_file.unlink()
+            progreso_q.put(None)
+
+    threading.Thread(target=background_task).start()
+
+    def generate():
+        while True:
+            item = progreso_q.get()
+            if item is None: break
+            yield f"data: {json.dumps(item)}\n\n"
+
+    return flask.Response(generate(), mimetype='text/event-stream')
 
 
 def delete_file_later(path: str, delay: int = TIMEOUT_TEMPFILES) -> None:

@@ -167,7 +167,8 @@ function createFMFactLabel(data) {
             subPropertiesSelector: "#collapseSubProperties",
             zebraStripingSelector: "#checkZebraStriping",
             showRatioBarSelector: "#checkRatioBar",
-            showPercentagesSelector: "#checkShowPercentages"
+            showPercentagesSelector: "#checkShowPercentages",
+            metricsSelectorContainer: "#metricsSelectorContainer"
         };
         const factLabel = new FMFactLabel("#FMFactLabelChart", data, options);
     }

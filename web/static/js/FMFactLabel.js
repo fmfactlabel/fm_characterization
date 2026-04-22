@@ -105,6 +105,10 @@ export class FMFactLabel {
                 this.draw();
             });
         }
+        if (options.metricsSelectorContainer) {
+            this.generateMetricsSelector(options.metricsSelectorContainer);
+            this.generateMetricsSelector(options.metricsSelectorContainer);
+        }
     }
     initStyles() {
         this.chart.selectAll('defs')
@@ -230,6 +234,7 @@ export class FMFactLabel {
     draw() {
         const visibleMetrics = this.allData.metrics.filter(d => this.visibleProperties[d.name]);
         const visibleAnalysis = this.allData.analysis.filter(d => this.visibleProperties[d.name]);
+        this.syncMetricsSelector(); // Syncronize the metrics selector with the current visibility state
         this.drawRule("rule1", this.yRule1);
         this.updateProperties(visibleMetrics, "metrics");
         const yRule2 = this.yMetrics + (this.propertyHeight * visibleMetrics.length);
@@ -475,6 +480,97 @@ export class FMFactLabel {
             const m = new bootstrap.Modal(modalEl);
             m.show();
         }
+    }
+    /**
+     * Genera dinámicamente los toggles de visibilidad para cada métrica.
+     * @param containerSelector Selector del contenedor donde se insertarán los toggles.
+     */
+    generateMetricsSelector(containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container)
+            return;
+        container.innerHTML = "";
+        // 1. Crear el buscador (Input)
+        const searchWrapper = document.createElement("div");
+        searchWrapper.className = "px-1 mb-3";
+        searchWrapper.innerHTML = `
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0" id="metricSearch" placeholder="Search metrics...">
+            </div>
+        `;
+        container.appendChild(searchWrapper);
+        // 2. Botones Bulk (All/None)
+        const bulkActions = document.createElement("div");
+        bulkActions.className = "mb-2 border-bottom pb-2 d-flex justify-content-between px-1";
+        bulkActions.innerHTML = `
+            <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" id="btnSelectAll">Select All</button>
+            <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none text-danger" id="btnSelectNone">Select None</button>
+        `;
+        container.appendChild(bulkActions);
+        // Contenedor interno para los items (para filtrar fácil)
+        const listContainer = document.createElement("div");
+        listContainer.id = "metricListItems";
+        container.appendChild(listContainer);
+        const allProperties = [...this.allData.metrics, ...this.allData.analysis];
+        allProperties.forEach((prop) => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "form-check form-switch mb-2 metric-item text-nowrap d-flex align-items-center";
+            wrapper.setAttribute("data-name", prop.name.toLowerCase()); // Para el buscador
+            const safeId = `toggle-${prop.name.replace(/\s+/g, '-')}`;
+            wrapper.innerHTML = `
+                <input class="form-check-input metric-toggle flex-shrink-0" type="checkbox" id="${safeId}" data-metric="${prop.name}" 
+                    ${this.visibleProperties[prop.name] !== false ? 'checked' : ''}>
+                <label class="form-check-label small ps-2 pe-3" for="${safeId}" style="cursor: pointer; flex-grow: 1;">
+                    ${prop.name}
+                </label>
+            `;
+            wrapper.querySelector('input')?.addEventListener('change', (e) => {
+                this.visibleProperties[prop.name] = e.target.checked;
+                this.draw();
+            });
+            listContainer.appendChild(wrapper);
+        });
+        // --- LÓGICA DEL BUSCADOR ---
+        const searchInput = searchWrapper.querySelector("#metricSearch");
+        searchInput.addEventListener("input", (e) => {
+            const term = e.target.value.toLowerCase();
+            const items = listContainer.querySelectorAll(".metric-item");
+            items.forEach(item => {
+                const name = item.getAttribute("data-name") || "";
+                item.style.display = name.includes(term) ? "block" : "none";
+            });
+        });
+        // Eventos Bulk
+        container.querySelector("#btnSelectAll")?.addEventListener("click", () => this.bulkToggleMetrics(true));
+        container.querySelector("#btnSelectNone")?.addEventListener("click", () => this.bulkToggleMetrics(false));
+    }
+    /**
+     * Función auxiliar para activar/desactivar todo de golpe
+     * @param state
+     */
+    bulkToggleMetrics(state) {
+        const all = [...this.allData.metrics, ...this.allData.analysis];
+        all.forEach(prop => {
+            this.visibleProperties[prop.name] = state;
+            // Actualizar el checkbox visualmente
+            const input = document.getElementById(`toggle-${prop.name.replace(/\s+/g, '-')}`);
+            if (input)
+                input.checked = state;
+        });
+        this.draw();
+    }
+    syncMetricsSelector() {
+        // Buscamos todos los toggles dentro del contenedor del selector
+        const toggles = document.querySelectorAll('.metric-toggle');
+        toggles.forEach(input => {
+            // Obtenemos el nombre de la métrica desde el atributo que guardamos al crearla
+            const metricName = input.getAttribute('data-metric');
+            if (metricName && this.visibleProperties[metricName] !== undefined) {
+                // Sincronizamos el check con la realidad de la clase
+                input.checked = this.visibleProperties[metricName];
+            }
+        });
     }
 }
 //# sourceMappingURL=FMFactLabel.js.map

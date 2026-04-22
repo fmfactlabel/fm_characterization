@@ -139,6 +139,16 @@
                             <input class="form-check-input" type="checkbox" id="checkShowPercentages">
                             <label class="form-check-label" for="checkShowPercentages">Show percentages</label>
                         </div>
+                        <div class="dropdown d-inline-block me-3">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" id="btnFilterMetrics">
+                                <i class="fa-solid fa-list-check me-1"></i> Select Metrics
+                            </button>
+                            <div class="dropdown-menu p-3 shadow" style="min-width: 300px; width: fit-content; max-height: 400px; overflow-y: auto;">
+                                <h6 class="dropdown-header ps-0">Visible Metrics</h6>
+                                <div id="metricsSelectorContainer">
+                                    </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="label-container" id="progress-anchor">

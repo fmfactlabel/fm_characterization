@@ -21,14 +21,30 @@ const loader = new ProgressBar("progress-anchor", { isModal: false, title: "Load
 const processBar = new ProgressBar(null, { isModal: true, title: "Generating Fact Label", color: "#007bff" });
 
 // ENTRY POINT
+// document.addEventListener("DOMContentLoaded", async () => {
+//     await initializeApp();
+//     setupFormObservers();
+//     requestAnimationFrame(() => {
+//         requestAnimationFrame(() => {
+//             // Aquí la UI ya se dibujó y el loader negro ya se ocultó.
+//             // Ahora lanzamos la carga de la URL. Sin esto el Progres Bar no se muestra para el caso de uso de generar el fact label desde una URL.
+//             loadFileFromURL(); 
+//         });
+//     });
+// });
+
 document.addEventListener("DOMContentLoaded", async () => {
-    await initializeApp();
-    setupFormObservers();
-    requestAnimationFrame(() => {
+    // 1. Primero configuramos los formularios para que sean interactivos
+    setupFormObservers(); 
+    
+    // 2. Lanzamos la carga de Pyodide sin bloquear el hilo principal
+    // No usamos 'await' aquí inmediatamente si queremos que el código siga
+    initializeApp().then(() => {
+        // 3. Cuando Pyodide esté listo, chequeamos la URL
         requestAnimationFrame(() => {
-            // Aquí la UI ya se dibujó y el loader negro ya se ocultó.
-            // Ahora lanzamos la carga de la URL. Sin esto el Progres Bar no se muestra para el caso de uso de generar el fact label desde una URL.
-            loadFileFromURL(); 
+            requestAnimationFrame(() => {
+                loadFileFromURL(); 
+            });
         });
     });
 });

@@ -18,11 +18,11 @@ export class PyodideEngine {
         
         onProgress(30, "Loading Micropip...");
         await this.instance.loadPackage(["micropip", "python-sat"]);
-
         onProgress(50, "Installing Flamapy ecosystem...");
         await this.instance.runPythonAsync(`
             import micropip
             await micropip.install([
+                "flamapy/pyodide_http-0.2.2-py3-none-any.whl",
                 "flamapy/ply-3.11-py2.py3-none-any.whl",
                 "flamapy/uvlparser-2.0.1-py3-none-any.whl",
                 "flamapy/afmparser-1.0.3-py3-none-any.whl",

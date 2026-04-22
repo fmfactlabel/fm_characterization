@@ -43,20 +43,24 @@ name
     PROCESS_URL: (url) => `
 import js
 import asyncio
+import pyodide_http  # Importamos el parche
 from fmfactlabel import FMCharacterization
-import pyodide
+
+# 1. PARCHEAMOS LAS LIBRERÍAS DE RED
+# Esto hace que urllib.request use fetch() de JS automáticamente
+pyodide_http.patch_all()
 
 async def run_url_process():
-    # 1. Definimos el adaptador para el callback de progreso
     def progress_adapter(p, m):
         if hasattr(js, "py_progress_callback"):
             js.py_progress_callback(p, m)
 
-    # 2. Ejecutamos la carga desde URL (que ahora es async)
-    # El método from_url ya maneja internamente la descarga y la generación
+    # 2. Ahora urllib (usado por from_url) funcionará perfectamente
+    # Nota: Asegúrate de que fmfactlabel sea compatible con el parche
+    # Si 'from_url' no es una corrutina en tu lib, quita el 'await' de delante
+    # pero mantén el async/await del wrapper.
     char = await FMCharacterization.from_url("${url}", on_progress=progress_adapter)
     
-    # 3. Guardado de archivos en el sistema virtual
     name = char.metadata.name
     char.to_json_file(f"{name}.json")
     with open(f"{name}.txt", 'w', encoding='utf-8') as f:
@@ -64,7 +68,6 @@ async def run_url_process():
     
     return name
 
-# Ejecutar y retornar el nombre a JS
 await run_url_process()
 `
 };

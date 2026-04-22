@@ -117,6 +117,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    pointer-events: none;
 }
 
 /* Section labels inside the form */

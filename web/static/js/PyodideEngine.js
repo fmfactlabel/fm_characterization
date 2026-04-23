@@ -17,12 +17,13 @@ export class PyodideEngine {
             "flamapy/uvlparser-2.0.1-py3-none-any.whl",
             "flamapy/afmparser-1.0.3-py3-none-any.whl",
             "flamapy/antlr4_python3_runtime-4.13.1-py3-none-any.whl",
+            "flamapy/dd-0.6.0-py3-none-any.whl",
+            "z3_solver-4.13.4.0-py3-none-pyodide_2024_0_wasm32.whl",
             "flamapy/flamapy-2.1.0.dev0-py3-none-any.whl",
             "flamapy/flamapy_fw-2.1.0.dev0-py3-none-any.whl",
             "flamapy/flamapy_fm-2.1.0.dev0-py3-none-any.whl",
             "flamapy/flamapy_sat-2.1.0.dev0-py3-none-any.whl",
             "flamapy/flamapy_bdd-2.1.0.dev0-py3-none-any.whl",
-            "flamapy/dd-0.5.7-py3-none-any.whl",
             "flamapy/astutils-0.0.6-py3-none-any.whl",
             "flamapy/fmfactlabel-1.8.2-py3-none-any.whl"
         ];
@@ -41,6 +42,7 @@ export class PyodideEngine {
             }
             catch (e) {
                 console.error(`Error installing ${wheelName}:`, e);
+                onProgress(100, "Error", `Failed to install ${wheelName}`);
                 // Si falla, podrías lanzar un error o intentar un reintento como el código de ejemplo
             }
         }

@@ -14,17 +14,17 @@ export class PyodideEngine {
         const packages = [
             "flamapy/pyodide_http-0.2.2-py3-none-any.whl",
             "flamapy/ply-3.11-py2.py3-none-any.whl",
-            "flamapy/uvlparser-2.0.1-py3-none-any.whl",
-            "flamapy/afmparser-1.0.3-py3-none-any.whl",
             "flamapy/antlr4_python3_runtime-4.13.1-py3-none-any.whl",
             "flamapy/dd-0.6.0-py3-none-any.whl",
-            "z3_solver-4.13.4.0-py3-none-pyodide_2024_0_wasm32.whl",
-            "flamapy/flamapy-2.1.0.dev0-py3-none-any.whl",
-            "flamapy/flamapy_fw-2.1.0.dev0-py3-none-any.whl",
-            "flamapy/flamapy_fm-2.1.0.dev0-py3-none-any.whl",
-            "flamapy/flamapy_sat-2.1.0.dev0-py3-none-any.whl",
-            "flamapy/flamapy_bdd-2.1.0.dev0-py3-none-any.whl",
+            "flamapy/z3_solver-4.13.4.0-py3-none-pyodide_2024_0_wasm32.whl",
             "flamapy/astutils-0.0.6-py3-none-any.whl",
+            "flamapy/afmparser-1.0.3-py3-none-any.whl",
+            "flamapy/uvlparser-2.5.0-py3-none-any.whl",
+            "flamapy/flamapy_fw-2.5.0-py3-none-any.whl",
+            "flamapy/flamapy_fm-2.5.0-py3-none-any.whl",
+            "flamapy/flamapy_sat-2.5.0-py3-none-any.whl",
+            "flamapy/flamapy_bdd-2.5.0-py3-none-any.whl",
+            "flamapy/flamapy-2.5.0-py3-none-any.whl",
             "flamapy/fmfactlabel-1.8.2-py3-none-any.whl"
         ];
         for (let i = 0; i < packages.length; i++) {

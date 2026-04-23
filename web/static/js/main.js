@@ -5,7 +5,7 @@ import { FMFactLabel } from './FMFactLabel.js';
 let CONFIG;
 // GLOBAL CONSTANTS
 export const engine = new PyodideEngine();
-const loader = new ProgressBar("progress-anchor", { isModal: false, title: "Loading FM Fact Label", color: "#000000" });
+const loader = new ProgressBar("progress-anchor", { isModal: false, title: "Initializing FM Fact Label", color: "#000000" });
 const processBar = new ProgressBar(null, { isModal: true, title: "Generating Fact Label", color: "#007bff" });
 document.addEventListener("DOMContentLoaded", async () => {
     await loadConfiguration();
@@ -38,13 +38,15 @@ async function initializeApp() {
     if (!CONFIG.is_flask) {
         try {
             loader.show();
-            await engine.initialize((p, msg) => loader.update(p, msg));
+            await engine.initialize((p, msg, detail) => loader.update(p, msg, detail));
             //(window as any).pyodideInstance = (engine as any).instance;
             loader.setState("success");
+            loader.update(100, "FM Fact Label Ready!", "Pyodide loaded successfully");
             loader.hide(1500);
         }
         catch (e) {
             loader.setState("error");
+            loader.update(100, "Error", "Failed to initialize Pyodide");
             console.error("Error loading Pyodide", e);
         }
     }
@@ -90,7 +92,7 @@ async function onFMFormSubmit(e, form) {
     e.preventDefault();
     const btn = document.getElementById("submitButtonFM");
     toggleUIState(true, btn);
-    processBar.update(0, "Initializing...");
+    processBar.update(0, "Preparing request...", "Initializing connection");
     try {
         if (CONFIG.is_flask) {
             const response = await fetch('/', { method: 'POST', body: new FormData(form) });
@@ -98,9 +100,9 @@ async function onFMFormSubmit(e, form) {
                 throw new Error('Flask response not ok.');
             await readStream(response, (event) => {
                 if (event.type === 'progress')
-                    processBar.update(event.p, event.m);
+                    processBar.update(event.p, "Processing feature model", event.m);
                 if (event.type === 'final') {
-                    processBar.update(100, "Fact Label generated!");
+                    processBar.update(100, "Fact Label generated!", "Complete");
                     processBar.setState("success");
                     updateAndRender(event.data);
                     processBar.hide(1500);
@@ -111,16 +113,16 @@ async function onFMFormSubmit(e, form) {
         }
         else {
             await handleFMSubmission(form, engine, (name) => {
-                processBar.update(100, "Fact Label generated!");
+                processBar.update(100, "Fact Label generated!", "Complete");
                 processBar.setState("success");
                 renderPyodideResult(name);
                 processBar.hide(1500);
-            }, (p, msg) => processBar.update(p, msg));
+            }, (p, msg) => processBar.update(p, "Processing feature model", msg));
         }
     }
     catch (err) {
         processBar.setState("error");
-        processBar.update(100, err.message);
+        processBar.update(100, "Error", err.message);
     }
     finally {
         toggleUIState(false, btn);
@@ -130,7 +132,7 @@ async function onJSONFormSubmit(e, form) {
     e.preventDefault();
     const btn = document.getElementById("submitButtonJSON");
     toggleUIState(true, btn);
-    processBar.update(0, "Initializing...");
+    processBar.update(0, "Preparing request...", "Initializing connection");
     try {
         if (CONFIG.is_flask) {
             const response = await fetch('/uploadJSON', { method: 'POST', body: new FormData(form) });
@@ -138,9 +140,9 @@ async function onJSONFormSubmit(e, form) {
                 throw new Error('Flask response not ok.');
             await readStream(response, (event) => {
                 if (event.type === 'progress')
-                    processBar.update(event.p, event.m);
+                    processBar.update(event.p, "Processing characterization", event.m);
                 if (event.type === 'final') {
-                    processBar.update(100, "Fact Label generated!");
+                    processBar.update(100, "Fact Label generated!", "Completed");
                     processBar.setState("success");
                     updateAndRender(event.data);
                     processBar.hide(1500);
@@ -151,16 +153,16 @@ async function onJSONFormSubmit(e, form) {
         }
         else { // Pyodide
             await handleJSONSubmission(form, engine, (name) => {
-                processBar.update(100, "Fact Label generated!");
+                processBar.update(100, "Fact Label generated!", "Completed");
                 processBar.setState("success");
                 renderPyodideResult(name);
                 processBar.hide(1500);
-            }, (p, msg) => processBar.update(p, msg));
+            }, (p, msg) => processBar.update(p, "Processing feature model", msg));
         }
     }
     catch (err) {
         processBar.setState("error");
-        processBar.update(100, err.message);
+        processBar.update(100, "Error", err.message);
     }
     finally {
         toggleUIState(false, btn);
@@ -212,7 +214,7 @@ async function loadFileFromURL() {
     if (fileURL) {
         const btn = document.getElementById("submitButtonFM");
         toggleUIState(true, btn);
-        processBar.update(0, "Initializing...");
+        processBar.update(0, "Preparing request...", "Initializing connection");
         if (CONFIG.is_flask) {
             // --- LÓGICA FLASK (STREAM) ---
             try {
@@ -226,7 +228,7 @@ async function loadFileFromURL() {
                 // Consumimos el stream igual que en los formularios
                 await readStream(response, (event) => {
                     if (event.type === 'progress') {
-                        processBar.update(event.p, event.m);
+                        processBar.update(event.p, "Processing feature model", event.m);
                     }
                     else if (event.type === 'final') {
                         processBar.update(100, "Fact Label generated!");
@@ -241,7 +243,7 @@ async function loadFileFromURL() {
             }
             catch (err) {
                 processBar.setState("error");
-                processBar.update(100, `Error: ${err.message}`);
+                processBar.update(100, "Error", `Error: ${err.message}`);
                 console.error("Flask URL Error:", err);
             }
         }
@@ -253,15 +255,15 @@ async function loadFileFromURL() {
                 processBar.update(20, "Downloading via Pyodide...");
                 // Aquí usamos la lógica de Pyodide:
                 // Nota: Asegúrate de tener expuesta esta lógica en tu PyodideEngine o similar
-                const fmName = await engine.processFromURL(fileURL, (p, msg) => processBar.update(p, msg));
-                processBar.update(100, "Done!");
+                const fmName = await engine.processFromURL(fileURL, (p, msg) => processBar.update(p, "Processing characterization", msg));
+                processBar.update(100, "Done!", "Complete");
                 processBar.setState("success");
                 renderPyodideResult(fmName);
                 processBar.hide(1000);
             }
             catch (error) {
                 processBar.setState("error");
-                processBar.update(100, "Pyodide URL Error");
+                processBar.update(100, "Pyodide URL Error", `Error: ${error.message}`);
                 console.error("Pyodide URL Error:", error);
             }
         }

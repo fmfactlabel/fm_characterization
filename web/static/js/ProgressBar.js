@@ -26,12 +26,15 @@ export class ProgressBar {
         this.el.innerHTML = `
             <div class="pg-backdrop"></div>
             <div class="pg-card">
-                <div class="pg-icon"><div class="pg-spinner"></div></div>
-                <h4 class="pg-title">${this.options.title}</h4>
+                <div class="pg-spinner-container">
+                    <div class="pg-spinner"></div>
+                </div>
+                <h3 class="pg-title">${this.options.title}</h3>
                 <p class="pg-msg">Iniciando...</p>
                 <div class="pg-bar-bg">
                     <div class="pg-bar-fill" style="width: 0%; background-color: ${this.options.color}"></div>
                 </div>
+                <p class="pg-detail"></p> 
             </div>
         `;
         if (!document.getElementById("pg-module-styles")) {
@@ -42,37 +45,43 @@ export class ProgressBar {
             this.hide();
     }
     // --- Métodos de Control ---
-    update(percent, message, title) {
+    update(percent, message, detail, title) {
         if (!this.el)
             return;
         const fill = this.el.querySelector(".pg-bar-fill");
         const msgEl = this.el.querySelector(".pg-msg");
+        const detailEl = this.el.querySelector(".pg-detail");
         const titleEl = this.el.querySelector(".pg-title");
         if (fill)
             fill.style.width = `${Math.max(0, Math.min(100, percent))}%`;
         if (message && msgEl)
             msgEl.innerText = message;
+        if (detail !== undefined && detailEl)
+            detailEl.innerText = detail;
         if (title && titleEl)
             titleEl.innerText = title;
     }
     setState(state) {
         if (!this.el)
             return;
-        const icon = this.el.querySelector(".pg-icon");
+        // Buscamos el contenedor del spinner que definimos en el nuevo init()
+        const iconContainer = this.el.querySelector(".pg-spinner-container");
         const bar = this.el.querySelector(".pg-bar-fill");
-        if (!icon || !bar)
+        if (!iconContainer || !bar)
             return;
         if (state === "success") {
-            bar.style.backgroundColor = "#28a745";
-            icon.innerHTML = '<span style="font-size: 2rem;">✅</span>';
+            bar.style.backgroundColor = "#28a745"; // Verde
+            // Reemplazamos el spinner por un icono de éxito grande y animado
+            iconContainer.innerHTML = '<span style="font-size: 3rem; animation: pg-bounce 0.5s ease;">✅</span>';
         }
         else if (state === "error") {
-            bar.style.backgroundColor = "#dc3545";
-            icon.innerHTML = '<span style="font-size: 2rem;">❌</span>';
+            bar.style.backgroundColor = "#dc3545"; // Rojo
+            iconContainer.innerHTML = '<span style="font-size: 3rem; animation: pg-bounce 0.5s ease;">❌</span>';
         }
         else {
+            // Volver al estado de carga
             bar.style.backgroundColor = this.options.color;
-            icon.innerHTML = '<div class="pg-spinner"></div>';
+            iconContainer.innerHTML = '<div class="pg-spinner"></div>';
         }
     }
     show() {
@@ -96,15 +105,37 @@ export class ProgressBar {
         const style = document.createElement("style");
         style.id = "pg-module-styles";
         style.innerHTML = `
-            .pg-wrapper { font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; }
+            .pg-wrapper { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s; }
             .pg-wrapper.pg-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; }
-            .pg-wrapper.pg-modal .pg-backdrop { position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
-            .pg-wrapper.pg-inline { position: relative; width: 100%; padding: 20px; border: 1px solid #eee; border-radius: 12px; background: #fafafa; }
-            .pg-card { position: relative; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; min-width: 300px; z-index: 10; }
-            .pg-spinner { border: 4px solid #f3f3f3; border-top: 4px solid ${this.options.color}; border-radius: 50%; width: 40px; height: 40px; animation: pg-spin 1s linear infinite; margin: 0 auto 20px; }
-            .pg-bar-bg { background: #e9ecef; border-radius: 10px; height: 12px; overflow: hidden; margin-top: 15px; }
-            .pg-bar-fill { height: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+            .pg-wrapper.pg-modal .pg-backdrop { position: absolute; width: 100%; height: 100%; background: rgba(255,255,255,0.7); backdrop-filter: blur(4px); }
+            
+            .pg-card { 
+                position: relative; background: white; padding: 40px; border-radius: 8px; 
+                box-shadow: 0 4px 30px rgba(0,0,0,0.1); text-align: center; 
+                width: 100%; max-width: 500px; z-index: 10; 
+            }
+
+            .pg-spinner-container { height: 60px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+            .pg-spinner { 
+                border: 3px solid #f0f2f6; border-top: 3px solid ${this.options.color}; 
+                border-radius: 50%; width: 50px; height: 50px; 
+                animation: pg-spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+            }
+
+            .pg-title { color: #0e1117; font-size: 1.5rem; font-weight: 700; margin: 0 0 8px 0; }
+            .pg-msg { color: #555e6d; font-size: 1.1rem; margin: 0 0 25px 0; }
+            
+            .pg-bar-bg { background: #f0f2f6; border-radius: 100px; height: 8px; overflow: hidden; margin: 10px 0; }
+            .pg-bar-fill { height: 100%; border-radius: 100px; transition: width 0.3s ease; }
+            
+            .pg-detail { color: #808495; font-size: 0.85rem; margin-top: 12px; font-variant-numeric: tabular-nums; }
+
             @keyframes pg-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes pg-bounce {
+                0% { transform: scale(0); }
+                70% { transform: scale(1.2); }
+                100% { transform: scale(1); }
+            }
         `;
         document.head.appendChild(style);
     }

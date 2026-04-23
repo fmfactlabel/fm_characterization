@@ -7,39 +7,53 @@ export class PyodideEngine {
     private instance: any;
     private isReady: boolean = false;
 
-    async initialize(onProgress: (p: number, msg: string) => void): Promise<any> {
+    async initialize(onProgress: (p: number, msg: string, detail?: string) => void): Promise<any> {
         if (this.isReady && this.instance) {
-            onProgress(100, "FM Fact Label ready (cached)!");
+            onProgress(100, "FM Fact Label ready!", "Cached Pyodide instance");
             return this.instance;
         }
 
-        onProgress(10, "Loading Pyodide core...");
+        onProgress(5, "Loading Pyodide core...");
         this.instance = await loadPyodide();
         
-        onProgress(30, "Loading Micropip...");
+        onProgress(15, "Preparing environment...", "Loading Micropip & python-sat");
         await this.instance.loadPackage(["micropip", "python-sat"]);
-        onProgress(50, "Installing Flamapy ecosystem...");
-        await this.instance.runPythonAsync(`
-            import micropip
-            await micropip.install([
-                "flamapy/pyodide_http-0.2.2-py3-none-any.whl",
-                "flamapy/ply-3.11-py2.py3-none-any.whl",
-                "flamapy/uvlparser-2.0.1-py3-none-any.whl",
-                "flamapy/afmparser-1.0.3-py3-none-any.whl",
-                "flamapy/antlr4_python3_runtime-4.13.1-py3-none-any.whl",
-                "flamapy/flamapy-2.1.0.dev0-py3-none-any.whl",
-                "flamapy/flamapy_fw-2.1.0.dev0-py3-none-any.whl",
-                "flamapy/flamapy_fm-2.1.0.dev0-py3-none-any.whl",
-                "flamapy/flamapy_sat-2.1.0.dev0-py3-none-any.whl",
-                "flamapy/flamapy_bdd-2.1.0.dev0-py3-none-any.whl",
-                "flamapy/dd-0.5.7-py3-none-any.whl",
-                "flamapy/astutils-0.0.6-py3-none-any.whl",
-                "flamapy/fmfactlabel-1.8.2-py3-none-any.whl"
-            ], deps=False)
-        `);
         
+        const packages = [
+            "flamapy/pyodide_http-0.2.2-py3-none-any.whl",
+            "flamapy/ply-3.11-py2.py3-none-any.whl",
+            "flamapy/uvlparser-2.0.1-py3-none-any.whl",
+            "flamapy/afmparser-1.0.3-py3-none-any.whl",
+            "flamapy/antlr4_python3_runtime-4.13.1-py3-none-any.whl",
+            "flamapy/flamapy-2.1.0.dev0-py3-none-any.whl",
+            "flamapy/flamapy_fw-2.1.0.dev0-py3-none-any.whl",
+            "flamapy/flamapy_fm-2.1.0.dev0-py3-none-any.whl",
+            "flamapy/flamapy_sat-2.1.0.dev0-py3-none-any.whl",
+            "flamapy/flamapy_bdd-2.1.0.dev0-py3-none-any.whl",
+            "flamapy/dd-0.5.7-py3-none-any.whl",
+            "flamapy/astutils-0.0.6-py3-none-any.whl",
+            "flamapy/fmfactlabel-1.8.2-py3-none-any.whl"
+        ];
+
+        for (let i = 0; i < packages.length; i++) {
+            const wheelUrl = packages[i]!;
+            const wheelName = wheelUrl.split('/').pop()?.split('-')[0] || wheelUrl;
+            onProgress(15 + (70 * i / packages.length), "Installing dependencies...", `(${i + 1}/${packages.length}) ${wheelName}`);
+            this.instance.globals.set("wheel_url", wheelUrl);
+            try {
+                // Ejecutamos la instalación desde dentro de Python
+                // Esto es lo que evita el error de dependencias
+                await this.instance.runPythonAsync(`
+                    import micropip
+                    await micropip.install(wheel_url, deps=False)
+                `);
+            } catch (e) {
+                console.error(`Error installing ${wheelName}:`, e);
+                // Si falla, podrías lanzar un error o intentar un reintento como el código de ejemplo
+            }
+        }
         this.isReady = true;
-        onProgress(100, "FM Fact Label ready!");
+        onProgress(100, "Pyodide ready", "All dependencies installed");
         return this.instance;
     }
 

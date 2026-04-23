@@ -39,7 +39,7 @@ export class PyodideEngine {
 
         for (let i = 0; i < packages.length; i++) {
             const wheelUrl = packages[i]!;
-            const wheelName = wheelUrl.split('/').pop()?.split('-')[0] || wheelUrl;
+            const wheelName = wheelUrl.split('/').pop()?.split('-').slice(0, 2).join('-') || wheelUrl;
             onProgress(15 + (70 * i / packages.length), "Installing dependencies...", `(${i + 1}/${packages.length}) ${wheelName}`);
             this.instance.globals.set("wheel_url", wheelUrl);
             try {

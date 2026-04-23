@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-04-23 
+
+### Changed
+
+- Modern Look & Feel.
+- Metric Modal Overhaul:
+  - Smart Content Formatting: Lists are now automatically split into vertical bulleted lines (using dot separators) instead of comma-separated strings.
+  - Dynamic Header: The modal title now includes real-time badges for count (size) and ratio (percentage).
+- JSON Serialization: Updated to_json to support UTF-8 encoding and special characters (ensure_ascii=False).
+- Library Updates: Bumped third-party dependencies for D3.js and Bootstrap.
+
+### Added
+
+- SMT analysis integration for advanced analytical metrics.
+- Metric update: Improved differentiation between Boolean configuration number and real configurations number.
+- New metric: Unbounded features.
+- Enhanced UI Feedback:
+  - Non-blocking progress bar for Pyodide initialization.
+  - Real-time progress bar for Fact Label generation in both Flask and Pyodide environments.
+- New Configurable Options (UI):
+  - Zebra striping: Toggle for alternating row background colors to improve readability.
+  - Toggle percentages: Option to hide/show ratio percentages globally.
+  - Ratio bars: Visual micro-visualizations (fill bars) for property ratios.
+  - Metric Selector: Dynamic panel to further customize and filter the label's content.
+  - 
+- Feedback through progress bar for Fact Label generation in both Flask and Pyodide.
+- New configurable option: Zebra striping
+- New configurable option: Toggle percentages
+- New configurable option: Ratio bar (toggle)
+- New configurable option: Select metric to further customize the label.
+
+### Removed
+
+- App version from URL: Simplified routing for better SEO and cleaner navigation.
+
 ## [1.8.2] - 2026-03-01 
 
 ### Changed

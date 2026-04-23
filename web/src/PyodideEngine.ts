@@ -34,7 +34,7 @@ export class PyodideEngine {
             "flamapy/flamapy_z3-2.5.0-py3-none-any.whl",
             "flamapy/flamapy_bdd-2.5.0-py3-none-any.whl",
             "flamapy/flamapy-2.5.0-py3-none-any.whl",
-            "flamapy/fmfactlabel-1.8.2-py3-none-any.whl"
+            "flamapy/fmfactlabel-1.9.0-py3-none-any.whl"
         ];
 
         for (let i = 0; i < packages.length; i++) {

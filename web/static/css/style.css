@@ -167,3 +167,8 @@ body {
 .navbar-brand:hover .navbar-logo {
     transform: scale(1.1); /* Un pequeño efecto visual al pasar el ratón */
 }
+
+#metricModal .modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+}

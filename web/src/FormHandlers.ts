@@ -4,7 +4,7 @@ export async function handleFMSubmission(
     form: HTMLFormElement, 
     engine: PyodideEngine,
     onResult: (name: string) => void,
-    onProgress?: (percent: number, message: string) => void
+    onProgress?: (percent: number, message: string, details: string) => void
 ) {
     const formData = new FormData(form);
     const fileInput = form.querySelector('#inputFM') as HTMLInputElement;
@@ -15,7 +15,7 @@ export async function handleFMSubmission(
         return;
     }
 
-    if (onProgress) onProgress(5, "Preparing virtual file system...");
+    if (onProgress) onProgress(5, "Processing feature model...", "Preparing virtual file system");
 
     // 1. Escribir archivo en la memoria de Pyodide
     const arrayBuffer = await file.arrayBuffer();
@@ -35,7 +35,7 @@ export async function handleJSONSubmission(
     form: HTMLFormElement, 
     engine: PyodideEngine,
     onResult: (name: string) => void,
-    onProgress?: (percent: number, message: string) => void
+    onProgress?: (percent: number, message: string, details: string) => void
 ) {
     const fileInput = form.querySelector('#inputCharacterization') as HTMLInputElement;
     const file = fileInput.files?.[0];
@@ -45,7 +45,7 @@ export async function handleJSONSubmission(
         return;
     }
 
-    if (onProgress) onProgress(5, "Reading JSON into memory...");
+    if (onProgress) onProgress(5, "Reading JSON into memory...", "");
 
     // 1. Escribir archivo
     const arrayBuffer = await file.arrayBuffer();

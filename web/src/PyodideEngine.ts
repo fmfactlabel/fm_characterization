@@ -31,6 +31,7 @@ export class PyodideEngine {
             "flamapy/flamapy_fw-2.5.0-py3-none-any.whl",
             "flamapy/flamapy_fm-2.5.0-py3-none-any.whl",
             "flamapy/flamapy_sat-2.5.0-py3-none-any.whl",
+            "flamapy/flamapy_z3-2.5.0-py3-none-any.whl",
             "flamapy/flamapy_bdd-2.5.0-py3-none-any.whl",
             "flamapy/flamapy-2.5.0-py3-none-any.whl",
             "flamapy/fmfactlabel-1.8.2-py3-none-any.whl"
@@ -48,9 +49,10 @@ export class PyodideEngine {
                     import micropip
                     await micropip.install(wheel_url, deps=False)
                 `);
-            } catch (e) {
+            } catch (e: any) {
                 console.error(`Error installing ${wheelName}:`, e);
                 onProgress(100, "Error", `Failed to install ${wheelName}`);
+                throw new Error(`Failed to install ${wheelName}: ${e.message}`);
                 // Si falla, podrías lanzar un error o intentar un reintento como el código de ejemplo
             }
         }
@@ -75,10 +77,10 @@ export class PyodideEngine {
         name: string | null, 
         isLight: boolean, 
         desc: string, 
-        onProgress?: (p: number, msg: string) => void
+        onProgress?: (p: number, msg: string, details: string) => void
     ): Promise<string> {
         if (onProgress) {
-            (self as any).py_progress_callback = (p: number, msg: string) => onProgress(p, msg);
+            (self as any).py_progress_callback = (p: number, msg: string, details: string) => onProgress(p, msg, details);
         }
 
         // Preparamos los argumentos para el script de Python
@@ -92,9 +94,9 @@ export class PyodideEngine {
     /**
      * Procesa un JSON ya generado
      */
-    async processJSON(fileName: string, onProgress?: (p: number, msg: string) => void): Promise<string> {
+    async processJSON(fileName: string, onProgress?: (p: number, msg: string, details: string) => void): Promise<string> {
         if (onProgress) {
-            (self as any).py_progress_callback = (p: number, msg: string) => onProgress(p, msg);
+            (self as any).py_progress_callback = (p: number, msg: string, details: string) => onProgress(p, msg, details);
         }
 
         const pyCode = PYTHON_CODE.PROCESS_JSON(fileName);
@@ -104,10 +106,10 @@ export class PyodideEngine {
     /**
      * Procesa un modelo desde una URL directamente en el navegador
      */
-    async processFromURL(url: string, onProgress: (p: number, msg: string) => void): Promise<string> {
+    async processFromURL(url: string, onProgress: (p: number, msg: string, details: string) => void): Promise<string> {
         // Registramos el callback en el scope global (self) para que Python lo vea
-        (self as any).py_progress_callback = (p: number, msg: string) => {
-            onProgress(p, msg);
+        (self as any).py_progress_callback = (p: number, msg: string, details: string) => {
+            onProgress(p, msg, details);
         };
 
         const pythonScript = PYTHON_CODE.PROCESS_URL(url);
@@ -120,10 +122,10 @@ export class PyodideEngine {
         }
     }
 
-    async run(code: string, onProgress?: (p: number, msg: string) => void): Promise<any> {
+    async run(code: string, onProgress?: (p: number, msg: string, details: string) => void): Promise<any> {
         if (onProgress) {
-            (self as any).py_progress_callback = (p: number, msg: string) => {
-                onProgress(p, msg);
+            (self as any).py_progress_callback = (p: number, msg: string, details: string) => {
+                onProgress(p, msg, details);
             };
         }
         return await this.instance.runPythonAsync(code);

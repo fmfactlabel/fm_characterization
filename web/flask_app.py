@@ -50,7 +50,7 @@ def index():
 
     # Pasamos la lógica de creación como una función lambda
     return process_characterization_stream(
-        fetch_coro_func=lambda on_p: FMCharacterization.from_path(filename, light_fact_label, on_progress=on_p),
+        fetch_coro_func=lambda on_p: FMCharacterization.from_path_async(filename, light_fact_label, on_progress=on_p),
         form_data=form_data,
         cleanup_path=filename
     )
@@ -99,7 +99,7 @@ def fromURL():
         return flask.jsonify({'error': 'URL not provided.'}), 400
 
     return process_characterization_stream(
-        fetch_coro_func=lambda on_p: FMCharacterization.from_url(url, on_progress=on_p)
+        fetch_coro_func=lambda on_p: FMCharacterization.from_url_async(url, on_progress=on_p)
     )
 
 
@@ -116,8 +116,8 @@ def process_characterization_stream(fetch_coro_func, form_data=None, cleanup_pat
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            def on_prog(p, m):
-                progreso_q.put({'type': 'progress', 'p': p, 'm': str(m)})
+            def on_prog(p, m, d=None):
+                progreso_q.put({'type': 'progress', 'p': p, 'm': str(m), 'd': str(d) if d else ''})
 
             # 1. Obtener la caracterización (aquí se ejecuta la corrutina pasada)
             char = loop.run_until_complete(fetch_coro_func(on_prog))

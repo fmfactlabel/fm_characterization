@@ -7,13 +7,13 @@ import pathlib
 
 async def run_process():
     # 1. Definimos el adaptador para el callback
-    def progress_adapter(p, m):
+    def progress_adapter(p, m, d=""):
         if hasattr(js, "py_progress_callback"):
-            js.py_progress_callback(p, m)
+            js.py_progress_callback(p, m, d)
 
     # 2. Llamada asíncrona a tu clase modificada
     # Usamos from_path porque ya implementamos el on_progress ahí
-    char = await FMCharacterization.from_path("${fileName}", ${isLight ? "True" : "False"}, on_progress=progress_adapter)
+    char = await FMCharacterization.from_path_async("${fileName}", ${isLight ? "True" : "False"}, on_progress=progress_adapter)
     
     # 3. Metadatos extra
     if ${name} is not None:
@@ -51,15 +51,15 @@ from fmfactlabel import FMCharacterization
 pyodide_http.patch_all()
 
 async def run_url_process():
-    def progress_adapter(p, m):
+    def progress_adapter(p, m, d=""):
         if hasattr(js, "py_progress_callback"):
-            js.py_progress_callback(p, m)
+            js.py_progress_callback(p, m, d)
 
     # 2. Ahora urllib (usado por from_url) funcionará perfectamente
     # Nota: Asegúrate de que fmfactlabel sea compatible con el parche
     # Si 'from_url' no es una corrutina en tu lib, quita el 'await' de delante
     # pero mantén el async/await del wrapper.
-    char = await FMCharacterization.from_url("${url}", on_progress=progress_adapter)
+    char = await FMCharacterization.from_url_async("${url}", on_progress=progress_adapter)
     
     name = char.metadata.name
     char.to_json_file(f"{name}.json")

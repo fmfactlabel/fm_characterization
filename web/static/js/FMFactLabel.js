@@ -303,7 +303,7 @@ export class FMFactLabel {
                 .attr("width", self.maxWidth)
                 .attr("height", self.propertyHeight)
                 .style("fill", self.showZebra && i % 2 !== 0 ? "#f3f4f6" : "rgba(0,0,0,0)") // Usar rgba transparente es más seguro
-                .style("pointer-events", "all"); // Para que el hover funcione en toda la fila
+                .style("pointer-events", "none"); // Para que el hover funcione en toda la fila
             // Ratio Bars (Micro-viz)
             const showBar = self.showRatioBar && d.ratio !== undefined;
             const barWidth = self.maxRatioWidth;
@@ -340,6 +340,8 @@ export class FMFactLabel {
                 .attr('font-size', self.COLLAPSEICON_FONT_SIZE)
                 .text(isCollapsed ? self.COLLAPSED_ICON : self.EXPANDED_ICON)
                 .attr("visibility", self.hasChildrenProperties(d) ? "visible" : "hidden")
+                .attr("cursor", "pointer")
+                .style("pointer-events", "all") // Asegura que el icono reciba los eventos
                 .on("click", () => isCollapsed ? self.expandProperty(d) : self.collapseProperty(d));
             const iconW = icon.node()?.getBBox().width || 0;
             // Nombre Propiedad
@@ -350,12 +352,19 @@ export class FMFactLabel {
                 .attr("font-family", self.PROPERTY_FONT_FAMILY)
                 .attr("font-size", self.PROPERTY_FONT_SIZE)
                 .attr("font-weight", d.level === 0 ? "bold" : "normal")
+                .attr("cursor", "help")
+                .style("pointer-events", "all") // FUERZA a que acepte eventos
                 .text(d.name)
                 .on("mouseover", (event) => {
                 self.tooltip.transition().duration(50).style("opacity", 1);
                 self.tooltip.html(d.description || "")
                     .style("left", event.pageX + 10 + "px")
                     .style("top", event.pageY - 15 + "px");
+            })
+                .on("mousemove", (event) => {
+                self.tooltip
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 15) + "px");
             })
                 .on("mouseout", () => self.tooltip.transition().duration(50).style("opacity", 0))
                 .on("click", () => self.showMetricModal(d));
@@ -415,7 +424,11 @@ export class FMFactLabel {
         return [...this.allData.metadata, ...this.allData.metrics, ...this.allData.analysis].find(p => p.name === name);
     }
     getValue(d) {
-        return (d.size === null || d.size === undefined) ? String(d.value) : String(d.size);
+        const val = (d.size === null || d.size === undefined) ? d.value : d.size;
+        if (val === null || val === undefined) {
+            return "";
+        }
+        return String(val);
     }
     getRatio(d) {
         return d.ratio ? `(${Math.round((d.ratio + Number.EPSILON) * 100)}%)` : "";
@@ -492,20 +505,105 @@ export class FMFactLabel {
     showMetricModal(metric) {
         const modalTitle = document.getElementById("metricModalLabel");
         const modalBody = document.querySelector("#metricModal .modal-body");
-        if (modalTitle)
-            modalTitle.innerHTML = `<b>${metric.name} </b><br><small>${metric.description || ''}</small>`;
+        const copyBtn = document.getElementById("copyButton");
+        if (modalTitle) {
+            // 1. Badge de Tamaño (Size)
+            const hasSize = metric.size !== null && metric.size !== undefined;
+            const sizeBadge = hasSize
+                ? `<span class="badge rounded-pill bg-secondary ms-2" style="font-size: 0.75rem;">count: ${metric.size}</span>`
+                : "";
+            // 2. Badge de Ratio (Solo si está definido y es > 0)
+            // He añadido > 0 por si prefieres no mostrar 0%, pero puedes quitarlo si quieres verlo
+            const ratioBadge = (metric.ratio !== undefined && metric.ratio !== null)
+                ? `<span class="badge rounded-pill bg-info text-dark ms-2" style="font-size: 0.75rem;">ratio: ${Math.round(metric.ratio * 100)}%</span>`
+                : "";
+            // 3. Descripción (Solo si existe y no es string vacío)
+            const descriptionHtml = metric.description
+                ? `<div style="font-size: 0.85rem; font-weight: normal; color: #6c757d; margin-top: 4px;">${metric.description}</div>`
+                : "";
+            modalTitle.innerHTML = `
+                <div class="d-flex align-items-center justify-content-start flex-wrap">
+                    <span class="fw-bold text-dark">${metric.name}</span>
+                    <div class="d-flex"> 
+                        ${sizeBadge}
+                        ${ratioBadge}
+                    </div>
+                </div>
+                ${descriptionHtml}
+            `;
+        }
         if (modalBody) {
             if (metric.stats) {
                 modalBody.innerHTML = `
-                    <p><strong>Mean:</strong> ${metric.stats.mean ?? "N/A"}</p>
-                    <p><strong>Median:</strong> ${metric.stats.median ?? "N/A"}</p>
-                    <p><strong>Min:</strong> ${metric.stats.min ?? "N/A"}</p>
-                    <p><strong>Max:</strong> ${metric.stats.max ?? "N/A"}</p>`;
+                    <div class="row g-2">
+                        <div class="col-6"><strong>Mean:</strong> ${metric.stats.mean ?? "N/A"}</div>
+                        <div class="col-6"><strong>Median:</strong> ${metric.stats.median ?? "N/A"}</div>
+                        <div class="col-6"><strong>Min:</strong> ${metric.stats.min ?? "N/A"}</div>
+                        <div class="col-6"><strong>Max:</strong> ${metric.stats.max ?? "N/A"}</div>
+                    </div>`;
             }
             else {
-                modalBody.innerHTML = Array.isArray(metric.value) ? metric.value.join(", ") : String(metric.value);
+                let values = [];
+                if (Array.isArray(metric.value)) {
+                    values = metric.value.map(v => String(v));
+                }
+                else if (typeof metric.value === 'string' && metric.value.includes(',')) {
+                    values = metric.value.split(',').map(v => v.trim()).filter(v => v !== "");
+                }
+                else {
+                    values = [String(metric.value)];
+                }
+                if (values.length > 1) {
+                    modalBody.innerHTML = `
+                        <ul class="list-group list-group-flush border rounded shadow-sm">
+                            ${values.map(v => `
+                                <li class="list-group-item py-1 border-0 d-flex align-items-start">
+                                    <span class="me-2 text-primary" style="font-size: 1.2rem; line-height: 1;">&bull;</span>
+                                    <span class="text-secondary">${v}</span>
+                                </li>
+                            `).join('')}
+                        </ul>`;
+                }
+                else if (values.length === 1 && values[0] !== "null" && values[0] !== "undefined" && values[0] !== "") {
+                    // Caso: Valor único válido
+                    modalBody.innerHTML = `<p class="px-2 bg-light p-3 rounded border text-center text-secondary m-0">${values[0]}</p>`;
+                }
+                else {
+                    // Caso: No hay nada que mostrar (values.length === 0)
+                    modalBody.innerHTML = `
+                        <div class="text-center p-4 text-muted border rounded bg-light-subtle">
+                        </div>`;
+                }
             }
         }
+        if (copyBtn) {
+            // IMPORTANTE: Limpiamos cualquier event listener previo para evitar duplicados
+            const newCopyBtn = copyBtn.cloneNode(true);
+            copyBtn.parentNode?.replaceChild(newCopyBtn, copyBtn);
+            newCopyBtn.onclick = () => {
+                // Decidimos qué copiar: si es array, lo unimos con saltos de línea
+                let textToCopy = "";
+                if (Array.isArray(metric.value)) {
+                    textToCopy = metric.value.join("\n");
+                }
+                else if (typeof metric.value === 'string' && metric.value.includes(',')) {
+                    textToCopy = metric.value.split(',').map(v => v.trim()).join("\n");
+                }
+                else {
+                    textToCopy = String(metric.value);
+                }
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = newCopyBtn.innerText;
+                    newCopyBtn.innerText = "Copied!";
+                    newCopyBtn.classList.replace("btn-primary", "btn-success");
+                    setTimeout(() => {
+                        newCopyBtn.innerText = originalText;
+                        newCopyBtn.classList.replace("btn-success", "btn-primary");
+                    }, 1500);
+                });
+            };
+        }
+        // Show the modal
         const modalEl = document.getElementById("metricModal");
         if (modalEl) {
             const m = new bootstrap.Modal(modalEl);

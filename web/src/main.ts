@@ -68,6 +68,7 @@ async function initializeApp() {
         } catch (e) {
             loader.setState("error");
             loader.update(100, "Error", "Failed to initialize Pyodide");
+            processBar.hide(5000);
             console.error("Error loading Pyodide", e);
         }
     } else {
@@ -128,9 +129,9 @@ async function onFMFormSubmit(e: Event, form: HTMLFormElement) {
             if (!response.ok) throw new Error('Flask response not ok.');
 
             await readStream(response, (event) => {
-                if (event.type === 'progress') processBar.update(event.p, "Processing feature model", event.m);
+                if (event.type === 'progress') processBar.update(event.p, event.m, event.d);
                 if (event.type === 'final') {
-                    processBar.update(100, "Fact Label generated!", "Complete");
+                    processBar.update(100, "Fact Label generated!", "Analysis completed!");
                     processBar.setState("success");
                     updateAndRender(event.data);
                     processBar.hide(1500);
@@ -140,17 +141,18 @@ async function onFMFormSubmit(e: Event, form: HTMLFormElement) {
         } else {
             await handleFMSubmission(form, engine, 
                 (name) => {
-                    processBar.update(100, "Fact Label generated!", "Complete");
+                    processBar.update(100, "Fact Label generated!", "Analysis completed!");
                     processBar.setState("success");
                     renderPyodideResult(name);
                     processBar.hide(1500);
                 },
-                (p, msg) => processBar.update(p, "Processing feature model", msg)
+                (p: number, msg: string, detail: string) => processBar.update(p, msg, detail)
             );
         }
     } catch (err: any) {
         processBar.setState("error");
         processBar.update(100, "Error", err.message);
+        processBar.hide(5000);
     } finally {
         toggleUIState(false, btn);
     }
@@ -171,7 +173,7 @@ async function onJSONFormSubmit(e: Event, form: HTMLFormElement) {
             await readStream(response, (event) => {
                 if (event.type === 'progress') processBar.update(event.p, "Processing characterization", event.m);
                 if (event.type === 'final') {
-                    processBar.update(100, "Fact Label generated!", "Completed");
+                    processBar.update(100, "Fact Label generated!", "Characterization reconstructed!");
                     processBar.setState("success");
                     updateAndRender(event.data);
                     processBar.hide(1500);
@@ -181,17 +183,18 @@ async function onJSONFormSubmit(e: Event, form: HTMLFormElement) {
         } else {  // Pyodide
             await handleJSONSubmission(form, engine, 
                 (name) => {
-                    processBar.update(100, "Fact Label generated!", "Completed");
+                    processBar.update(100, "Fact Label generated!", "Characterization reconstructed!");
                     processBar.setState("success");
                     renderPyodideResult(name);
                     processBar.hide(1500);
                 },
-                (p, msg) => processBar.update(p, "Processing feature model", msg)
+                (p, msg, details) => processBar.update(p, msg, details)
             );
         }
     } catch (err: any) {
         processBar.setState("error");
         processBar.update(100, "Error", err.message);
+        processBar.hide(5000);
     } finally {
         toggleUIState(false, btn);
     }
@@ -259,7 +262,7 @@ async function loadFileFromURL() {
                     if (event.type === 'progress') {
                         processBar.update(event.p, "Processing feature model", event.m);
                     } else if (event.type === 'final') {
-                        processBar.update(100, "Fact Label generated!");
+                        processBar.update(100, "Fact Label generated!", "Analysis completed!");
                         processBar.setState("success");
                         updateAndRender(event.data);
                         processBar.hide(1500);
@@ -270,6 +273,7 @@ async function loadFileFromURL() {
             } catch (err: any) {
                 processBar.setState("error");
                 processBar.update(100, "Error", `Error: ${err.message}`);
+                processBar.hide(5000);
                 console.error("Flask URL Error:", err);
             }
         } else {
@@ -283,10 +287,10 @@ async function loadFileFromURL() {
                 // Nota: Asegúrate de tener expuesta esta lógica en tu PyodideEngine o similar
                 const fmName = await engine.processFromURL(
                     fileURL, 
-                    (p: number, msg: string) => processBar.update(p, "Processing characterization", msg)
+                    (p: number, msg: string, details: string) => processBar.update(p, msg, details)
                 );
 
-                processBar.update(100, "Done!", "Complete");
+                processBar.update(100, "Fact Label generated!", "Analysis completed!");
                 processBar.setState("success");
                 renderPyodideResult(fmName);
                 processBar.hide(1000);
@@ -294,6 +298,7 @@ async function loadFileFromURL() {
                 processBar.setState("error");
                 processBar.update(100, "Pyodide URL Error", `Error: ${error.message}`);
                 console.error("Pyodide URL Error:", error);
+                processBar.hide(5000);
             }
         }
         toggleUIState(false, btn);

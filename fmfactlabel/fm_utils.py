@@ -23,8 +23,11 @@ def int_to_scientific_notation(n: int, precision: int = 2) -> str:
     return str_n[0] + '.' + decimal + 'e' + exponent
 
 
-def get_nof_configuration_as_str(nof_configurations: int, aproximation: bool, nof_cross_tree_constraints: int) -> str:
-    return f"{'≤ ' if aproximation and nof_cross_tree_constraints > 0 else ''}{int_to_scientific_notation(nof_configurations) if nof_configurations > 1e6 else nof_configurations}"
+def get_nof_configuration_as_str(nof_configurations: int, aproximation: str = None) -> str:
+    """Return the number of configurations as a string, using scientific notation if the number is large.
+    """
+    approximation_str = f"{aproximation} " if aproximation is not None else ""
+    return f"{approximation_str}{int_to_scientific_notation(nof_configurations) if nof_configurations > 1e6 else nof_configurations}"
 
 
 def get_ratio(collection1: Collection, collection2: Collection, precision: int = 2) -> float:

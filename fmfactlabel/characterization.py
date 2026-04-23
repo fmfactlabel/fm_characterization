@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import pathlib
 from typing import Any
 import urllib.request
+import asyncio
 
 from flamapy.core.exceptions import FlamaException
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
@@ -25,15 +26,58 @@ INDENT_MULTIPLIER = 1  # change to 2 if you need more indentation
 class FMCharacterization():
     
     def __init__(self, model: FeatureModel, light_fact_label: bool = False) -> None:
-        self.metadata = FMMetadata(model)
-        self.metrics = FMMetrics(model)
-        self.analysis = FMAnalysis(model, light_fact_label)
+        self.model = model
+        self.light_fact_label = light_fact_label
+        self.metadata = None
+        self.metrics = None
+        self.analysis = None
+    
+    async def generate(self, on_progress: callable = None) -> None:
+        if on_progress: 
+            on_progress(20, "Generating metadata...")
+            await asyncio.sleep(0) # <--- CRUCIAL para Pyodide
+        self.metadata = FMMetadata(self.model)
+
+        if on_progress: 
+            on_progress(30, "Obtaining structural metrics...")
+            await asyncio.sleep(0)
+        self.metrics = FMMetrics(self.model)
+        await self.metrics.calculate_metrics(on_progress)
+
+        if on_progress: 
+            on_progress(50, "Obtaining analytical metrics...")
+            await asyncio.sleep(0)
+        self.analysis = FMAnalysis(self.model, self.light_fact_label)
+        await self.analysis.calculate_analysis(on_progress)
+
+    @staticmethod
+    async def from_path_async(fm_filepath: str, light_fact_label: bool = False, on_progress: callable = None) -> 'FMCharacterization':
+        """Load characterization from a feature model file."""
+        if on_progress: 
+            on_progress(10, "Reading feature model...")
+            await asyncio.sleep(0)
+        fm_model = read_fm_file(fm_filepath)
+        characterization = FMCharacterization(fm_model, light_fact_label)
+        await characterization.generate(on_progress)
+        characterization.metadata.name = fm_filepath.split('.')[0]
+        return characterization
+
+    @staticmethod
+    async def from_url_async(fm_url_filepath: str, light_fact_label: bool = False, on_progress: callable = None) -> 'FMCharacterization':
+        """Load characterization from a feature model URL."""
+        if on_progress: on_progress(10, "Reading feature model from URL...")
+        with tempfile.NamedTemporaryFile(suffix=".uvl", mode='w+', delete=True) as tmp:
+            urllib.request.urlretrieve(fm_url_filepath, tmp.name)
+            characterization = await FMCharacterization.from_path(tmp.name, light_fact_label, on_progress)
+            characterization.metadata.name = get_filename_from_url(fm_url_filepath)
+            return characterization
     
     @staticmethod
     def from_path(fm_filepath: str, light_fact_label: bool = False) -> 'FMCharacterization':
         """Load characterization from a feature model file."""
         fm_model = read_fm_file(fm_filepath)
         characterization = FMCharacterization(fm_model, light_fact_label)
+        asyncio.run(characterization.generate())
         characterization.metadata.name = fm_filepath.split('.')[0]
         return characterization
 
@@ -42,7 +86,7 @@ class FMCharacterization():
         """Load characterization from a feature model URL."""
         with tempfile.NamedTemporaryFile(suffix=".uvl", mode='w+', delete=True) as tmp:
             urllib.request.urlretrieve(fm_url_filepath, tmp.name)
-            characterization = FMCharacterization.from_path(tmp.name, light_fact_label)
+            characterization = asyncio.run(FMCharacterization.from_path(tmp.name, light_fact_label))
             characterization.metadata.name = get_filename_from_url(fm_url_filepath)
             return characterization
     
@@ -123,12 +167,12 @@ class FMCharacterization():
 
     def to_json_str(self) -> str:
         result = self.to_json()
-        return json.dumps(result, indent=4)
+        return json.dumps(result, indent=4, ensure_ascii=False)
 
     def to_json_file(self, filepath: str = None) -> None:
         result = self.to_json()
         with open(filepath, 'w', encoding='utf-8') as output_file:
-            json.dump(result, output_file, indent=4)
+            json.dump(result, output_file, indent=4, ensure_ascii=False)
 
 
 def get_parents_numbers(property: FMProperty) -> int:

@@ -1,0 +1,970 @@
+{
+    "metadata": [
+        {
+            "name": "Name",
+            "description": "Name of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": "resources/Pizza_z3",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Description",
+            "description": "Description of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Author",
+            "description": "Author of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Year",
+            "description": "Year of creation of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Reference",
+            "description": "Main paper for reference or DOI of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Tags",
+            "description": "Tags or keywords that identify the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Domain",
+            "description": "Domain of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Language level",
+            "description": "Language level of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": "Type (String constraints, Aggregate function)",
+            "size": null,
+            "ratio": null
+        }
+    ],
+    "metrics": [
+        {
+            "name": "Features",
+            "description": "Set of features in the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Pizza",
+                "CheesyCrust",
+                "SpicyLvl",
+                "Name",
+                "Topping",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Anchovies",
+                "Size",
+                "Normal",
+                "Big",
+                "Dough",
+                "Neapolitan",
+                "Sicilian"
+            ],
+            "size": 15,
+            "ratio": null
+        },
+        {
+            "name": "Abstract features",
+            "description": "Features used to structure the feature model that, however, do not have any impact at implementation level.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Pizza",
+                "Topping",
+                "Size",
+                "Dough"
+            ],
+            "size": 4,
+            "ratio": 0.27
+        },
+        {
+            "name": "Abstract leaf features",
+            "description": "Abstract and leaf features.",
+            "parent": "Abstract features",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Abstract compound features",
+            "description": "Abstract and compound features.",
+            "parent": "Abstract features",
+            "level": 2,
+            "value": [
+                "Pizza",
+                "Topping",
+                "Size",
+                "Dough"
+            ],
+            "size": 4,
+            "ratio": 1.0
+        },
+        {
+            "name": "Concrete features",
+            "description": "Features that are mapped to at least one implementation artifact.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "CheesyCrust",
+                "SpicyLvl",
+                "Name",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Anchovies",
+                "Normal",
+                "Big",
+                "Neapolitan",
+                "Sicilian"
+            ],
+            "size": 11,
+            "ratio": 0.73
+        },
+        {
+            "name": "Concrete leaf features",
+            "description": "Concrete and leaf features.",
+            "parent": "Concrete features",
+            "level": 2,
+            "value": [
+                "CheesyCrust",
+                "SpicyLvl",
+                "Name",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Anchovies",
+                "Normal",
+                "Big",
+                "Neapolitan",
+                "Sicilian"
+            ],
+            "size": 11,
+            "ratio": 1.0
+        },
+        {
+            "name": "Concrete compound features",
+            "description": "Concrete and compound features.",
+            "parent": "Concrete features",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Compound features",
+            "description": "Features that have subfeatures.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Pizza",
+                "Topping",
+                "Size",
+                "Dough"
+            ],
+            "size": 4,
+            "ratio": 0.27
+        },
+        {
+            "name": "Leaf features",
+            "description": "Features that have not subfeatures (aka 'primitive features' or 'terminal features').",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "CheesyCrust",
+                "SpicyLvl",
+                "Name",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Anchovies",
+                "Normal",
+                "Big",
+                "Neapolitan",
+                "Sicilian"
+            ],
+            "size": 11,
+            "ratio": 0.73
+        },
+        {
+            "name": "Root feature",
+            "description": "The root of the feature model.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Pizza"
+            ],
+            "size": 1,
+            "ratio": 0.07
+        },
+        {
+            "name": "Top features",
+            "description": "Features that are first descendants of the root.",
+            "parent": "Root feature",
+            "level": 2,
+            "value": [
+                "CheesyCrust",
+                "SpicyLvl",
+                "Name",
+                "Topping",
+                "Size",
+                "Dough"
+            ],
+            "size": 6,
+            "ratio": 0.4
+        },
+        {
+            "name": "Solitary features",
+            "description": "Features that are not grouped in a feature group.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Pizza",
+                "CheesyCrust",
+                "SpicyLvl",
+                "Name",
+                "Topping",
+                "Size",
+                "Dough"
+            ],
+            "size": 7,
+            "ratio": 0.47
+        },
+        {
+            "name": "Grouped features",
+            "description": "Features that occurs in a feature group.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Anchovies",
+                "Normal",
+                "Big",
+                "Neapolitan",
+                "Sicilian"
+            ],
+            "size": 8,
+            "ratio": 0.53
+        },
+        {
+            "name": "Typed features",
+            "description": "Non-Boolean features its selection require to provide a value (e.g., a number, a string,...",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "SpicyLvl",
+                "Name"
+            ],
+            "size": 2,
+            "ratio": 0.13
+        },
+        {
+            "name": "Numerical features",
+            "description": "Features with a Integer or Real type.",
+            "parent": "Typed features",
+            "level": 2,
+            "value": [
+                "SpicyLvl"
+            ],
+            "size": 1,
+            "ratio": 0.07
+        },
+        {
+            "name": "Integer features",
+            "description": "Features with a Integer type.",
+            "parent": "Numerical features",
+            "level": 3,
+            "value": [
+                "SpicyLvl"
+            ],
+            "size": 1,
+            "ratio": 0.07
+        },
+        {
+            "name": "Real features",
+            "description": "Features with a Real type.",
+            "parent": "Numerical features",
+            "level": 3,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "String features",
+            "description": "Features with a String type.",
+            "parent": "Typed features",
+            "level": 2,
+            "value": [
+                "Name"
+            ],
+            "size": 1,
+            "ratio": 0.07
+        },
+        {
+            "name": "Multi-features",
+            "description": "Features with cardinalities (aka 'clonable features')",
+            "parent": "Features",
+            "level": 1,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Tree relationships",
+            "description": "Number of relationships (edges) of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "(optional) Pizza[0,1]CheesyCrust",
+                "(optional) Pizza[0,1]SpicyLvl",
+                "(optional) Pizza[0,1]Name",
+                "(mandatory) Pizza[1,1]Topping",
+                "(or) Topping[1,4]Salami Ham Mozzarella Anchovies",
+                "(mandatory) Pizza[1,1]Size",
+                "(alternative) Size[1,1]Normal Big",
+                "(mandatory) Pizza[1,1]Dough",
+                "(alternative) Dough[1,1]Neapolitan Sicilian"
+            ],
+            "size": 9,
+            "ratio": null
+        },
+        {
+            "name": "Mandatory features",
+            "description": "Features marked as mandatory that need to be selected if its parent is selected.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "Pizza",
+                "Pizza",
+                "Pizza"
+            ],
+            "size": 3,
+            "ratio": 0.43
+        },
+        {
+            "name": "Optional features",
+            "description": "Feature marked as optional.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "Pizza",
+                "Pizza",
+                "Pizza"
+            ],
+            "size": 3,
+            "ratio": 0.43
+        },
+        {
+            "name": "Feature groups",
+            "description": "Features that express a choice over the grouped features in a group.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "(or) Topping[1,4]Salami Ham Mozzarella Anchovies",
+                "(alternative) Size[1,1]Normal Big",
+                "(alternative) Dough[1,1]Neapolitan Sicilian"
+            ],
+            "size": 3,
+            "ratio": 0.33
+        },
+        {
+            "name": "Alternative groups",
+            "description": "Feature groups that require the selection of just one child (i.e., [1..1] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [
+                "(alternative) Size[1,1]Normal Big",
+                "(alternative) Dough[1,1]Neapolitan Sicilian"
+            ],
+            "size": 2,
+            "ratio": 0.67
+        },
+        {
+            "name": "Or groups",
+            "description": "Feature groups that require the selection of at least one child (i.e., [1..*] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [
+                "(or) Topping[1,4]Salami Ham Mozzarella Anchovies"
+            ],
+            "size": 1,
+            "ratio": 0.33
+        },
+        {
+            "name": "Mutex groups",
+            "description": "Feature groups that require the selection of zero or just one child (i.e., [0..1] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Cardinality groups",
+            "description": "Feature groups with arbitraty cardinality [a..b] that require the selection of an minimum and a maximum number of children.",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Depth of tree",
+            "description": "Number of features of the longest path from the root to the leaf features.",
+            "parent": null,
+            "level": 0,
+            "value": 2,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Mean depth of tree",
+            "description": "Number of features of the mean path from the root to the leaf features.",
+            "parent": "Depth of tree",
+            "level": 1,
+            "value": 1.73,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Branching factor",
+            "description": "Average number of children per non-leaf feature (aka 'Ratio of Variability').",
+            "parent": null,
+            "level": 0,
+            "value": 3.5,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Min children per feature",
+            "description": "Minimal number of children per non-leaf feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 2,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max children per feature",
+            "description": "Maximal number of children per feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 6,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg children per feature",
+            "description": "Average number of children per feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 0.93,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Cross-tree constraints",
+            "description": "Textual cross-tree constraints.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "(CheesyCrust AND Sicilian) IMPLIES Big",
+                "Neapolitan IMPLIES (NOT Salami AND NOT Ham)",
+                "SUM(Price) LOWER 12",
+                "Name IMPLIES ((LEN(Name) LOWER 10) AND (Name EQUALS Margherita))",
+                "(SpicyLvl GREATER_EQUALS 1) AND (SpicyLvl LOWER_EQUALS 5)",
+                "(SpicyLvl EQUALS 5) IMPLIES (SpicyLvl.Price EQUALS 1.0)",
+                "((SpicyLvl GREATER_EQUALS 1) AND (SpicyLvl LOWER 5)) IMPLIES (SpicyLvl.Price EQUALS 0)"
+            ],
+            "size": 7,
+            "ratio": null
+        },
+        {
+            "name": "Logical constraints",
+            "description": "Constraints with only logical operators.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [
+                "(CheesyCrust AND Sicilian) IMPLIES Big",
+                "Neapolitan IMPLIES (NOT Salami AND NOT Ham)"
+            ],
+            "size": 2,
+            "ratio": 0.29
+        },
+        {
+            "name": "Single feature constraints",
+            "description": "Constraints with a single feature or negated feature.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Simple constraints",
+            "description": "Requires and Excludes constraints.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Requires constraints",
+            "description": "Constraints modeling that the activation of a feature f1 implies the activation of a feature f2.",
+            "parent": "Simple constraints",
+            "level": 3,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Excludes constraints",
+            "description": "Constraints modeling that two features are mutually exclusive and cannot be activated together.",
+            "parent": "Simple constraints",
+            "level": 3,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Complex constraints",
+            "description": "Constraints in arbitrary propositional logic formulae.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": [
+                "(CheesyCrust AND Sicilian) IMPLIES Big",
+                "Neapolitan IMPLIES (NOT Salami AND NOT Ham)"
+            ],
+            "size": 2,
+            "ratio": 1.0
+        },
+        {
+            "name": "Pseudo-complex constraints",
+            "description": "Constraints that are convertible to a set of simple constraints.",
+            "parent": "Complex constraints",
+            "level": 3,
+            "value": [
+                "Neapolitan IMPLIES (NOT Salami AND NOT Ham)"
+            ],
+            "size": 1,
+            "ratio": 0.5
+        },
+        {
+            "name": "Strict-complex constraints",
+            "description": "Constraints that cannot be converted to a set of simple constraints.",
+            "parent": "Complex constraints",
+            "level": 3,
+            "value": [
+                "(CheesyCrust AND Sicilian) IMPLIES Big"
+            ],
+            "size": 1,
+            "ratio": 0.5
+        },
+        {
+            "name": "Arithmetic constraints",
+            "description": "Constraints with at least one arithmetic operator.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [
+                "(SpicyLvl GREATER_EQUALS 1) AND (SpicyLvl LOWER_EQUALS 5)",
+                "(SpicyLvl EQUALS 5) IMPLIES (SpicyLvl.Price EQUALS 1.0)",
+                "((SpicyLvl GREATER_EQUALS 1) AND (SpicyLvl LOWER 5)) IMPLIES (SpicyLvl.Price EQUALS 0)"
+            ],
+            "size": 3,
+            "ratio": 0.43
+        },
+        {
+            "name": "Aggregation constraints",
+            "description": "Constraints with at least one aggregation operator.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [
+                "SUM(Price) LOWER 12",
+                "Name IMPLIES ((LEN(Name) LOWER 10) AND (Name EQUALS Margherita))"
+            ],
+            "size": 2,
+            "ratio": 0.29
+        },
+        {
+            "name": "Features in constraints",
+            "description": "Features involved in cross-tree constraints. The ratio to the total number of features is called 'Extra constraint representativeness (ECR)'.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [
+                "CheesyCrust",
+                "SpicyLvl",
+                "Ham",
+                "Name",
+                "Margherita",
+                "Salami",
+                "Neapolitan",
+                "SpicyLvl.Price",
+                "Big",
+                "Sicilian"
+            ],
+            "size": 10,
+            "ratio": 0.67
+        },
+        {
+            "name": "Min features per constraint",
+            "description": "The minimal number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 0,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max features per constraint",
+            "description": "The maximal number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 3,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg features per constraint",
+            "description": "The average number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 1.86,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg constraints per feature",
+            "description": "The average number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 1.3,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Min constraints per feature",
+            "description": "The minimal number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 1,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max constraints per feature",
+            "description": "The maximal number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 3,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Attributes",
+            "description": "Features attributes in the model (i.e., number of distinct attributes).",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Kcal",
+                "Price"
+            ],
+            "size": 2,
+            "ratio": null
+        },
+        {
+            "name": "Features with attributes",
+            "description": "Features that contain some attributes defined in the model.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": [
+                "CheesyCrust",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Anchovies",
+                "Normal",
+                "Big",
+                "Sicilian"
+            ],
+            "size": 8,
+            "ratio": 0.53
+        },
+        {
+            "name": "Min attributes per feature",
+            "description": "The minimal number of attributes in a feature.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 0,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max attributes per feature",
+            "description": "The maximal number of attributes in a feature.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 2,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg attributes per feature",
+            "description": "Average number of attributes in features.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 0.67,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg attributes per feature w. attributes",
+            "description": "Average number of attributes in features with attributes.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 1.25,
+            "size": null,
+            "ratio": null
+        }
+    ],
+    "analysis": [
+        {
+            "name": "Satisfiable (valid)",
+            "description": "A feature model is satisfiable (valid, not void) if it represents at least one configuration.",
+            "parent": null,
+            "level": 0,
+            "value": "Yes",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Core features",
+            "description": "Features that are part of all the configurations (aka 'common features').",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Size",
+                "Pizza",
+                "Dough",
+                "Topping"
+            ],
+            "size": 4,
+            "ratio": 0.27
+        },
+        {
+            "name": "False-optional features",
+            "description": "Features included in all possible configurations although not being modelled as mandatory. The ratio is based on the total number of features.",
+            "parent": "Core features",
+            "level": 1,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Dead features",
+            "description": "Features that cannot appear in any configuration.",
+            "parent": null,
+            "level": 0,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Variant features",
+            "description": "Features that appear only in some configurations (i.e., features that are neither core nor dead).",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "CheesyCrust",
+                "SpicyLvl",
+                "Anchovies",
+                "Neapolitan",
+                "Name",
+                "Normal",
+                "Salami",
+                "Sicilian",
+                "Ham",
+                "Mozzarella",
+                "Big"
+            ],
+            "size": 11,
+            "ratio": 0.73
+        },
+        {
+            "name": "Unique features",
+            "description": "Features that appear in exactly one configuration. The ratio is based on the total number of features.",
+            "parent": "Variant features",
+            "level": 1,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Pure optional features",
+            "description": "Feature with 0.5 (50%) probability of being selected in a valid configuration (i.e., their selection is unconstrained). The ratio is based on the total number of features.",
+            "parent": "Variant features",
+            "level": 1,
+            "value": [
+                "SpicyLvl",
+                "Name"
+            ],
+            "size": 2,
+            "ratio": 0.13
+        },
+        {
+            "name": "Configurations",
+            "description": "Number of configurations represented by the feature model. If <= is shown, the number represents an upper estimation bound.",
+            "parent": null,
+            "level": 0,
+            "value": "228",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Total variability",
+            "description": "The total variability measures the flexibility of the SPL considering all features.",
+            "parent": null,
+            "level": 0,
+            "value": "0.7%",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Partial variability",
+            "description": "The partial variability measures the flexibility of the SPL considering only variant features.",
+            "parent": null,
+            "level": 0,
+            "value": "11.14%",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Homogeneity",
+            "description": "The homogeneity measures how similar are the configurations of the SPL.",
+            "parent": null,
+            "level": 0,
+            "value": "62.22%",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Configuration distribution",
+            "description": "Number of configurations having a given number of features.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Mean",
+            "description": "Mean number of features occurring in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 9.33,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Standard deviation",
+            "description": "Standard deviation of number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 1.21,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Median",
+            "description": "Median number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 9,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Median absolute deviation",
+            "description": "Median absolute deviation number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 0.95,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Mode",
+            "description": "Most frequently occurring number of features for a configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 9,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Min",
+            "description": "Number of features in the smallest configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 7,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max",
+            "description": "Number of features in the largest configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 13,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Range",
+            "description": "Range of number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 6,
+            "size": null,
+            "ratio": null
+        }
+    ]
+}

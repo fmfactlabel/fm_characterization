@@ -80,7 +80,7 @@ def uploadJSON():
             
             def to_json(self): return self.data
             def to_json_file(self, path): 
-                with open(path, 'w', encoding='utf-8') as f: json.dump(self.data, f, indent=4)
+                with open(path, 'w', encoding='utf-8') as f: json.dump(self.data, f, indent=4, ensure_ascii=False)
             def __str__(self): return FMCharacterization.json_to_text(self.data)
             
         return JSONWrapper(data)
@@ -169,7 +169,7 @@ def process_characterization_stream(fetch_coro_func, form_data=None, cleanup_pat
         while True:
             item = progreso_q.get()
             if item is None: break
-            yield f"data: {json.dumps(item)}\n\n"
+            yield f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
 
     return flask.Response(generate(), mimetype='text/event-stream')
 

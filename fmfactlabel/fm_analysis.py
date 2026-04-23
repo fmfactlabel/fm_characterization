@@ -2,16 +2,19 @@ import math
 import pathlib
 import logging
 from typing import Any
+import asyncio
 
 from fmfactlabel import FMProperties, FMPropertyMeasure
 from .fm_utils import get_ratio, get_nof_configuration_as_str, get_percentage_str
 
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
 from flamapy.metamodels.pysat_metamodel.transformations import FmToPysat
+from flamapy.metamodels.z3_metamodel.transformations import FmToZ3
 from flamapy.metamodels.bdd_metamodel.transformations import FmToBDD
 from flamapy.metamodels.pysat_metamodel import operations as sat_operations
 from flamapy.metamodels.bdd_metamodel import operations as bdd_operations
 from flamapy.metamodels.fm_metamodel import operations as fm_operations
+from flamapy.metamodels.z3_metamodel import operations as z3_operations
 
 
 class FMAnalysis():
@@ -19,36 +22,88 @@ class FMAnalysis():
     def __init__(self, model: FeatureModel, light_fact_label: bool = False) -> None:
         self.fm = model
         self.light_fact_label = light_fact_label
+        
+    async def calculate_analysis(self, on_progress: callable = None) -> None:
         self.bdd_model = None
-        self.sat_model = FmToPysat(model).transform()
+        if on_progress: 
+            on_progress(50, "Obtaining analytical metrics...", "(1/3) SAT analysis")
+            await asyncio.sleep(0)
+        self.sat_model = FmToPysat(self.fm).transform()
         self.sat_model.original_model = self.fm
+        if on_progress: 
+            on_progress(60, "Obtaining analytical metrics...", "(2/3) SMT analysis")
+            await asyncio.sleep(0)
+        self.z3_model = FmToZ3(self.fm).transform()
+        if on_progress: 
+            on_progress(70, "Obtaining analytical metrics...", "(3/3) BDD analysis")
+            await asyncio.sleep(0)
         if not self.light_fact_label:
             try:
-                self.bdd_model = FmToBDD(model).transform()
+                self.bdd_model = FmToBDD(self.fm).transform()
             except Exception as e:
                 logging.warning(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
 
+        if on_progress: 
+            on_progress(80, "Obtaining analytical metrics...", "Executing analysis operations")
+            await asyncio.sleep(0)
         # For performance purposes
         self._features = self.fm.get_features()
         if self.bdd_model is not None:
-            self._configurations = bdd_operations.BDDConfigurationsNumber().execute(self.bdd_model).get_result()
-            self._approximation = False
+            self._boolean_configurations = bdd_operations.BDDConfigurationsNumber().execute(self.bdd_model).get_result()
+            self._boolean_approximation = None
             self._fip = bdd_operations.BDDFeatureInclusionProbability().execute(self.bdd_model).get_result()
             self._pd = bdd_operations.BDDProductDistribution().execute(self.bdd_model).get_result()
             self._descriptive_statistics = descriptive_statistics(self._pd)
-            self._core_features = [feat for feat, prob, in self._fip.items() if prob >= 1.0]
-            self._dead_features = [feat for feat, prob, in self._fip.items() if prob <= 0.0]
-            self._variant_features = [feat for feat, prob, in self._fip.items() if 0.0 < prob < 1.0]
+            #self._core_features = [feat for feat, prob, in self._fip.items() if prob >= 1.0]
+            #self._dead_features = [feat for feat, prob, in self._fip.items() if prob <= 0.0]
+            #self._variant_features = [feat for feat, prob, in self._fip.items() if 0.0 < prob < 1.0]
         else:
-            self._configurations = fm_operations.FMEstimatedConfigurationsNumber().execute(self.fm).get_result()
-            self._approximation = True
-            self._core_features = sat_operations.PySATCoreFeatures().execute(self.sat_model).get_result()
-            self._dead_features = sat_operations.PySATDeadFeatures().execute(self.sat_model).get_result()
-            self._variant_features = [f.name for f in self._features 
-                                      if f.name not in self._core_features and
-                                      f.name not in self._dead_features]
+            self._boolean_configurations = fm_operations.FMEstimatedConfigurationsNumber().execute(self.fm).get_result()
+            if self.fm.get_constraints():
+                self._boolean_approximation = '≤'
+            else:
+                self._boolean_approximation = None
+            #self._core_features = sat_operations.PySATCoreFeatures().execute(self.sat_model).get_result()
+            #self._dead_features = sat_operations.PySATDeadFeatures().execute(self.sat_model).get_result()
+            # self._variant_features = [f.name for f in self._features 
+            #                           if f.name not in self._core_features and
+            #                           f.name not in self._dead_features]
             self._fip = None
             self._descriptive_statistics = None
+        self._core_features = z3_operations.Z3CoreFeatures().execute(self.z3_model).get_result()
+        self._dead_features = z3_operations.Z3DeadFeatures().execute(self.z3_model).get_result()
+        self._variant_features = [f.name for f in self._features if f.name not in self._core_features and f.name not in self._dead_features]
+        # Calculate unbounded features based on cardinality and Z3 bounds
+        unbounded_features_cardinalities = [f.name for f in self.fm.get_features() if f.is_multifeature() and (f.feature_cardinality.min == -1 or f.feature_cardinality.max == -1)]
+        features_bounds = z3_operations.Z3AllFeatureBounds().execute(self.z3_model).get_result()
+        _unbounded_typed_features = []
+        for feature, bounds in features_bounds.items():
+            if not bounds['bounded']:
+                _unbounded_typed_features.append(feature)
+        self._unbounded_features = list(set(unbounded_features_cardinalities + _unbounded_typed_features))
+        # Calculate the number of configurations
+        if self._unbounded_features:
+            self._configurations = float('inf')
+            self._approximation = None
+        else:
+            language_level = fm_operations.FMLanguageLevel().execute(self.fm).get_result()
+            if language_level.major == fm_operations.MajorLevel.TYPE:  # We need Z3 to calculate the number of configurations if the feature model has non-Boolean features
+                if self._boolean_configurations <= 1e3:  # Try to calculate the exact number of configurations if the number of Boolean configurations is not too high
+                    self._configurations = z3_operations.Z3ConfigurationsNumber().execute(self.z3_model).get_result()
+                    self._approximation = None
+                else:  # If the number of Boolean configurations is too high, we keep the approximation based on the number of Boolean configurations
+                    self._configurations = self._boolean_configurations
+                    if self._boolean_approximation is None:  # The number of Boolean configurations was exact, so the real number of configurations with non-Boolean features is likely higher.
+                        self._approximation = '≥'
+                    else:  # The number of Boolean configurations was already an approximation, so the real number of configurations with non-Boolean features is a poor approximation too.
+                        self._approximation = '~'
+            else:
+                self._configurations = self._boolean_configurations
+                if self._boolean_approximation is not None:  # The number of Boolean configurations was an approximation, so we try to calculate the real number of configuration witg SAT if it is not too high.
+                    if self._boolean_configurations <= 1e3:  # Try to calculate the exact number of configurations if the number of Boolean configurations is not too high
+                        self._configurations = sat_operations.PySATConfigurationsNumber().execute(self.sat_model).get_result()
+                        self._boolean_approximation = None
+                        self._approximation = None
 
     def clean(self) -> None:
         if self.bdd_model is not None:
@@ -71,6 +126,8 @@ class FMAnalysis():
         if self._fip is not None:
             result.append(self.fm_pure_optional_features())
         result.append(self.fm_configurations_number())
+        result.append(self.fm_boolean_configurations_number())
+        result.append(self.fm_unbounded_features())
         result.append(self.fm_total_variability())
         result.append(self.fm_partial_variability())
         if self.bdd_model is not None:
@@ -88,7 +145,9 @@ class FMAnalysis():
         return result
 
     def fm_valid(self) -> FMPropertyMeasure:
-        if self.bdd_model is not None:
+        if self.z3_model is not None:
+            _valid = z3_operations.Z3Satisfiable().execute(self.z3_model).get_result()
+        elif self.bdd_model is not None:
             _valid = self._configurations > 0
         else:
             _valid = sat_operations.PySATSatisfiable().execute(self.sat_model).get_result()
@@ -128,34 +187,35 @@ class FMAnalysis():
                                  get_ratio(_pure_optional_features, self._features))
 
     def fm_false_optional_features(self) -> FMPropertyMeasure:
-        if self.bdd_model is not None:
-            _false_optional_features = []
-            for feat in self._core_features:
-                feature = self.fm.get_feature_by_name(feat)
-                if feature is not None and not feature.is_root() and not feature.is_mandatory():
-                    _false_optional_features.append(feat)
-        else:
-            try:
-                _false_optional_features = sat_operations.PySATFalseOptionalFeatures().execute(self.sat_model).get_result()
-            except AssertionError as e:
-                logging.warning(f'Warning: Feature model has feature cardinalities, false optional features cannot be computed.\n {e}')
-                _false_optional_features = []
+        _false_optional_features = z3_operations.Z3FalseOptionalFeatures().execute(self.z3_model).get_result()
         return FMPropertyMeasure(FMProperties.FALSE_OPTIONAL_FEATURES.value, 
                                  _false_optional_features, 
                                  len(_false_optional_features),
                                  get_ratio(_false_optional_features, self._features))
 
     def fm_configurations_number(self) -> FMPropertyMeasure:
-        _configurations = get_nof_configuration_as_str(self._configurations, self._approximation, len(self.fm.get_constraints()))
-        return FMPropertyMeasure(FMProperties.CONFIGURATIONS.value, _configurations)
+        if self._configurations == float('inf'):
+            _configurations_str = '∞ (inf)'
+        else:
+            _configurations_str = get_nof_configuration_as_str(self._configurations, self._approximation)
+        return FMPropertyMeasure(FMProperties.CONFIGURATIONS.value, _configurations_str)
+
+    def fm_boolean_configurations_number(self) -> FMPropertyMeasure:
+        _boolean_configurations = get_nof_configuration_as_str(self._boolean_configurations, self._boolean_approximation)
+        return FMPropertyMeasure(FMProperties.BOOLEAN_CONFIGURATIONS.value, _boolean_configurations)
     
+    def fm_unbounded_features(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.UNBOUNDED_FEATURES.value, self._unbounded_features, len(self._unbounded_features), get_ratio(self._unbounded_features, self._features))
+
     def fm_total_variability(self) -> FMPropertyMeasure:
-        _total_variability = self._configurations / (2 ** len(self._features) - 1)
+        _configs = self._configurations if self._configurations != float('inf') else self._boolean_configurations
+        _total_variability = _configs / (2 ** len(self._features) - 1)
         _total_variability = get_percentage_str(_total_variability, 2) + "%"
         return FMPropertyMeasure(FMProperties.TOTAL_VARIABILITY.value, _total_variability)
     
     def fm_partial_variability(self) -> FMPropertyMeasure:
-        _partial_variability = 0 if not self._variant_features else self._configurations / (2 ** len(self._variant_features) - 1)
+        _configs = self._configurations if self._configurations != float('inf') else self._boolean_configurations
+        _partial_variability = 0 if not self._variant_features else _configs / (2 ** len(self._variant_features) - 1)
         _partial_variability = get_percentage_str(_partial_variability, 2) + "%"
         return FMPropertyMeasure(FMProperties.PARTIAL_VARIABILITY.value, _partial_variability)
     

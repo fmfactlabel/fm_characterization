@@ -13,8 +13,11 @@ class FMMetrics():
 
     def __init__(self, model: FeatureModel):
         self.fm = model
-        self._metrics: dict[str, Any] = traverse_metrics(self.fm)
-                     
+        self._metrics: dict[str, Any] = None
+
+    async def calculate_metrics(self, on_progress: callable = None) -> None:
+        self._metrics = traverse_metrics(self.fm)
+
     def get_metrics(self) -> list[FMPropertyMeasure]:
         result = []
         result.append(self.fm_features())

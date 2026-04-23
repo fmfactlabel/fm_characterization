@@ -14,6 +14,7 @@
     - [Repository's structure and contents](#repositorys-structure-and-contents)
   - [Generate Pypi package](#generate-pypi-package)
   - [References and third-party software](#references-and-third-party-software)
+  - [Node for Typescrypt](#node-for-typescrypt)
 
 # FM Fact Label: A Configurable and Interactive Visualization of Feature Model Characterizations
 A tool to generate visualizations of feature model characterizations as a fact label similar to the [nutritions fact label](https://en.wikipedia.org/wiki/Nutrition_facts_label).
@@ -117,4 +118,7 @@ The tool offers a web service to upload the feature model and its metadata via a
 - [D3: Data-Driven Documents](https://d3js.org/)
 - [Flama](https://www.flamapy.org/)
 - [Flask](https://flask.palletsprojects.com/en/3.0.x/)
-npx tsc -w
+
+## Node for Typescrypt
+- `npm install`
+- `npx tsc -w`

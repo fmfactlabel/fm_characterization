@@ -2,6 +2,7 @@ import sys
 import logging
 import argparse
 from typing import Any
+import pathlib
 
 from fmfactlabel import FMCharacterization
 
@@ -12,6 +13,10 @@ def main(fm_filepath: str, metadata: dict[str, Any], light_fm: bool) -> None:
     else:
         characterization = FMCharacterization.from_path(fm_filepath, light_fm)
     
+    name = pathlib.Path(fm_filepath).stem
+    characterization.metadata.name = metadata.get('name', name)
+    if characterization.metadata.name is None:
+        characterization.metadata.name = name
     characterization.metadata.description = metadata.get('description')
     characterization.metadata.author = metadata.get('authors')
     characterization.metadata.year = metadata.get('year')

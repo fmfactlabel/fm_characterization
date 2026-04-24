@@ -47,6 +47,8 @@ class FMAnalysis():
             on_progress(80, "Obtaining analytical metrics...", "Executing analysis operations")
             await asyncio.sleep(0)
         # For performance purposes
+        self._boolean_approximation = None
+        self._approximation = None
         self._features = self.fm.get_features()
         if self.bdd_model is not None:
             self._boolean_configurations = bdd_operations.BDDConfigurationsNumber().execute(self.bdd_model).get_result()

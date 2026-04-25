@@ -1,6 +1,6 @@
 import { ProgressBar } from './ProgressBar.js';
 import { PyodideEngine } from './PyodideEngine.js';
-import { handleFMSubmission, handleJSONSubmission } from './FormHandlers.js';
+import { handleFMSubmission, handleJSONSubmission, handleDatasetSubmission } from './FormHandlers.js';
 import { FMFactLabel } from './FMFactLabel.js';
 
 // GLOBAL DECLARATIONS
@@ -81,6 +81,7 @@ function setupFormObservers() {
     const attach = () => {
         const fmForm = document.getElementById("fmForm") as HTMLFormElement;
         const jsonForm = document.getElementById("jsonForm") as HTMLFormElement;
+        const datasetForm = document.getElementById("datasetForm") as HTMLFormElement;
 
         if (fmForm && !fmForm.dataset.listenerAttached) {
             fmForm.onsubmit = (e) => {
@@ -99,6 +100,15 @@ function setupFormObservers() {
             };
             jsonForm.dataset.listenerAttached = "true";
         }
+
+        if (datasetForm && !datasetForm.dataset.listenerAttached) {
+            datasetForm.onsubmit = (e) => {
+                e.preventDefault();
+                onDatasetFormSubmit(e, datasetForm);
+                return false;
+            };
+            datasetForm.dataset.listenerAttached = "true";
+        }
     };
 
     attach();
@@ -107,7 +117,8 @@ function setupFormObservers() {
         attach();
         const fmForm = document.getElementById("fmForm");
         const jsonForm = document.getElementById("jsonForm");
-        if (fmForm?.dataset.listenerAttached && jsonForm?.dataset.listenerAttached) {
+        const datasetForm = document.getElementById("datasetForm");
+        if (fmForm?.dataset.listenerAttached && jsonForm?.dataset.listenerAttached && datasetForm?.dataset.listenerAttached) {
             observer.disconnect();
         }
     });
@@ -189,6 +200,48 @@ async function onJSONFormSubmit(e: Event, form: HTMLFormElement) {
                     processBar.hide(1500);
                 },
                 (p, msg, details) => processBar.update(p, msg, details)
+            );
+        }
+    } catch (err: any) {
+        processBar.setState("error");
+        processBar.update(100, "Error", err.message);
+        processBar.hide(5000);
+    } finally {
+        toggleUIState(false, btn);
+    }
+}
+
+async function onDatasetFormSubmit(e: Event, form: HTMLFormElement) {
+    e.preventDefault();
+    const btn = document.getElementById("submitButtonDataset") as HTMLButtonElement;
+    
+    toggleUIState(true, btn);
+    processBar.update(0, "Preparing request...", "Initializing connection");
+
+    try {
+        if (CONFIG.is_flask) {
+            const response = await fetch('/datasetUpload', { method: 'POST', body: new FormData(form) });
+            if (!response.ok) throw new Error('Flask response not ok.');
+
+            await readStream(response, (event) => {
+                if (event.type === 'progress') processBar.update(event.p, event.m, event.d);
+                if (event.type === 'final') {
+                    processBar.update(100, "Fact Label generated!", "Analysis completed!");
+                    processBar.setState("success");
+                    updateAndRender(event.data);
+                    processBar.hide(1500);
+                }
+                if (event.type === 'error') throw new Error(event.msg);
+            });
+        } else {
+            await handleDatasetSubmission(form, engine, 
+                (name) => {
+                    processBar.update(100, "Fact Label generated!", "Analysis completed!");
+                    processBar.setState("success");
+                    renderPyodideResult(name);
+                    processBar.hide(1500);
+                },
+                (p: number, msg: string, detail: string) => processBar.update(p, msg, detail)
             );
         }
     } catch (err: any) {

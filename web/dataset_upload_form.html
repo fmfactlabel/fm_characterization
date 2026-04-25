@@ -1,0 +1,53 @@
+<form id="datasetForm">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Dataset Name</label>
+        <input type="text" class="form-control" id="inputName" name="inputName">
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Description</label>
+        <textarea class="form-control" id="inputDescription" name="inputDescription" rows="2"></textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <label class="form-label fw-semibold">Author(s)</label>
+            <input type="text" class="form-control" id="inputAuthor" name="inputAuthor">
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label fw-semibold">Year</label>
+            <input type="number" class="form-control" id="inputYear" name="inputYear" min="1990" step="1">
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Reference (DOI/Handle)</label>
+        <input type="text" class="form-control" id="inputReference" name="inputReference">
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label fw-semibold">Domain</label>
+            <input type="text" class="form-control" id="inputDomain" name="inputDomain">
+        </div>
+        <div class="col-md-8 mb-3">
+            <label class="form-label fw-semibold">Keywords</label>
+            <input type="text" class="form-control" id="inputKeywords" name="inputKeywords" placeholder="Tag 1, Tag2, Tag3, ...">
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Dataset file (.zip) <span class="text-danger">*</span></label>
+        <input type="file" class="form-control" id="inputDataset" name="inputDataset" accept=".zip" required>
+        <!-- <div class="form-text">Please upload a valid ZIP file.</div> -->
+        <div class="invalid-feedback">A .zip file is required to generate the label.</div>
+    </div>
+    
+    <div class="form-check form-switch mb-4">
+        <input class="form-check-input" type="checkbox" id="lightFactLabel" name="lightFactLabel">
+        <label class="form-check-label" for="lightFactLabel">Light fact label (no deep analysis)</label>
+    </div>
+
+    <button type="submit" id="submitButtonDataset" class="btn btn-primary w-100 py-3 shadow-sm">
+        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Generate Label
+    </button>
+</form>

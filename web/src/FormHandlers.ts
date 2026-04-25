@@ -55,3 +55,34 @@ export async function handleJSONSubmission(
     const fmName = await engine.processJSON(file.name, onProgress);
     onResult(fmName);
 }
+
+export async function handleDatasetSubmission(
+    form: HTMLFormElement, 
+    engine: PyodideEngine,
+    onResult: (name: string) => void,
+    onProgress?: (percent: number, message: string, details: string) => void
+) {
+    const formData = new FormData(form);
+    const fileInput = form.querySelector('#inputDataset') as HTMLInputElement;
+    const file = fileInput.files?.[0];
+
+    if (!file) {
+        alert("Please, select a file.");
+        return;
+    }
+
+    if (onProgress) onProgress(5, "Processing dataset...", "Preparing virtual file system");
+
+    // 1. Escribir archivo en la memoria de Pyodide
+    const arrayBuffer = await file.arrayBuffer();
+    engine.writeFile(file.name, new Uint8Array(arrayBuffer));
+
+    // 2. Extraer datos del formulario
+    const name = formData.get("inputName")?.toString().trim() || null;
+    const desc = formData.get("inputDescription")?.toString().trim() || "";
+    const isLight = formData.get("lightFactLabel") === "on";
+
+    // 3. Delegar la ejecución al motor unificado
+    const fmName = await engine.processDataset(file.name, name, isLight, desc, onProgress);
+    onResult(fmName);
+}

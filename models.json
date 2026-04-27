@@ -1,0 +1,2297 @@
+{
+    "metadata": [
+        {
+            "name": "Name",
+            "description": null,
+            "parent": null,
+            "level": 0,
+            "value": "models",
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.0,
+                "median": 3.0,
+                "min": 3.0,
+                "max": 3.0,
+                "q1": 3.0,
+                "q3": 3.0,
+                "sd": 0.0,
+                "raw_values": [
+                    3.0,
+                    3.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            },
+            "author": null,
+            "year": null,
+            "tags": null,
+            "reference": null,
+            "domains": null
+        },
+        {
+            "name": "Description",
+            "description": "Description of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Author",
+            "description": "Author of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Year",
+            "description": "Year of creation of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Reference",
+            "description": "Main paper for reference or DOI of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Tags",
+            "description": "Tags or keywords that identify the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Domain",
+            "description": "Domain of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Language level",
+            "description": "Language level of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": "Type (String constraints, Aggregate function)",
+            "size": null,
+            "ratio": null
+        }
+    ],
+    "metrics": [
+        {
+            "name": "Features",
+            "description": "Set of features in the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": 13.5,
+            "size": 15,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 13.5,
+                "median": 13.5,
+                "min": 12.0,
+                "max": 15.0,
+                "q1": 12.0,
+                "q3": 15.0,
+                "sd": 2.1213203435596424,
+                "raw_values": [
+                    12.0,
+                    15.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Abstract features",
+            "description": "Features used to structure the feature model that, however, do not have any impact at implementation level.",
+            "parent": "Features",
+            "level": 1,
+            "value": 3.5,
+            "size": 4,
+            "ratio": 0.26,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.5,
+                "median": 3.5,
+                "min": 3.0,
+                "max": 4.0,
+                "q1": 3.0,
+                "q3": 4.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    3.0,
+                    4.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Abstract leaf features",
+            "description": "Abstract and leaf features.",
+            "parent": "Abstract features",
+            "level": 2,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Abstract compound features",
+            "description": "Abstract and compound features.",
+            "parent": "Abstract features",
+            "level": 2,
+            "value": 3.5,
+            "size": 4,
+            "ratio": 1.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.5,
+                "median": 3.5,
+                "min": 3.0,
+                "max": 4.0,
+                "q1": 3.0,
+                "q3": 4.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    3.0,
+                    4.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Concrete features",
+            "description": "Features that are mapped to at least one implementation artifact.",
+            "parent": "Features",
+            "level": 1,
+            "value": 10.0,
+            "size": 11,
+            "ratio": 0.74,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 10.0,
+                "median": 10.0,
+                "min": 9.0,
+                "max": 11.0,
+                "q1": 9.0,
+                "q3": 11.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    9.0,
+                    11.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Concrete leaf features",
+            "description": "Concrete and leaf features.",
+            "parent": "Concrete features",
+            "level": 2,
+            "value": 10.0,
+            "size": 11,
+            "ratio": 1.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 10.0,
+                "median": 10.0,
+                "min": 9.0,
+                "max": 11.0,
+                "q1": 9.0,
+                "q3": 11.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    9.0,
+                    11.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Concrete compound features",
+            "description": "Concrete and compound features.",
+            "parent": "Concrete features",
+            "level": 2,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Compound features",
+            "description": "Features that have subfeatures.",
+            "parent": "Features",
+            "level": 1,
+            "value": 3.5,
+            "size": 4,
+            "ratio": 0.26,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.5,
+                "median": 3.5,
+                "min": 3.0,
+                "max": 4.0,
+                "q1": 3.0,
+                "q3": 4.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    3.0,
+                    4.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Leaf features",
+            "description": "Features that have not subfeatures (aka 'primitive features' or 'terminal features').",
+            "parent": "Features",
+            "level": 1,
+            "value": 10.0,
+            "size": 11,
+            "ratio": 0.74,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 10.0,
+                "median": 10.0,
+                "min": 9.0,
+                "max": 11.0,
+                "q1": 9.0,
+                "q3": 11.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    9.0,
+                    11.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Root feature",
+            "description": "The root of the feature model.",
+            "parent": "Features",
+            "level": 1,
+            "value": 1.0,
+            "size": 1,
+            "ratio": 0.07500000000000001,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 1.0,
+                "max": 1.0,
+                "q1": 1.0,
+                "q3": 1.0,
+                "sd": 0.0,
+                "raw_values": [
+                    1.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Top features",
+            "description": "Features that are first descendants of the root.",
+            "parent": "Root feature",
+            "level": 2,
+            "value": 5.5,
+            "size": 6,
+            "ratio": 0.41000000000000003,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 5.5,
+                "median": 5.5,
+                "min": 5.0,
+                "max": 6.0,
+                "q1": 5.0,
+                "q3": 6.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    5.0,
+                    6.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Solitary features",
+            "description": "Features that are not grouped in a feature group.",
+            "parent": "Features",
+            "level": 1,
+            "value": 6.5,
+            "size": 7,
+            "ratio": 0.485,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 6.5,
+                "median": 6.5,
+                "min": 6.0,
+                "max": 7.0,
+                "q1": 6.0,
+                "q3": 7.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    6.0,
+                    7.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Grouped features",
+            "description": "Features that occurs in a feature group.",
+            "parent": "Features",
+            "level": 1,
+            "value": 7.0,
+            "size": 8,
+            "ratio": 0.515,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 7.0,
+                "median": 7.0,
+                "min": 6.0,
+                "max": 8.0,
+                "q1": 6.0,
+                "q3": 8.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    6.0,
+                    8.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Typed features",
+            "description": "Non-Boolean features its selection require to provide a value (e.g., a number, a string,...",
+            "parent": "Features",
+            "level": 1,
+            "value": 2.0,
+            "size": 2,
+            "ratio": 0.15000000000000002,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Numerical features",
+            "description": "Features with a Integer or Real type.",
+            "parent": "Typed features",
+            "level": 2,
+            "value": 1.0,
+            "size": 1,
+            "ratio": 0.07500000000000001,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 1.0,
+                "max": 1.0,
+                "q1": 1.0,
+                "q3": 1.0,
+                "sd": 0.0,
+                "raw_values": [
+                    1.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Integer features",
+            "description": "Features with a Integer type.",
+            "parent": "Numerical features",
+            "level": 3,
+            "value": 1.0,
+            "size": 1,
+            "ratio": 0.07500000000000001,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 1.0,
+                "max": 1.0,
+                "q1": 1.0,
+                "q3": 1.0,
+                "sd": 0.0,
+                "raw_values": [
+                    1.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Real features",
+            "description": "Features with a Real type.",
+            "parent": "Numerical features",
+            "level": 3,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "String features",
+            "description": "Features with a String type.",
+            "parent": "Typed features",
+            "level": 2,
+            "value": 1.0,
+            "size": 1,
+            "ratio": 0.07500000000000001,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 1.0,
+                "max": 1.0,
+                "q1": 1.0,
+                "q3": 1.0,
+                "sd": 0.0,
+                "raw_values": [
+                    1.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Multi-features",
+            "description": "Features with cardinalities (aka 'clonable features')",
+            "parent": "Features",
+            "level": 1,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Tree relationships",
+            "description": "Number of relationships (edges) of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": 8.0,
+            "size": 9,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 8.0,
+                "median": 8.0,
+                "min": 7.0,
+                "max": 9.0,
+                "q1": 7.0,
+                "q3": 9.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    7.0,
+                    9.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Mandatory features",
+            "description": "Features marked as mandatory that need to be selected if its parent is selected.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": 2.5,
+            "size": 3,
+            "ratio": 0.38,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.5,
+                "median": 2.5,
+                "min": 2.0,
+                "max": 3.0,
+                "q1": 2.0,
+                "q3": 3.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    2.0,
+                    3.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Optional features",
+            "description": "Feature marked as optional.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": 3.0,
+            "size": 3,
+            "ratio": 0.46499999999999997,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.0,
+                "median": 3.0,
+                "min": 3.0,
+                "max": 3.0,
+                "q1": 3.0,
+                "q3": 3.0,
+                "sd": 0.0,
+                "raw_values": [
+                    3.0,
+                    3.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Feature groups",
+            "description": "Features that express a choice over the grouped features in a group.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": 2.5,
+            "size": 3,
+            "ratio": 0.31,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.5,
+                "median": 2.5,
+                "min": 2.0,
+                "max": 3.0,
+                "q1": 2.0,
+                "q3": 3.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    2.0,
+                    3.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Alternative groups",
+            "description": "Feature groups that require the selection of just one child (i.e., [1..1] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": 1.5,
+            "size": 2,
+            "ratio": 0.585,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.5,
+                "median": 1.5,
+                "min": 1.0,
+                "max": 2.0,
+                "q1": 1.0,
+                "q3": 2.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    1.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Or groups",
+            "description": "Feature groups that require the selection of at least one child (i.e., [1..*] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": 1.0,
+            "size": 1,
+            "ratio": 0.41500000000000004,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 1.0,
+                "max": 1.0,
+                "q1": 1.0,
+                "q3": 1.0,
+                "sd": 0.0,
+                "raw_values": [
+                    1.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Mutex groups",
+            "description": "Feature groups that require the selection of zero or just one child (i.e., [0..1] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Cardinality groups",
+            "description": "Feature groups with arbitraty cardinality [a..b] that require the selection of an minimum and a maximum number of children.",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Depth of tree",
+            "description": "Number of features of the longest path from the root to the leaf features.",
+            "parent": null,
+            "level": 0,
+            "value": 2.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Mean depth of tree",
+            "description": "Number of features of the mean path from the root to the leaf features.",
+            "parent": "Depth of tree",
+            "level": 1,
+            "value": 1.7,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.7,
+                "median": 1.7,
+                "min": 1.67,
+                "max": 1.73,
+                "q1": 1.67,
+                "q3": 1.73,
+                "sd": 0.04242640687119289,
+                "raw_values": [
+                    1.67,
+                    1.73
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Branching factor",
+            "description": "Average number of children per non-leaf feature (aka 'Ratio of Variability').",
+            "parent": null,
+            "level": 0,
+            "value": 3.585,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.585,
+                "median": 3.585,
+                "min": 3.5,
+                "max": 3.67,
+                "q1": 3.5,
+                "q3": 3.67,
+                "sd": 0.12020815280171303,
+                "raw_values": [
+                    3.5,
+                    3.67
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Min children per feature",
+            "description": "Minimal number of children per non-leaf feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 2.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Max children per feature",
+            "description": "Maximal number of children per feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 5.5,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 5.5,
+                "median": 5.5,
+                "min": 5.0,
+                "max": 6.0,
+                "q1": 5.0,
+                "q3": 6.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    5.0,
+                    6.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Avg children per feature",
+            "description": "Average number of children per feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 0.925,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.925,
+                "median": 0.925,
+                "min": 0.92,
+                "max": 0.93,
+                "q1": 0.92,
+                "q3": 0.93,
+                "sd": 0.007071067811865481,
+                "raw_values": [
+                    0.92,
+                    0.93
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Cross-tree constraints",
+            "description": "Textual cross-tree constraints.",
+            "parent": null,
+            "level": 0,
+            "value": 6.0,
+            "size": 7,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 6.0,
+                "median": 6.0,
+                "min": 5.0,
+                "max": 7.0,
+                "q1": 5.0,
+                "q3": 7.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    5.0,
+                    7.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Logical constraints",
+            "description": "Constraints with only logical operators.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 1.0,
+            "size": 2,
+            "ratio": 0.145,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 0.0,
+                "max": 2.0,
+                "q1": 0.0,
+                "q3": 2.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    0.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Single feature constraints",
+            "description": "Constraints with a single feature or negated feature.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Simple constraints",
+            "description": "Requires and Excludes constraints.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Requires constraints",
+            "description": "Constraints modeling that the activation of a feature f1 implies the activation of a feature f2.",
+            "parent": "Simple constraints",
+            "level": 3,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Excludes constraints",
+            "description": "Constraints modeling that two features are mutually exclusive and cannot be activated together.",
+            "parent": "Simple constraints",
+            "level": 3,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Complex constraints",
+            "description": "Constraints in arbitrary propositional logic formulae.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": 1.0,
+            "size": 2,
+            "ratio": 0.5,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 0.0,
+                "max": 2.0,
+                "q1": 0.0,
+                "q3": 2.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    0.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Pseudo-complex constraints",
+            "description": "Constraints that are convertible to a set of simple constraints.",
+            "parent": "Complex constraints",
+            "level": 3,
+            "value": 0.5,
+            "size": 1,
+            "ratio": 0.25,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.5,
+                "median": 0.5,
+                "min": 0.0,
+                "max": 1.0,
+                "q1": 0.0,
+                "q3": 1.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    0.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Strict-complex constraints",
+            "description": "Constraints that cannot be converted to a set of simple constraints.",
+            "parent": "Complex constraints",
+            "level": 3,
+            "value": 0.5,
+            "size": 1,
+            "ratio": 0.25,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.5,
+                "median": 0.5,
+                "min": 0.0,
+                "max": 1.0,
+                "q1": 0.0,
+                "q3": 1.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    0.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Arithmetic constraints",
+            "description": "Constraints with at least one arithmetic operator.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 3.0,
+            "size": 3,
+            "ratio": 0.515,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.0,
+                "median": 3.0,
+                "min": 3.0,
+                "max": 3.0,
+                "q1": 3.0,
+                "q3": 3.0,
+                "sd": 0.0,
+                "raw_values": [
+                    3.0,
+                    3.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Aggregation constraints",
+            "description": "Constraints with at least one aggregation operator.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 2.0,
+            "size": 2,
+            "ratio": 0.345,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Features in constraints",
+            "description": "Features involved in cross-tree constraints. The ratio to the total number of features is called 'Extra constraint representativeness (ECR)'.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 6.0,
+            "size": 9,
+            "ratio": 0.425,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 6.0,
+                "median": 6.0,
+                "min": 3.0,
+                "max": 9.0,
+                "q1": 3.0,
+                "q3": 9.0,
+                "sd": 4.242640687119285,
+                "raw_values": [
+                    3.0,
+                    9.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Min features per constraint",
+            "description": "The minimal number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 0.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Max features per constraint",
+            "description": "The maximal number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 2.5,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.5,
+                "median": 2.5,
+                "min": 2.0,
+                "max": 3.0,
+                "q1": 2.0,
+                "q3": 3.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    2.0,
+                    3.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Avg features per constraint",
+            "description": "The average number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 1.455,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.455,
+                "median": 1.455,
+                "min": 1.2,
+                "max": 1.71,
+                "q1": 1.2,
+                "q3": 1.71,
+                "sd": 0.36062445840513924,
+                "raw_values": [
+                    1.2,
+                    1.71
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Avg constraints per feature",
+            "description": "The average number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 1.665,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.665,
+                "median": 1.665,
+                "min": 1.33,
+                "max": 2.0,
+                "q1": 1.33,
+                "q3": 2.0,
+                "sd": 0.4737615433949868,
+                "raw_values": [
+                    1.33,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Min constraints per feature",
+            "description": "The minimal number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 1.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 1.0,
+                "max": 1.0,
+                "q1": 1.0,
+                "q3": 1.0,
+                "sd": 0.0,
+                "raw_values": [
+                    1.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Max constraints per feature",
+            "description": "The maximal number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 3.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.0,
+                "median": 3.0,
+                "min": 3.0,
+                "max": 3.0,
+                "q1": 3.0,
+                "q3": 3.0,
+                "sd": 0.0,
+                "raw_values": [
+                    3.0,
+                    3.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Attributes",
+            "description": "Features attributes in the model (i.e., number of distinct attributes).",
+            "parent": null,
+            "level": 0,
+            "value": 2.0,
+            "size": 2,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Features with attributes",
+            "description": "Features that contain some attributes defined in the model.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 7.5,
+            "size": 8,
+            "ratio": 0.5549999999999999,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 7.5,
+                "median": 7.5,
+                "min": 7.0,
+                "max": 8.0,
+                "q1": 7.0,
+                "q3": 8.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    7.0,
+                    8.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Min attributes per feature",
+            "description": "The minimal number of attributes in a feature.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 0.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Max attributes per feature",
+            "description": "The maximal number of attributes in a feature.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 2.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Avg attributes per feature",
+            "description": "Average number of attributes in features.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 0.71,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.71,
+                "median": 0.71,
+                "min": 0.67,
+                "max": 0.75,
+                "q1": 0.67,
+                "q3": 0.75,
+                "sd": 0.056568542494923775,
+                "raw_values": [
+                    0.67,
+                    0.75
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Avg attributes per feature w. attributes",
+            "description": "Average number of attributes in features with attributes.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 1.27,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.27,
+                "median": 1.27,
+                "min": 1.25,
+                "max": 1.29,
+                "q1": 1.25,
+                "q3": 1.29,
+                "sd": 0.028284271247461926,
+                "raw_values": [
+                    1.25,
+                    1.29
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        }
+    ],
+    "analysis": [
+        {
+            "name": "Satisfiable (valid)",
+            "description": "A feature model is satisfiable (valid, not void) if it represents at least one configuration.",
+            "parent": null,
+            "level": 0,
+            "value": 1.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.0,
+                "median": 1.0,
+                "min": 1.0,
+                "max": 1.0,
+                "q1": 1.0,
+                "q3": 1.0,
+                "sd": 0.0,
+                "raw_values": [
+                    1.0,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Core features",
+            "description": "Features that are part of all the configurations (aka 'common features').",
+            "parent": null,
+            "level": 0,
+            "value": 5.5,
+            "size": 6,
+            "ratio": 0.41000000000000003,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 5.5,
+                "median": 5.5,
+                "min": 5.0,
+                "max": 6.0,
+                "q1": 5.0,
+                "q3": 6.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    5.0,
+                    6.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "False-optional features",
+            "description": "Features included in all possible configurations although not being modelled as mandatory. The ratio is based on the total number of features.",
+            "parent": "Core features",
+            "level": 1,
+            "value": 2.0,
+            "size": 2,
+            "ratio": 0.15000000000000002,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Dead features",
+            "description": "Features that cannot appear in any configuration.",
+            "parent": null,
+            "level": 0,
+            "value": 2.0,
+            "size": 2,
+            "ratio": 0.15000000000000002,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 2.0,
+                "median": 2.0,
+                "min": 2.0,
+                "max": 2.0,
+                "q1": 2.0,
+                "q3": 2.0,
+                "sd": 0.0,
+                "raw_values": [
+                    2.0,
+                    2.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Variant features",
+            "description": "Features that appear only in some configurations (i.e., features that are neither core nor dead).",
+            "parent": null,
+            "level": 0,
+            "value": 6.0,
+            "size": 7,
+            "ratio": 0.44499999999999995,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 6.0,
+                "median": 6.0,
+                "min": 5.0,
+                "max": 7.0,
+                "q1": 5.0,
+                "q3": 7.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    5.0,
+                    7.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Unique features",
+            "description": "Features that appear in exactly one configuration. The ratio is based on the total number of features.",
+            "parent": "Variant features",
+            "level": 1,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Pure optional features",
+            "description": "Feature with 0.5 (50%) probability of being selected in a valid configuration (i.e., their selection is unconstrained). The ratio is based on the total number of features.",
+            "parent": "Variant features",
+            "level": 1,
+            "value": 3.5,
+            "size": 2,
+            "ratio": 0.275,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 3.5,
+                "median": 3.5,
+                "min": 2.0,
+                "max": 5.0,
+                "q1": 2.0,
+                "q3": 5.0,
+                "sd": 2.1213203435596424,
+                "raw_values": [
+                    2.0,
+                    5.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Configurations",
+            "description": "Number of configurations represented by the feature model. This considers Non-Boolean features and multifeatures. If <=, >=, or ~ is shown, the number represents an estimation.",
+            "parent": null,
+            "level": 0,
+            "value": 127.5,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 127.5,
+                "median": 127.5,
+                "min": 105.0,
+                "max": 150.0,
+                "q1": 105.0,
+                "q3": 150.0,
+                "sd": 31.81980515339464,
+                "raw_values": [
+                    105.0,
+                    150.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Boolean configurations",
+            "description": "Number of configurations represented by the feature model considering all features as Boolean features. If <= is shown, the number represents an upper estimation bound.",
+            "parent": "Configurations",
+            "level": 1,
+            "value": 234.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 234.0,
+                "median": 234.0,
+                "min": 228.0,
+                "max": 240.0,
+                "q1": 228.0,
+                "q3": 240.0,
+                "sd": 8.48528137423857,
+                "raw_values": [
+                    228.0,
+                    240.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Unbounded features",
+            "description": "Features that can take infinite (unbounded) values and lead to infinite configuration spaces. The ratio is based on the total number of features.",
+            "parent": "Configurations",
+            "level": 1,
+            "value": 0.0,
+            "size": 0,
+            "ratio": 0.0,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.0,
+                "median": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "q1": 0.0,
+                "q3": 0.0,
+                "sd": 0.0,
+                "raw_values": [
+                    0.0,
+                    0.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Total variability",
+            "description": "The total variability measures the flexibility of the SPL considering all features.",
+            "parent": null,
+            "level": 0,
+            "value": 1.99,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.99,
+                "median": 1.99,
+                "min": 0.32,
+                "max": 3.66,
+                "q1": 0.32,
+                "q3": 3.66,
+                "sd": 2.3617366491630687,
+                "raw_values": [
+                    0.32,
+                    3.66
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Partial variability",
+            "description": "The partial variability measures the flexibility of the SPL considering only variant features.",
+            "parent": null,
+            "level": 0,
+            "value": 283.275,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 283.275,
+                "median": 283.275,
+                "min": 82.68,
+                "max": 483.87,
+                "q1": 82.68,
+                "q3": 483.87,
+                "sd": 283.684169544231,
+                "raw_values": [
+                    82.68,
+                    483.87
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Homogeneity",
+            "description": "The homogeneity measures how similar are the configurations of the SPL.",
+            "parent": null,
+            "level": 0,
+            "value": 62.915,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 62.915,
+                "median": 62.915,
+                "min": 62.22,
+                "max": 63.61,
+                "q1": 62.22,
+                "q3": 63.61,
+                "sd": 0.9828784258493014,
+                "raw_values": [
+                    62.22,
+                    63.61
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Configuration distribution",
+            "description": "Number of configurations having a given number of features.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Mean",
+            "description": "Mean number of features occurring in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 8.48,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 8.48,
+                "median": 8.48,
+                "min": 7.63,
+                "max": 9.33,
+                "q1": 7.63,
+                "q3": 9.33,
+                "sd": 1.2020815280171309,
+                "raw_values": [
+                    7.63,
+                    9.33
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Standard deviation",
+            "description": "Standard deviation of number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 1.225,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 1.225,
+                "median": 1.225,
+                "min": 1.21,
+                "max": 1.24,
+                "q1": 1.21,
+                "q3": 1.24,
+                "sd": 0.021213203435596444,
+                "raw_values": [
+                    1.21,
+                    1.24
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Median",
+            "description": "Median number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 8.5,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 8.5,
+                "median": 8.5,
+                "min": 8.0,
+                "max": 9.0,
+                "q1": 8.0,
+                "q3": 9.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    8.0,
+                    9.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Median absolute deviation",
+            "description": "Median absolute deviation number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 0.975,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 0.975,
+                "median": 0.975,
+                "min": 0.95,
+                "max": 1.0,
+                "q1": 0.95,
+                "q3": 1.0,
+                "sd": 0.03535533905932741,
+                "raw_values": [
+                    0.95,
+                    1.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3b"
+                }
+            }
+        },
+        {
+            "name": "Mode",
+            "description": "Most frequently occurring number of features for a configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 8.5,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 8.5,
+                "median": 8.5,
+                "min": 8.0,
+                "max": 9.0,
+                "q1": 8.0,
+                "q3": 9.0,
+                "sd": 0.7071067811865476,
+                "raw_values": [
+                    8.0,
+                    9.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Min",
+            "description": "Number of features in the smallest configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 6.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 6.0,
+                "median": 6.0,
+                "min": 5.0,
+                "max": 7.0,
+                "q1": 5.0,
+                "q3": 7.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    5.0,
+                    7.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Max",
+            "description": "Number of features in the largest configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 12.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 12.0,
+                "median": 12.0,
+                "min": 11.0,
+                "max": 13.0,
+                "q1": 11.0,
+                "q3": 13.0,
+                "sd": 1.4142135623730951,
+                "raw_values": [
+                    11.0,
+                    13.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3b",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        },
+        {
+            "name": "Range",
+            "description": "Range of number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 6.0,
+            "size": null,
+            "ratio": null,
+            "is_dataset": true,
+            "dataset_stats": {
+                "count": 2,
+                "mean": 6.0,
+                "median": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "q1": 6.0,
+                "q3": 6.0,
+                "sd": 0.0,
+                "raw_values": [
+                    6.0,
+                    6.0
+                ],
+                "outliers": {
+                    "min_model_name": "Pizza_z3",
+                    "max_model_name": "Pizza_z3"
+                }
+            }
+        }
+    ]
+}

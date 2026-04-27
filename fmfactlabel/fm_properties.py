@@ -55,6 +55,46 @@ class FMPropertyMeasure():
         return self.property.to_dict() | result
 
 
+class FMPropertyStats():
+    """It represent the statistics of a property."""
+
+    def __init__(self,
+                 property_measure: FMPropertyMeasure,
+                 min_value: Optional[Any] = None,
+                 max_value: Optional[Any] = None,
+                 mean_value: Optional[Any] = None,
+                 std_value: Optional[Any] = None,
+                 median_value: Optional[Any] = None,
+                 q1_value: Optional[Any] = None,
+                 q3_value: Optional[Any] = None,
+                 irq_value: Optional[Any] = None,
+                 outliers_value: Optional[Any] = None,):
+        self.property_measure = property_measure
+        self.min_value = min_value
+        self.max_value = max_value
+        self.mean_value = mean_value
+        self.std_value = std_value
+        self.median_value = median_value
+        self.q1_value = q1_value
+        self.q3_value = q3_value
+        self.irq_value = irq_value
+        self.outliers_value = outliers_value
+
+    def to_dict(self) -> dict[str, Any]:
+        result = {'min': safe_value(self.min_value),
+                  'max': safe_value(self.max_value),
+                  'mean': safe_value(self.mean_value),
+                  'std': safe_value(self.std_value),
+                  'median': safe_value(self.median_value),
+                  'q1': safe_value(self.q1_value),
+                  'q3': safe_value(self.q3_value),
+                  'irq': safe_value(self.irq_value),
+                  'outliers': safe_value(self.outliers_value)}
+        property_measure_dict = self.property_measure.to_dict()
+        property_measure_dict['stats'] = result
+        return property_measure_dict
+    
+
 class FMProperties(Enum):
     # METADATA
     NAME = FMProperty('Name', 'Name of the feature model.', None)

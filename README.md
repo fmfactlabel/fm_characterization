@@ -120,5 +120,10 @@ The tool offers a web service to upload the feature model and its metadata via a
 - [Flask](https://flask.palletsprojects.com/en/3.0.x/)
 
 ## Node for Typescrypt
+Borra la carpeta de dependencias y el archivo de bloqueo
+- `rm -rf node_modules package-lock.json`
+Limpia la caché de npm (forzado)
+- `npm cache clean --force`
 - `npm install`
+- `sudo npm install -g typescript`
 - `npx tsc -w`

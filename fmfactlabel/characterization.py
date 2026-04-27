@@ -45,9 +45,9 @@ class FMCharacterization():
         await self.metrics.calculate_metrics(on_progress)
 
         if on_progress: 
-            on_progress(50, "Obtaining analytical metrics...")
+            on_progress(40, "Obtaining analytical metrics...")
             await asyncio.sleep(0)
-        self.analysis = FMAnalysis(self.model, self.light_fact_label)
+        self.analysis = FMAnalysis(self.model, self.metrics, self.light_fact_label)
         await self.analysis.calculate_analysis(on_progress)
 
     @staticmethod

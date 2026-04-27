@@ -15,6 +15,10 @@ class FMMetrics():
         self.fm = model
         self._metrics: dict[str, Any] = None
 
+    @property
+    def metrics(self) -> dict[str, Any]:
+        return self._metrics
+    
     async def calculate_metrics(self, on_progress: callable = None) -> None:
         self._metrics = traverse_metrics(self.fm)
 

@@ -4,7 +4,7 @@ import logging
 from typing import Any
 import asyncio
 
-from fmfactlabel import FMProperties, FMPropertyMeasure
+from fmfactlabel import FMProperties, FMPropertyMeasure, FMMetrics
 from .fm_utils import get_ratio, get_nof_configuration_as_str, get_percentage_str
 
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
@@ -19,93 +19,127 @@ from flamapy.metamodels.z3_metamodel import operations as z3_operations
 
 class FMAnalysis():
 
-    def __init__(self, model: FeatureModel, light_fact_label: bool = False) -> None:
+    def __init__(self, 
+                 model: FeatureModel, 
+                 metrics: FMMetrics,
+                 light_fact_label: bool = False) -> None:
         self.fm = model
+        self.metrics = metrics
         self.light_fact_label = light_fact_label
         
     async def calculate_analysis(self, on_progress: callable = None) -> None:
         self.bdd_model = None
-        if on_progress: 
-            on_progress(50, "Obtaining analytical metrics...", "(1/3) SAT analysis")
-            await asyncio.sleep(0)
-        self.sat_model = FmToPysat(self.fm).transform()
-        self.sat_model.original_model = self.fm
-        if on_progress: 
-            on_progress(60, "Obtaining analytical metrics...", "(2/3) SMT analysis")
-            await asyncio.sleep(0)
-        self.z3_model = FmToZ3(self.fm).transform()
-        if on_progress: 
-            on_progress(70, "Obtaining analytical metrics...", "(3/3) BDD analysis")
-            await asyncio.sleep(0)
+        self.sat_model = None
+        self.z3_model = None
+        self._features = self.metrics.metrics[FMProperties.FEATURES.value]
+        language_level = fm_operations.FMLanguageLevel().execute(self.fm).get_result()
+
         if not self.light_fact_label:
             try:
+                if on_progress: 
+                    on_progress(40, "Obtaining analytical metrics...", "BDD transformation")
+                    await asyncio.sleep(0)
                 self.bdd_model = FmToBDD(self.fm).transform()
             except Exception as e:
                 logging.warning(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
-
-        if on_progress: 
-            on_progress(80, "Obtaining analytical metrics...", "Executing analysis operations")
-            await asyncio.sleep(0)
-        # For performance purposes
-        self._boolean_approximation = None
-        self._approximation = None
-        self._features = self.fm.get_features()
-        if self.bdd_model is not None:
+                
+        if self.bdd_model is not None:  
+            if on_progress: 
+                on_progress(50, "Obtaining analytical metrics...", "BDD analysis")
+                await asyncio.sleep(0)
             self._boolean_configurations = bdd_operations.BDDConfigurationsNumber().execute(self.bdd_model).get_result()
             self._boolean_approximation = None
             self._fip = bdd_operations.BDDFeatureInclusionProbability().execute(self.bdd_model).get_result()
             self._pd = bdd_operations.BDDProductDistribution().execute(self.bdd_model).get_result()
             self._descriptive_statistics = descriptive_statistics(self._pd)
-            #self._core_features = [feat for feat, prob, in self._fip.items() if prob >= 1.0]
-            #self._dead_features = [feat for feat, prob, in self._fip.items() if prob <= 0.0]
-            #self._variant_features = [feat for feat, prob, in self._fip.items() if 0.0 < prob < 1.0]
-        else:
+            self._core_features = [feat for feat, prob, in self._fip.items() if prob >= 1.0]
+            self._dead_features = [feat for feat, prob, in self._fip.items() if prob <= 0.0]
+            self._variant_features = [feat for feat, prob, in self._fip.items() if 0.0 < prob < 1.0]
+            self._false_optional_features = bdd_operations.BDDFalseOptionalFeatures().execute(self.bdd_model).get_result()
+        else:  # The BDD could not be built
+            self._fip = None
+            self._pd = None
+            self._descriptive_statistics = None
+            if on_progress: 
+                on_progress(50 if self.light_fact_label else 60, "Obtaining analytical metrics...", "SAT transformation")
+                await asyncio.sleep(0)
+            self.sat_model = FmToPysat(self.fm).transform()
+            self.sat_model.original_model = self.fm
+
+            if on_progress: 
+                on_progress(60 if self.light_fact_label else 70, "Obtaining analytical metrics...", "SAT analysis")
+                await asyncio.sleep(0)
+            print("Calculating estimated number of Boolean configurations...")
             self._boolean_configurations = fm_operations.FMEstimatedConfigurationsNumber().execute(self.fm).get_result()
             if self.fm.get_constraints():
-                self._boolean_approximation = '≤'
+                if self._boolean_configurations <= 1e3:  # Try to calculate the exact number of configurations if the number of Boolean configurations is not too high
+                    print("Calculating exact number of Boolean configurations with PySAT...")
+                    self._boolean_configurations = sat_operations.PySATConfigurationsNumber().execute(self.sat_model).get_result()
+                    self._boolean_approximation = None
+                else:
+                    self._boolean_approximation = '≤'
             else:
                 self._boolean_approximation = None
-            #self._core_features = sat_operations.PySATCoreFeatures().execute(self.sat_model).get_result()
-            #self._dead_features = sat_operations.PySATDeadFeatures().execute(self.sat_model).get_result()
-            # self._variant_features = [f.name for f in self._features 
-            #                           if f.name not in self._core_features and
-            #                           f.name not in self._dead_features]
-            self._fip = None
-            self._descriptive_statistics = None
-        self._core_features = z3_operations.Z3CoreFeatures().execute(self.z3_model).get_result()
-        self._dead_features = z3_operations.Z3DeadFeatures().execute(self.z3_model).get_result()
-        self._variant_features = [f.name for f in self._features if f.name not in self._core_features and f.name not in self._dead_features]
-        # Calculate unbounded features based on cardinality and Z3 bounds
-        unbounded_features_cardinalities = [f.name for f in self.fm.get_features() if f.is_multifeature() and (f.feature_cardinality.min == -1 or f.feature_cardinality.max == -1)]
-        features_bounds = z3_operations.Z3AllFeatureBounds().execute(self.z3_model).get_result()
-        _unbounded_typed_features = []
-        for feature, bounds in features_bounds.items():
-            if not bounds['bounded']:
-                _unbounded_typed_features.append(feature)
-        self._unbounded_features = list(set(unbounded_features_cardinalities + _unbounded_typed_features))
-        # Calculate the number of configurations
-        if self._unbounded_features:
-            self._configurations = float('inf')
-            self._approximation = None
-        else:
-            language_level = fm_operations.FMLanguageLevel().execute(self.fm).get_result()
-            if language_level.major == fm_operations.MajorLevel.TYPE:  # We need Z3 to calculate the number of configurations if the feature model has non-Boolean features
-                if self._boolean_configurations <= 1e3:  # Try to calculate the exact number of configurations if the number of Boolean configurations is not too high
-                    self._configurations = z3_operations.Z3ConfigurationsNumber().execute(self.z3_model).get_result()
+            print("Calculating core with PySAT...")
+            #backbone = sat_operations.PySATBackbone().execute(self.sat_model).get_result()
+            self._core_features = sat_operations.PySATCoreFeatures().execute(self.sat_model).get_result()
+            print("Calculating dead with PySAT...")
+            self._dead_features = sat_operations.PySATDeadFeatures().execute(self.sat_model).get_result()
+            print("Calculating variant with PySAT...")
+            self._variant_features = [f for f in self._features if f not in self._core_features and f not in self._dead_features]
+            print("Finished SAT analysis.")
+            self._false_optional_features = sat_operations.PySATFalseOptionalFeatures().execute(self.sat_model).get_result()
+        self._configurations = self._boolean_configurations
+        self._approximation = self._boolean_approximation
+        self._unbounded_features = []
+        if language_level.major != fm_operations.MajorLevel.BOOLEAN:
+            self._configurations = self._boolean_configurations
+            if self._boolean_approximation is None:  # The number of Boolean configurations was exact, so the real number of configurations with non-Boolean features is likely higher.
+                self._approximation = '≥'
+            else:  # The number of Boolean configurations was already an approximation, so the real number of configurations with non-Boolean features is a poor approximation too.
+                self._approximation = '≈'
+            if self._boolean_configurations <= 1e3:
+                if on_progress: 
+                    on_progress(70 if self.light_fact_label else 80, "Obtaining analytical metrics...", "SMT transformation")
+                    await asyncio.sleep(0)
+                self.z3_model = FmToZ3(self.fm).transform()
+                if on_progress: 
+                    on_progress(80 if self.light_fact_label else 90, "Obtaining analytical metrics...", "SMT analysis")
+                    await asyncio.sleep(0)
+                print("Calculating backbone with Z3...")
+                backbone = z3_operations.Z3Backbone().execute(self.z3_model).get_result()
+                self._core_features = backbone['core']
+                self._dead_features = backbone['dead']
+                print("Calculating variant with Z3...")
+                self._variant_features = [f for f in self._features if f not in self._core_features and f not in self._dead_features]
+                self._false_optional_features = z3_operations.Z3FalseOptionalFeatures().execute(self.z3_model).get_result()
+                if not self.light_fact_label:
+                    unbounded_features_cardinalities = [f.name for f in self.fm.get_features() if f.is_multifeature() and (f.feature_cardinality.min == -1 or f.feature_cardinality.max == -1)]
+                    print("Calculating unbounded features with Z3...")
+                    features_bounds = z3_operations.Z3AllFeatureBounds().execute(self.z3_model).get_result()
+                    _unbounded_typed_features = []
+                    for feature, bounds in features_bounds.items():
+                        if not bounds['bounded']:
+                            _unbounded_typed_features.append(feature)
+                    self._unbounded_features = list(set(unbounded_features_cardinalities + _unbounded_typed_features))
+                if self._unbounded_features:
+                    self._configurations = float('inf')
                     self._approximation = None
-                else:  # If the number of Boolean configurations is too high, we keep the approximation based on the number of Boolean configurations
-                    self._configurations = self._boolean_configurations
-                    if self._boolean_approximation is None:  # The number of Boolean configurations was exact, so the real number of configurations with non-Boolean features is likely higher.
-                        self._approximation = '≥'
-                    else:  # The number of Boolean configurations was already an approximation, so the real number of configurations with non-Boolean features is a poor approximation too.
-                        self._approximation = '~'
-            else:
-                self._configurations = self._boolean_configurations
-                if self._boolean_approximation is not None:  # The number of Boolean configurations was an approximation, so we try to calculate the real number of configuration witg SAT if it is not too high.
+                else:
                     if self._boolean_configurations <= 1e3:  # Try to calculate the exact number of configurations if the number of Boolean configurations is not too high
-                        self._configurations = sat_operations.PySATConfigurationsNumber().execute(self.sat_model).get_result()
-                        self._boolean_approximation = None
+                        print("Calculating exact number of configurations with Z3...")
+                        self._configurations = z3_operations.Z3ConfigurationsNumber().execute(self.z3_model).get_result()
                         self._approximation = None
+                    else:  # If the number of Boolean configurations is too high, we keep the approximation based on the number of Boolean configurations
+                        self._configurations = self._boolean_configurations
+                        if self._boolean_approximation is None:  # The number of Boolean configurations was exact, so the real number of configurations with non-Boolean features is likely higher.
+                            self._approximation = '≥'
+                        else:  # The number of Boolean configurations was already an approximation, so the real number of configurations with non-Boolean features is a poor approximation too.
+                            self._approximation = '~'
+        if on_progress:
+            on_progress(95, "Obtaining analytical metrics...", "Finishing analysis")
+            await asyncio.sleep(0) 
+        print("Finished analysis.")
 
     def clean(self) -> None:
         if self.bdd_model is not None:
@@ -189,7 +223,7 @@ class FMAnalysis():
                                  get_ratio(_pure_optional_features, self._features))
 
     def fm_false_optional_features(self) -> FMPropertyMeasure:
-        _false_optional_features = z3_operations.Z3FalseOptionalFeatures().execute(self.z3_model).get_result()
+        _false_optional_features = self._false_optional_features
         return FMPropertyMeasure(FMProperties.FALSE_OPTIONAL_FEATURES.value, 
                                  _false_optional_features, 
                                  len(_false_optional_features),

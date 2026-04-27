@@ -8,6 +8,7 @@ import threading
 import time
 import asyncio
 import queue
+import traceback
 
 import flask
 from flask_cors import CORS
@@ -26,6 +27,8 @@ app = flask.Flask(__name__,
                   template_folder=STATIC_DIR)
 CORS(app)
 
+logging.basicConfig(level=logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -156,7 +159,9 @@ def process_characterization_stream(fetch_coro_func, form_data=None, cleanup_pat
             progreso_q.put({'type': 'final', 'data': final_data})
 
         except Exception as e:
+            traceback.print_exc()
             progreso_q.put({'type': 'error', 'msg': str(e)})
+            
         finally:
             if cleanup_path:
                 p_file = pathlib.Path(cleanup_path)

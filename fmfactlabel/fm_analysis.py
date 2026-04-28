@@ -31,8 +31,12 @@ class FMAnalysis():
         self.bdd_model = None
         self.sat_model = None
         self.z3_model = None
+        self._configurations = None
+        self._boolean_configurations = None
+        self._approximation = None
+        self._boolean_approximation = None
         self._features = self.metrics.metrics[FMProperties.FEATURES.value]
-        language_level = fm_operations.FMLanguageLevel().execute(self.fm).get_result()
+        self._language_level = fm_operations.FMLanguageLevel().execute(self.fm).get_result()
 
         if not self.light_fact_label:
             try:
@@ -92,50 +96,43 @@ class FMAnalysis():
         self._configurations = self._boolean_configurations
         self._approximation = self._boolean_approximation
         self._unbounded_features = []
-        if language_level.major != fm_operations.MajorLevel.BOOLEAN:
-            self._configurations = self._boolean_configurations
-            if self._boolean_approximation is None:  # The number of Boolean configurations was exact, so the real number of configurations with non-Boolean features is likely higher.
-                self._approximation = '≥'
-            else:  # The number of Boolean configurations was already an approximation, so the real number of configurations with non-Boolean features is a poor approximation too.
+        if self._language_level.major != fm_operations.MajorLevel.BOOLEAN:
+            unbounded_features_cardinalities = [f.name for f in self.fm.get_features() if f.is_multifeature() and (f.feature_cardinality.min == -1 or f.feature_cardinality.max == -1)]
+            self._unbounded_features = unbounded_features_cardinalities
+            if self._unbounded_features:
+                    self._configurations = float('inf')
+                    self._approximation = None
+            else:
                 self._approximation = '≈'
-            if self._boolean_configurations <= 1e3:
-                if on_progress: 
-                    on_progress(70 if self.light_fact_label else 80, "Obtaining analytical metrics...", "SMT transformation")
-                    await asyncio.sleep(0)
-                self.z3_model = FmToZ3(self.fm).transform()
-                if on_progress: 
-                    on_progress(80 if self.light_fact_label else 90, "Obtaining analytical metrics...", "SMT analysis")
-                    await asyncio.sleep(0)
-                print("Calculating backbone with Z3...")
-                backbone = z3_operations.Z3Backbone().execute(self.z3_model).get_result()
-                self._core_features = backbone['core']
-                self._dead_features = backbone['dead']
-                print("Calculating variant with Z3...")
-                self._variant_features = [f for f in self._features if f not in self._core_features and f not in self._dead_features]
-                self._false_optional_features = z3_operations.Z3FalseOptionalFeatures().execute(self.z3_model).get_result()
                 if not self.light_fact_label:
-                    unbounded_features_cardinalities = [f.name for f in self.fm.get_features() if f.is_multifeature() and (f.feature_cardinality.min == -1 or f.feature_cardinality.max == -1)]
-                    print("Calculating unbounded features with Z3...")
+                    if on_progress: 
+                        on_progress(70 if self.light_fact_label else 80, "Obtaining analytical metrics...", "SMT transformation")
+                        await asyncio.sleep(0)
+                    self.z3_model = FmToZ3(self.fm).transform()
+                    if on_progress: 
+                        on_progress(80 if self.light_fact_label else 90, "Obtaining analytical metrics...", "SMT analysis")
+                        await asyncio.sleep(0)
+                    print("Calculating backbone with Z3...")
+                    backbone = z3_operations.Z3Backbone().execute(self.z3_model).get_result()
+                    self._core_features = backbone['core']
+                    self._dead_features = backbone['dead']
+                    print("Calculating variant with Z3...")
+                    self._variant_features = [f for f in self._features if f not in self._core_features and f not in self._dead_features]
+                    self._false_optional_features = z3_operations.Z3FalseOptionalFeatures().execute(self.z3_model).get_result()
                     features_bounds = z3_operations.Z3AllFeatureBounds().execute(self.z3_model).get_result()
                     _unbounded_typed_features = []
                     for feature, bounds in features_bounds.items():
                         if not bounds['bounded']:
                             _unbounded_typed_features.append(feature)
                     self._unbounded_features = list(set(unbounded_features_cardinalities + _unbounded_typed_features))
-                if self._unbounded_features:
-                    self._configurations = float('inf')
-                    self._approximation = None
-                else:
-                    if self._boolean_configurations <= 1e3:  # Try to calculate the exact number of configurations if the number of Boolean configurations is not too high
-                        print("Calculating exact number of configurations with Z3...")
-                        self._configurations = z3_operations.Z3ConfigurationsNumber().execute(self.z3_model).get_result()
+                    if self._unbounded_features:
+                        self._configurations = float('inf')
                         self._approximation = None
-                    else:  # If the number of Boolean configurations is too high, we keep the approximation based on the number of Boolean configurations
-                        self._configurations = self._boolean_configurations
-                        if self._boolean_approximation is None:  # The number of Boolean configurations was exact, so the real number of configurations with non-Boolean features is likely higher.
-                            self._approximation = '≥'
-                        else:  # The number of Boolean configurations was already an approximation, so the real number of configurations with non-Boolean features is a poor approximation too.
-                            self._approximation = '~'
+                    else:
+                        if self._boolean_configurations <= 1e3:  # Try to calculate the exact number of configurations if the number of Boolean configurations is not too high
+                            print("Calculating exact number of configurations with Z3...")
+                            self._configurations = z3_operations.Z3ConfigurationsNumber().execute(self.z3_model).get_result()
+                            self._approximation = None
         if on_progress:
             on_progress(95, "Obtaining analytical metrics...", "Finishing analysis")
             await asyncio.sleep(0) 
@@ -162,8 +159,10 @@ class FMAnalysis():
         if self._fip is not None:
             result.append(self.fm_pure_optional_features())
         result.append(self.fm_configurations_number())
-        result.append(self.fm_boolean_configurations_number())
-        result.append(self.fm_unbounded_features())
+        if self._language_level.major != fm_operations.MajorLevel.BOOLEAN:
+            result.append(self.fm_boolean_configurations_number())
+            if self.z3_model is not None:
+                result.append(self.fm_unbounded_features())
         result.append(self.fm_total_variability())
         result.append(self.fm_partial_variability())
         if self.bdd_model is not None:
